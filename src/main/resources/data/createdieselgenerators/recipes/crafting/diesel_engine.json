@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#Q#",
+    "#G#",
+    "OSO"
+  ],
+  "key": {
+    "#": {
+      "item": "createdieselgenerators:engine_piston"
+    },
+    "Q": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "G": {
+      "item": "create:brass_block"
+    },
+    "O": {
+      "item": "create:sturdy_sheet"
+    },
+    "S": {
+      "item": "create:fluid_pipe"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:diesel_engine"
+  }
+}

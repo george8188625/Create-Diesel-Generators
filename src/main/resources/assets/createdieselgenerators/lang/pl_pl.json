@@ -1,0 +1,27 @@
+{
+  "item.createdieselgenerators.engine_piston": "Tłok Silnika",
+  "item.createdieselgenerators.plant_oil_bucket": "Wiadro Oleju Roślinnego",
+  "fluid.createdieselgenerators.plant_oil": "Olej Roślinny",
+  "item.createdieselgenerators.biodiesel_bucket": "Wiadro Biodiesla",
+  "item.createdieselgenerators.ethanol_bucket": "Wiadro Etanolu",
+  "fluid.createdieselgenerators.biodiesel": "Biodiesel",
+  "fluid.createdieselgenerators.biodiesel": "Biodiesel",
+  "fluid.createdieselgenerators.ethanol": "Ethanol",
+  "block.createdieselgenerators.diesel_engine": "Silnik Spalinowy",
+  "block.createdieselgenerators.basin_lid": "Pokrywa Tygielu",
+  "block.createdieselgenerators.large_diesel_engine": "Modułowy Silnik Spalinowy",
+  "createdieselgenerators.recipe.basin_fermenting": "Fermentacja w Tygielu",
+
+  "createdieselgenerators.ponder.diesel_engine.header": "Używanie Silników Spalinowych",
+  "createdieselgenerators.ponder.diesel_engine.text_1": "Silniki Spalinowe są kompaktowym źródłem Energii Kinetycznej.",
+  "createdieselgenerators.ponder.diesel_engine.text_2": "Daj im trochę paliwa i zaczną tworzyć Energię Kinetyczną.",
+  "createdieselgenerators.ponder.basin_fermenting_station.header": "Fermentacja w Tygielu",
+  "createdieselgenerators.ponder.basin_fermenting_station.text_1": "Pokrywy Tygielu pozwalają ci tworzyć etanol.",
+  "createdieselgenerators.ponder.basin_fermenting_station.text_2": "Wsadź do nich trochę cukru...",
+  "createdieselgenerators.ponder.basin_fermenting_station.text_3": "... Etanol zostanie stworzony.",
+  "createdieselgenerators.ponder.large_diesel_engine.header": "Używanie Modułowych Silników Spalinowych",
+  "createdieselgenerators.ponder.large_diesel_engine.text_1": "Modułowe Silniki Spalinowe funkcjonują jak normalne Silniki Spalinowe.",
+  "createdieselgenerators.ponder.large_diesel_engine.text_2": "Jak im dasz Paliwo, zaczną produkować Energię Kinetyczną ...",
+  "createdieselgenerators.ponder.large_diesel_engine.text_3": "... One mogą być układane w Stos.",
+  "createdieselgenerators.ponder.large_diesel_engine.text_4": "Będą generować siłę proporcjonalnie do tego, ile Silników ustawisz."
+}

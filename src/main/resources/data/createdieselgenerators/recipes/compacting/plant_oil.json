@@ -1,0 +1,14 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "tag": "forge:seeds"
+    }
+  ],
+  "results": [
+    {
+      "fluid": "createdieselgenerators:plant_oil",
+      "amount": 100
+    }
+  ]
+}

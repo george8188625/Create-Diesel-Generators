@@ -1,0 +1,15 @@
+{
+  "type": "createdieselgenerators:basin_fermenting",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "processingTime": 180,
+  "results": [
+    {
+      "fluid": "createdieselgenerators:ethanol",
+      "amount": 25
+    }
+  ]
+}
