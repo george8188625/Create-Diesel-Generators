@@ -2,14 +2,20 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.LargeDieselGeneratorBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
@@ -34,6 +40,34 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
         super(properties);
         registerDefaultState(super.defaultBlockState().setValue(POWERED, false));
         registerDefaultState(super.defaultBlockState().setValue(PIPE, true));
+    }
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if(context.getClickedFace() == Direction.UP){
+            if(state.getValue(PIPE)) {
+                context.getLevel().setBlock(context.getClickedPos(), state.setValue(PIPE, false), 3);
+            }else{
+                context.getLevel().setBlock(context.getClickedPos(), state.setValue(PIPE, true), 3);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        Level world = context.getLevel();
+        BlockState rotated = getRotatedBlockState(state, context.getClickedFace());
+        if (!rotated.canSurvive(world, context.getClickedPos()))
+            return InteractionResult.PASS;
+
+        KineticBlockEntity.switchToBlockState(world, context.getClickedPos(), updateAfterWrenched(rotated, context));
+
+        BlockEntity be = context.getLevel()
+                .getBlockEntity(context.getClickedPos());
+        if (be instanceof GeneratingKineticBlockEntity) {
+            ((GeneratingKineticBlockEntity) be).reActivateSource = true;
+        }
+
+        if (world.getBlockState(context.getClickedPos()) != state)
+            playRotateSound(world, context.getClickedPos());
+
+        return InteractionResult.SUCCESS;
     }
     @Override
     public BlockState getRotatedBlockState(BlockState originalState, Direction targetedFace) {

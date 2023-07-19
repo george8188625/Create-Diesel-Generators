@@ -1,7 +1,7 @@
 package com.jesz.createdieselgenerators.blocks;
 
-import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;

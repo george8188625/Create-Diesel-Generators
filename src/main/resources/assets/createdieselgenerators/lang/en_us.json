@@ -23,5 +23,12 @@
   "createdieselgenerators.ponder.large_diesel_engine.text_1": "Modular Diesel Generators function like normal Diesel generators.",
   "createdieselgenerators.ponder.large_diesel_engine.text_2": "Once you give them some fuel, they will produce Kinetic Energy ...",
   "createdieselgenerators.ponder.large_diesel_engine.text_3": "... They can be stacked.",
-  "createdieselgenerators.ponder.large_diesel_engine.text_4": "They will generate stress proportionally to how much engines you stack."
+  "createdieselgenerators.ponder.large_diesel_engine.text_4": "They will generate stress proportionally to how much engines you stack.",
+
+  "createdieselgenerators.display_source.diesel_engine_source": "Engine Status",
+  "createdieselgenerators.display_source.large_diesel_engine_source": "Engine Status",
+  "createdieselgenerators.display_source.engine_status": "Engine Status",
+  "createdieselgenerators.display_source.speed": "SPEED : ",
+  "createdieselgenerators.display_source.stress": "STRESS : ",
+  "createdieselgenerators.display_source.idle": "IDLE"
 }

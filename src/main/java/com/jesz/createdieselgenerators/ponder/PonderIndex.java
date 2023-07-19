@@ -21,5 +21,8 @@ public class PonderIndex {
                 .add(BlockRegistry.MODULAR_DIESEL_ENGINE);
         PonderRegistry.TAGS.forTag(AllPonderTags.KINETIC_APPLIANCES)
                 .add(BlockRegistry.BASIN_LID);
+        PonderRegistry.TAGS.forTag(AllPonderTags.DISPLAY_SOURCES)
+                .add(BlockRegistry.DIESEL_ENGINE)
+                .add(BlockRegistry.MODULAR_DIESEL_ENGINE);
     }
 }

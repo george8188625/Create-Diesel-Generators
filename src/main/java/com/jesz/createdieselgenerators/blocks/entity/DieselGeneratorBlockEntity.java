@@ -1,13 +1,14 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
-import com.jesz.createdieselgenerators.blocks.BlockRegistry;
-//import com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock;
 import com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.ChatFormatting;
@@ -30,14 +31,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
-import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.*;
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.FACING;
 import static com.simibubi.create.AllTags.optionalTag;
 
 public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     BlockState state;
     boolean weak;
     boolean slow;
-    boolean validFuel;
+    public boolean validFuel;
 
     private final TagKey<Fluid> tagSS;
     private final TagKey<Fluid> tagFS;
@@ -46,6 +47,8 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     private final TagKey<Fluid> tagPlantOil;
     private final TagKey<Fluid> tagFuel;
     private final TagKey<Fluid> tagEthanol;
+    private final TagKey<Fluid> tagBiodiesel;
+
     public DieselGeneratorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
         tagSS = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong"));
@@ -55,6 +58,7 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         tagPlantOil = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil"));
         tagFuel = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel"));
         tagEthanol = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol"));
+        tagBiodiesel = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel"));
         this.state = state;
     }
     private SmartFluidTankBehaviour tank;
@@ -94,14 +98,20 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         super.read(compound, clientPacket);
         tank.read(compound, false);
     }
-
+    protected ScrollOptionBehaviour<WindmillBearingBlockEntity.RotationDirection> movementDirection;
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+
+        movementDirection = new ScrollOptionBehaviour<>(WindmillBearingBlockEntity.RotationDirection.class,
+                Lang.translateDirect("contraptions.windmill.rotation_direction"), this, new DieselGeneratorValueBox());
+        movementDirection.withCallback($ -> onDirectionChanged());
+
+        behaviours.add(movementDirection);
         tank = SmartFluidTankBehaviour.single(this, 1000);
         behaviours.add(tank);
         super.addBehaviours(behaviours);
     }
-
+    public void onDirectionChanged(){}
     @Override
     public void initialize() {
         super.initialize();
@@ -112,19 +122,19 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public float calculateAddedStressCapacity() {
         if(getGeneratedSpeed() == 0)
             return 0;
-        if(weak)
-            return 512/Math.abs(getGeneratedSpeed());
+        if (weak)
+            return ConfigRegistry.WEAK_STRESS.get().floatValue() / Math.abs(getGeneratedSpeed());
         else
-            return 1024/Math.abs(getGeneratedSpeed());
+            return ConfigRegistry.STRONG_STRESS.get().floatValue() / Math.abs(getGeneratedSpeed());
     }
 
     @Override
     public float getGeneratedSpeed() {
         if(validFuel) {
             if(slow)
-                return convertToDirection(48, getBlockState().getValue(FACING));
+                return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)*ConfigRegistry.SLOW_SPEED.get().floatValue(), getBlockState().getValue(DieselGeneratorBlock.FACING));
             else
-                return convertToDirection(96, getBlockState().getValue(FACING));
+                return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)*ConfigRegistry.FAST_SPEED.get().floatValue(), getBlockState().getValue(DieselGeneratorBlock.FACING));
         }
         return 0;
     }
@@ -149,15 +159,15 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public void tick() {
         super.tick();
         updateGeneratedRotation();
-        if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) {
+        if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || (ConfigRegistry.FUEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) || (ConfigRegistry.BIODIESEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagBiodiesel))) {
             validFuel = true;
             slow = false;
             weak = false;
-        } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFW) || tank.getPrimaryHandler().getFluid().getFluid().is(tagEthanol)) {
+        } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFW) || (ConfigRegistry.ETHANOL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagEthanol))) {
             validFuel = true;
             slow = false;
             weak = true;
-        } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSS) || tank.getPrimaryHandler().getFluid().getFluid().is(tagPlantOil)) {
+        } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSS) || (ConfigRegistry.PLANTOIL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagPlantOil))) {
             validFuel = true;
             slow = true;
             weak = false;

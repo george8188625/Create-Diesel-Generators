@@ -5,6 +5,7 @@
 		"4": "create:block/basin",
 		"5": "createdieselgenerators:block/gauge",
 		"6": "createdieselgenerators:block/basin_lid",
+		"7": "createdieselgenerators:block/basin_fermenting_station",
 		"particle": "create:block/basin"
 	},
 	"elements": [
@@ -39,6 +40,17 @@
 			"to": [12, -1, -0.01],
 			"faces": {
 				"north": {"uv": [0, 0, 8, 8], "texture": "#5"}
+			}
+		},
+		{
+			"from": [3, -14, 3],
+			"to": [13, -12, 13],
+			"faces": {
+				"north": {"uv": [0, 0, 10, 2], "texture": "#7"},
+				"east": {"uv": [0, 0, 10, 2], "texture": "#7"},
+				"south": {"uv": [0, 0, 10, 2], "texture": "#7"},
+				"west": {"uv": [0, 0, 10, 2], "texture": "#7"},
+				"up": {"uv": [0, 2, 10, 12], "texture": "#7"}
 			}
 		}
 	]

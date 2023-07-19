@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -57,6 +58,25 @@ public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<
                     Block.box(5, 5, -2, 11, 11, 0));
         return Shapes.or(Block.box(14, 0, 0, 16, 16, 16),
                 Block.box(16, 5, 5, 18, 11, 11));
+
+    }
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos p_57551_, boolean p_57552_) {
+        if (!level.isClientSide) {
+            boolean flag = level.hasNeighborSignal(pos);
+            if (flag != state.getValue(OPEN)) {
+                if (state.getValue(OPEN) != flag) {
+                    state = state.setValue(OPEN, flag);
+                    level.levelEvent(null, flag ? 1037:1036, pos, 0);
+                }
+
+                level.setBlock(pos, state.setValue(OPEN, flag), 2);
+                if (state.getValue(WATERLOGGED)) {
+                    level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+                }
+            }
+
+        }
 
     }
 
