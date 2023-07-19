@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "create:mechanical_crafting",
   "pattern": [
     "#Q#",
     "SGS",

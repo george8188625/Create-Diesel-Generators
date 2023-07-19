@@ -3,9 +3,12 @@
   "ingredients": [
     {
       "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:bone_meal"
     }
   ],
-  "processingTime": 180,
+  "processingTime": 400,
   "results": [
     {
       "fluid": "createdieselgenerators:ethanol",

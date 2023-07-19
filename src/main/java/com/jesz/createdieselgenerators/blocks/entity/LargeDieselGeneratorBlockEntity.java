@@ -1,11 +1,13 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
-import com.mojang.logging.LogUtils;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.ChatFormatting;
@@ -25,8 +27,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -38,7 +40,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     BlockState state;
     boolean weak;
     boolean slow;
-    boolean validFuel;
+    public boolean validFuel;
     public int stacked;
     public boolean powered = false;
     boolean end = true;
@@ -49,6 +51,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     private final TagKey<Fluid> tagPlantOil;
     private final TagKey<Fluid> tagFuel;
     private final TagKey<Fluid> tagEthanol;
+    private final TagKey<Fluid> tagBiodiesel;
     public WeakReference<LargeDieselGeneratorBlockEntity> forw;
     public WeakReference<LargeDieselGeneratorBlockEntity> back;
 
@@ -63,6 +66,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         tagPlantOil = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil"));
         tagFuel = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel"));
         tagEthanol = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol"));
+        tagBiodiesel = optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel"));
 
         this.state = state;
     }
@@ -90,12 +94,27 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         super.read(compound, clientPacket);
         tank.read(compound, false);
     }
-
+    protected ScrollOptionBehaviour<WindmillBearingBlockEntity.RotationDirection> movementDirection;
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        movementDirection = new ScrollOptionBehaviour<>(WindmillBearingBlockEntity.RotationDirection.class,
+                Lang.translateDirect("contraptions.windmill.rotation_direction"), this, new LargeDieselGeneratorValueBox());
+        movementDirection.withCallback($ -> onDirectionChanged(true));
+
+        behaviours.add(movementDirection);
         tank = SmartFluidTankBehaviour.single(this, 1000);
         behaviours.add(tank);
         super.addBehaviours(behaviours);
+    }
+    public void onDirectionChanged(boolean first) {
+        if(first && getEngineFor() != null){
+            FrontEngine.movementDirection.setValue(movementDirection.getValue());
+            FrontEngine.onDirectionChanged(false);
+            return;
+        }
+        movementDirection.setValue(FrontEngine.movementDirection.getValue());
+        if(getEngineBack() != null)
+            getEngineBack().onDirectionChanged(false);
     }
 
     @Override
@@ -110,33 +129,80 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if (getGeneratedSpeed() == 0 || !end)
             return 0;
         if (weak)
-            return (512 / Math.abs(getGeneratedSpeed())) * stacked;
+            return (ConfigRegistry.WEAK_STRESS.get().floatValue() / Math.abs(getGeneratedSpeed())) * stacked;
         else
-            return (1024 / Math.abs(getGeneratedSpeed())) * stacked;
+            return (ConfigRegistry.STRONG_STRESS.get().floatValue() / Math.abs(getGeneratedSpeed())) * stacked;
     }
 
     @Override
     public float getGeneratedSpeed() {
         if (validFuel) {
-            if (slow)
-                return convertToDirection(48, getBlockState().getValue(FACING));
+            if(slow)
+                return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)*ConfigRegistry.SLOW_SPEED.get().floatValue(), getBlockState().getValue(FACING));
             else
-                return convertToDirection(96, getBlockState().getValue(FACING));
+                return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)*ConfigRegistry.FAST_SPEED.get().floatValue(), getBlockState().getValue(FACING));
         }
         return 0;
+    }
+    public LargeDieselGeneratorBlockEntity FrontEngine;
+    public void UpdateStacked(){
+        LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
+        LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
+
+
+        if(engineBack == null) {
+            stacked = 1;
+
+        }else{
+            stacked = engineBack.stacked + 1;
+        }
+        if(engineForward == null)
+            SetEveryEnginesFront();
+        else
+            engineForward.UpdateStacked();
+    }
+    public void SetEveryEnginesFront(){
+        LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
+        LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
+
+        if(engineForward == null){
+            FrontEngine = this;
+        }else{
+            FrontEngine = engineForward.FrontEngine;
+        }
+        if(engineBack != null)
+            engineBack.SetEveryEnginesFront();
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (!IRotate.StressImpact.isEnabled())
+        if (!IRotate.StressImpact.isEnabled() || FrontEngine == null)
             return added;
-
-        float stressBase = calculateAddedStressCapacity();
+        float stressBase = FrontEngine.calculateAddedStressCapacity();
         if (Mth.equal(stressBase, 0))
             return added;
+        if(FrontEngine != this){
+            Lang.translate("gui.goggles.generator_stats")
+                    .forGoggles(tooltip);
+            Lang.translate("tooltip.capacityProvided")
+                    .style(ChatFormatting.GRAY)
+                    .forGoggles(tooltip);
+
+            float stressTotal = FrontEngine.getGeneratedSpeed()* stressBase;
+
+            Lang.number(stressTotal)
+                    .translate("generic.unit.stress")
+                    .style(ChatFormatting.AQUA)
+                    .space()
+                    .add(Lang.translate("gui.goggles.at_current_speed")
+                            .style(ChatFormatting.DARK_GRAY))
+                    .forGoggles(tooltip, 1);
+
+        }
+
         Lang.translate("gui.goggles.fluid_container").forGoggles(tooltip);
-        Lang.fluidName(tank.getPrimaryHandler().getFluid()).style(ChatFormatting.GRAY).space().add(Lang.number(tank.getPrimaryHandler().getFluid().getAmount()).style(ChatFormatting.DARK_GRAY)).add(Lang.translate("generic.unit.millibuckets").style(ChatFormatting.DARK_GRAY)).forGoggles(tooltip);
+        Lang.fluidName(FrontEngine.tank.getPrimaryHandler().getFluid()).style(ChatFormatting.GRAY).space().add(Lang.number(FrontEngine.tank.getPrimaryHandler().getFluid().getAmount()).style(ChatFormatting.DARK_GRAY)).add(Lang.translate("generic.unit.millibuckets").style(ChatFormatting.DARK_GRAY)).forGoggles(tooltip);
 
         return true;
     }
@@ -150,21 +216,8 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
 
         LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
         LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
-
-
-        lastf = getBlockState().getValue(PIPE);
         state = getBlockState();
-        if(engineForward == null){
-            if(!lastf){
-                lastf = true;
-                changeBlockState(getBlockState().setValue(PIPE, true));
-            }
-        }else{
-            if(lastf){
-                lastf = false;
-                changeBlockState(getBlockState().setValue(PIPE, false));
-            }
-        }
+
         end = engineForward == null;
 
 
@@ -176,32 +229,34 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         }
 
         // stacked
-        if (engineBack != null) {
-            this.stacked = engineBack.stacked + 1;
-        } else {
-            this.stacked = 1;
+        if(engineBack == null)
+            UpdateStacked();
+
+        if(engineForward != null){
+            FrontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
+            tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
 
         if(tank.getPrimaryHandler().getFluid().getAmount() >= stacked){
-                if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) {
-                    validFuel = true;
-                    slow = false;
-                    weak = false;
-                } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFW) || tank.getPrimaryHandler().getFluid().getFluid().is(tagEthanol)) {
-                    validFuel = true;
-                    slow = false;
-                    weak = true;
-                } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSS) || tank.getPrimaryHandler().getFluid().getFluid().is(tagPlantOil)) {
-                    validFuel = true;
-                    slow = true;
-                    weak = false;
-                } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSW)) {
-                    validFuel = true;
-                    slow = true;
-                    weak = true;
-                }else{
-                    validFuel = false;
-                }
+            if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || (ConfigRegistry.FUEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) || (ConfigRegistry.BIODIESEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagBiodiesel))) {
+                validFuel = true;
+                slow = false;
+                weak = false;
+            } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFW) || (ConfigRegistry.ETHANOL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagEthanol))) {
+                validFuel = true;
+                slow = false;
+                weak = true;
+            } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSS) || (ConfigRegistry.PLANTOIL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagPlantOil))) {
+                validFuel = true;
+                slow = true;
+                weak = false;
+            } else if (tank.getPrimaryHandler().getFluid().getFluid().is(tagSW)) {
+                validFuel = true;
+                slow = true;
+                weak = true;
+            }else{
+                validFuel = false;
+            }
         }else{
             validFuel = false;
         }

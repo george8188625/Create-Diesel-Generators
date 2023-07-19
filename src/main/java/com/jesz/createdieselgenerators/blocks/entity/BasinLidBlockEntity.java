@@ -20,7 +20,7 @@ import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.OPEN;
 
 public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
 
-    public int procesingTime;
+    public int processingTime;
     public boolean running;
     public BasinLidBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -29,21 +29,21 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     protected void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        compound.putInt("MeltingTime", this.procesingTime);
+        compound.putInt("MeltingTime", this.processingTime);
         compound.putBoolean("Running", this.running);
     }
 
     @Override
     protected void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        this.procesingTime = compound.getInt("MeltingTime");
+        this.processingTime = compound.getInt("MeltingTime");
         this.running = compound.getBoolean("Running");
     }
 
     @Override
     protected void onBasinRemoved() {
         if (!this.running) return;
-        this.procesingTime = 0;
+        this.processingTime = 0;
         this.currentRecipe = null;
         this.running = false;
     }
@@ -58,20 +58,20 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
             level.setBlock(getBlockPos(), getBlockState().setValue(ON_A_BASIN, basinPresent), 3);
         }
 
-        if (!this.level.isClientSide && (this.currentRecipe == null || this.procesingTime == -1)) {
+        if (!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) {
             this.running = false;
-            this.procesingTime = -1;
+            this.processingTime = -1;
             this.basinChecker.scheduleUpdate();
         }
 
         if (this.running && this.level != null) {
-            if (!this.level.isClientSide && this.procesingTime <= 0) {
-                this.procesingTime = -1;
+            if (!this.level.isClientSide && this.processingTime <= 0) {
+                this.processingTime = -1;
                 this.applyBasinRecipe();
                 this.sendData();
             }
 
-            if (this.procesingTime > 0) --this.procesingTime;
+            if (this.processingTime > 0) --this.processingTime;
         }
     }
 
@@ -91,10 +91,10 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
 
     @Override
     public void startProcessingBasin() {
-        if (this.running && this.procesingTime > 0) return;
+        if (this.running && this.processingTime > 0) return;
         super.startProcessingBasin();
         this.running = true;
-        this.procesingTime = this.currentRecipe instanceof ProcessingRecipe<?> processed ? processed.getProcessingDuration() : 20;
+        this.processingTime = this.currentRecipe instanceof ProcessingRecipe<?> processed ? processed.getProcessingDuration() : 20;
     }
 
     @Override

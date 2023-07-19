@@ -1,20 +1,22 @@
 package com.jesz.createdieselgenerators.items;
 
 import com.jesz.createdieselgenerators.CreativeTab;
+import com.simibubi.create.AllCreativeModeTabs;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import static com.jesz.createdieselgenerators.CreateDieselGenerators.REGISTRATE;
+
+
 public class ItemRegistry {
-    public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, "createdieselgenerators");
+    static { REGISTRATE.useCreativeTab(CreativeTab.CREATIVE_TAB); }
 
-    public static final RegistryObject<Item> ENGINEPISTON = ITEMS.register("engine_piston",
-            () -> new Item(new Item.Properties().tab(CreativeTab.CREATIVE_TAB)));
+    public static final ItemEntry<Item> ENGINEPISTON = REGISTRATE.item("engine_piston", Item::new).register();
 
-    public static void register(IEventBus eventBus) {
-        ITEMS.register(eventBus);
-    }
+
+    public static void register() {}
 }

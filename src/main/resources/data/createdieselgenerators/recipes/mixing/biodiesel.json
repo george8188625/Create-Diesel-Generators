@@ -6,7 +6,7 @@
       "amount": 100
     },
     {
-      "fluid": "createdieselgenerators:ethanol",
+      "fluidTag": "forge:ethanol",
       "amount": 100
     }
   ],

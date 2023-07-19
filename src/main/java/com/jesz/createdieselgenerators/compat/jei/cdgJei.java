@@ -45,7 +45,7 @@ import static com.simibubi.create.compat.jei.CreateJEI.*;
 
 @JeiPlugin
 @ParametersAreNonnullByDefault
-public class cdgJei implements IModPlugin {
+public class CDGJEI implements IModPlugin {
 
     private static final ResourceLocation ID = new ResourceLocation("createdieselgenerators", "jei_plugin");
     @Override
@@ -66,7 +66,7 @@ public class cdgJei implements IModPlugin {
                 .catalyst(BlockRegistry.BASIN_LID::get)
                 .catalyst(AllBlocks.BASIN::get)
                 .doubleItemIcon(AllBlocks.BASIN.get(), BlockRegistry.BASIN_LID.get())
-                .emptyBackground(177, 53)
+                .emptyBackground(177, 100)
                 .build("basin_fermenting", BasinFermentingCategory::new);
     }
 
