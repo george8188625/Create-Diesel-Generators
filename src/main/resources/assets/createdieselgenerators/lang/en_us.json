@@ -11,6 +11,7 @@
   "block.createdieselgenerators.basin_lid": "Basin Lid",
   "block.createdieselgenerators.large_diesel_engine": "Modular Diesel Engine",
   "createdieselgenerators.recipe.basin_fermenting": "Basin Fermenting",
+  "createdieselgenerators.recipe.diesel_combustion": "Diesel Engine Combustion",
 
   "createdieselgenerators.ponder.diesel_engine.header": "Setting up a Diesel Engine",
   "createdieselgenerators.ponder.diesel_engine.text_1": "Diesel Generators are a compact way of generating kinetic energy.",

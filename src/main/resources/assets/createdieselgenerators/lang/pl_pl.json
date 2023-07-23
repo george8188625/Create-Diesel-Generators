@@ -11,6 +11,7 @@
   "block.createdieselgenerators.basin_lid": "Pokrywa Tygielu",
   "block.createdieselgenerators.large_diesel_engine": "Modułowy Silnik Spalinowy",
   "createdieselgenerators.recipe.basin_fermenting": "Fermentacja w Tygielu",
+  "createdieselgenerators.recipe.diesel_combustion": "Spalanie w Silniku Spalinowym",
 
   "createdieselgenerators.ponder.diesel_engine.header": "Używanie Silników Spalinowych",
   "createdieselgenerators.ponder.diesel_engine.text_1": "Silniki Spalinowe są kompaktowym źródłem Energii Kinetycznej.",
@@ -23,5 +24,12 @@
   "createdieselgenerators.ponder.large_diesel_engine.text_1": "Modułowe Silniki Spalinowe funkcjonują jak normalne Silniki Spalinowe.",
   "createdieselgenerators.ponder.large_diesel_engine.text_2": "Jak im dasz Paliwo, zaczną produkować Energię Kinetyczną ...",
   "createdieselgenerators.ponder.large_diesel_engine.text_3": "... One mogą być układane w Stos.",
-  "createdieselgenerators.ponder.large_diesel_engine.text_4": "Będą generować siłę proporcjonalnie do tego, ile Silników ustawisz."
+  "createdieselgenerators.ponder.large_diesel_engine.text_4": "Będą generować siłę proporcjonalnie do tego, ile Silników ustawisz.",
+
+  "createdieselgenerators.display_source.diesel_engine_source": "Status Silnika",
+  "createdieselgenerators.display_source.large_diesel_engine_source": "Status Silnika",
+  "createdieselgenerators.display_source.engine_status": "Status Silnika",
+  "createdieselgenerators.display_source.speed": "PRĘDKOŚĆ : ",
+  "createdieselgenerators.display_source.stress": "SIŁA : ",
+  "createdieselgenerators.display_source.idle": "W SPOCZYNKU"
 }

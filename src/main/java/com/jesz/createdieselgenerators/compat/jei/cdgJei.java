@@ -1,6 +1,8 @@
 package com.jesz.createdieselgenerators.compat.jei;
 
+import com.google.common.collect.ImmutableList;
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.compat.jei.*;
@@ -11,6 +13,7 @@ import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerScreen;
 import com.simibubi.create.content.trains.schedule.ScheduleScreen;
 import com.simibubi.create.foundation.config.ConfigBase;
+import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -29,6 +32,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -41,6 +46,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static com.jesz.createdieselgenerators.CreateDieselGenerators.translate;
+import static com.simibubi.create.AllTags.optionalTag;
 import static com.simibubi.create.compat.jei.CreateJEI.*;
 
 @JeiPlugin
@@ -61,7 +67,7 @@ public class CDGJEI implements IModPlugin {
         allCategories.clear();
 
         CreateRecipeCategory<?>
-        milling = builder(BasinRecipe.class)
+        basin_fermenting = builder(BasinRecipe.class)
                 .addTypedRecipes(RecipeRegistry.BASIN_FERMENTING)
                 .catalyst(BlockRegistry.BASIN_LID::get)
                 .catalyst(AllBlocks.BASIN::get)
@@ -76,6 +82,7 @@ public class CDGJEI implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
+        registration.addRecipeCategories(new DieselEngineCategory(registration.getJeiHelpers().getGuiHelper()));
         loadCategories();
         registration.addRecipeCategories(allCategories.toArray(IRecipeCategory[]::new));
     }
@@ -83,12 +90,41 @@ public class CDGJEI implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         ingredientManager = registration.getIngredientManager();
 
+        List<FluidStack> fluids;
+
+        //
+        fluids = FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong")), 1000).getMatchingFluidStacks();
+            if(ConfigRegistry.PLANTOIL_TAG.get())
+                fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil")), 1000).getMatchingFluidStacks());
+            if(!fluids.isEmpty())
+                registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of( new DieselEngineJeiRecipeType(0, ConfigRegistry.SLOW_SPEED.get().floatValue(),  ConfigRegistry.STRONG_STRESS.get().floatValue(), fluids)));
+        //
+        fluids = FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak")), 1000).getMatchingFluidStacks();
+            if(!fluids.isEmpty())
+                registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType(1, ConfigRegistry.SLOW_SPEED.get().floatValue(),  ConfigRegistry.WEAK_STRESS.get().floatValue(), fluids)));
+        //
+        fluids = FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong")), 1000).getMatchingFluidStacks();
+            if(ConfigRegistry.FUEL_TAG.get())
+                fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel")), 1000).getMatchingFluidStacks());
+            if(ConfigRegistry.BIODIESEL_TAG.get())
+                fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel")), 1000).getMatchingFluidStacks());
+            if(!fluids.isEmpty())
+                registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType(2, ConfigRegistry.FAST_SPEED.get().floatValue(),  ConfigRegistry.STRONG_STRESS.get().floatValue(), fluids)));
+        //
+        fluids = FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak")), 1000).getMatchingFluidStacks();
+            if(ConfigRegistry.ETHANOL_TAG.get())
+                fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol")), 1000).getMatchingFluidStacks());
+            if(!fluids.isEmpty())
+                registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType(3, ConfigRegistry.FAST_SPEED.get().floatValue(),  ConfigRegistry.WEAK_STRESS.get().floatValue(), fluids)));
+
         allCategories.forEach(c -> c.registerRecipes(registration));
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         allCategories.forEach(c -> c.registerCatalysts(registration));
+        registration.addRecipeCatalyst(BlockRegistry.DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_BURNING);
+        registration.addRecipeCatalyst(BlockRegistry.MODULAR_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_BURNING);
     }
 
     @Override

@@ -1,18 +1,23 @@
 package com.jesz.createdieselgenerators.ponder;
 
 import com.jesz.createdieselgenerators.fluids.FluidRegistry;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import com.simibubi.create.foundation.ponder.ElementLink;
 import com.simibubi.create.foundation.ponder.SceneBuilder;
 import com.simibubi.create.foundation.ponder.SceneBuildingUtil;
 import com.simibubi.create.foundation.ponder.Selection;
+import com.simibubi.create.foundation.ponder.element.InputWindowElement;
 import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
+import com.simibubi.create.foundation.utility.Pointing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
+import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.PIPE;
 
 public class DieselEngineScenes {
     public static void small(SceneBuilder scene, SceneBuildingUtil util) {
@@ -81,7 +86,6 @@ public class DieselEngineScenes {
         scene.configureBasePlate(0, 0, 5);
         scene.showBasePlate();
 
-        Selection tank = util.select.fromTo(4, 1, 3, 4, 2, 3);
         BlockPos pumpPos = util.grid.at(3, 1, 3);
         Selection mainEngine = util.select.position(1, 1, 1);
         Selection engines = util.select.fromTo(1, 1, 2, 1, 1, 3);
@@ -145,20 +149,36 @@ public class DieselEngineScenes {
                 .text("... They can be stacked.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
-
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
         scene.idle(60);
 
         scene.world.showSection(engines, Direction.EAST);
 
-        scene.world.modifyKineticSpeed(engines, s -> 96f);
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlocks(engines, s -> s.setValue(PIPE, true), false);
 
+        scene.world.modifyKineticSpeed(engines, s -> 96f);
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.idle(20);
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 2), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
+        scene.world.modifyBlock(util.grid.at(1,1,2), s -> s.setValue(PIPE, false), false);
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.idle(30);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 3), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
+        scene.world.modifyBlock(util.grid.at(1,1,3), s -> s.setValue(PIPE, false), false);
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.idle(30);
         scene.overlay.showText(50)
                 .attachKeyFrame()
                 .text("They will generate stress proportionally to how much engines you stack.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
-
+        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
+        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
         scene.idle(60);
     }
 }

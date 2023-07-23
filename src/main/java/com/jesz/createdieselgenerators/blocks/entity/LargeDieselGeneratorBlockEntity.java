@@ -232,7 +232,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if(engineBack == null)
             UpdateStacked();
 
-        if(engineForward != null){
+        if(engineForward != null && FrontEngine != null){
             FrontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
             tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
