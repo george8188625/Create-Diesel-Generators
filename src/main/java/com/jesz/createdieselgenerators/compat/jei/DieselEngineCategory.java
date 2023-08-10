@@ -66,12 +66,12 @@ public class DieselEngineCategory implements IRecipeCategory<DieselEngineJeiReci
     @Override
     public void draw(DieselEngineJeiRecipeType recipe, IRecipeSlotsView iRecipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         AllGuiTextures.JEI_DOWN_ARROW.render(matrixStack, 40, 15);
-        AllGuiTextures.JEI_ARROW.render(matrixStack, 75, 40);
+        AllGuiTextures.JEI_LONG_ARROW.render(matrixStack, 75, 40);
         AllGuiTextures.JEI_SHADOW.render(matrixStack, 28, 50);
-        AllIcons.I_REFRESH.render(matrixStack, 120, 36);
-        Minecraft.getInstance().font.draw(matrixStack, Component.literal("§l"+recipe.speed+"rpm"), 75,
+        AllIcons.I_REFRESH.render(matrixStack, 145, 36);
+        Minecraft.getInstance().font.draw(matrixStack, Component.literal("§l"+recipe.speed+"rpm"), 80,
                 32, 0xeeeeee);
-        Minecraft.getInstance().font.draw(matrixStack, Component.literal("§l"+recipe.stress+"su"), 75,
+        Minecraft.getInstance().font.draw(matrixStack, Component.literal("§l"+recipe.stress+"su"), 80,
                 49, 0xeeeeee);
         engine.draw(matrixStack, 47, 62);
 

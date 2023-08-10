@@ -14,6 +14,7 @@ public class ItemRegistry {
     static { REGISTRATE.creativeModeTab(() -> CreativeTab.CREATIVE_TAB); }
 
     public static final ItemEntry<Item> ENGINEPISTON = REGISTRATE.item("engine_piston", Item::new).register();
+    public static final ItemEntry<Item> ENGINESILENCER = REGISTRATE.item("engine_silencer", Item::new).register();
 
 
     public static void register() {}
