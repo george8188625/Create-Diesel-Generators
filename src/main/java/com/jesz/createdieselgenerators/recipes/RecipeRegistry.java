@@ -1,6 +1,5 @@
 package com.jesz.createdieselgenerators.recipes;
 
-import com.simibubi.create.Create;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
@@ -17,33 +16,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
+import static com.simibubi.create.AllRecipeTypes.simpleType;
+
 public enum RecipeRegistry implements IRecipeTypeInfo {
 
     BASIN_FERMENTING(BasinFermentingRecipe::new);
-    private final ResourceLocation id;
+    private final ResourceLocation id = new ResourceLocation("createdieselgenerators");;
     private final RegistryObject<RecipeSerializer<?>> serializerObject;
     @Nullable
     private final RegistryObject<RecipeType<?>> typeObject;
     private final Supplier<RecipeType<?>> type;
 
-    RecipeRegistry(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
-        String name = Lang.asId(name());
-        id = new ResourceLocation("createdieselgenerators");
-        serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-        if (registerType) {
-            typeObject = Registers.TYPE_REGISTER.register(name, typeSupplier);
-            type = typeObject;
-        } else {
-            typeObject = null;
-            type = typeSupplier;
-        }
-    }
-
     RecipeRegistry(Supplier<RecipeSerializer<?>> serializerSupplier) {
         String name = Lang.asId(name());
-        id = new ResourceLocation("createdieselgenerators");
         serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-        typeObject = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(id));
+        typeObject = Registers.TYPE_REGISTER.register(name, () -> simpleType(id));
         type = typeObject;
     }
     RecipeRegistry(ProcessingRecipeBuilder.ProcessingRecipeFactory<?> processingFactory) {

@@ -25,13 +25,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.FACING;
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.simibubi.create.AllTags.optionalTag;
 
 public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
@@ -70,17 +71,17 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if(state.getValue(FACING) == Direction.DOWN) {
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.WEST)
+            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.WEST)
                 return tank.getCapability().cast();
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.EAST)
+            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.EAST)
                 return tank.getCapability().cast();
         }else if(state.getValue(FACING) == Direction.UP){
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.NORTH)
+            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.NORTH)
                 return tank.getCapability().cast();
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.SOUTH)
+            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.SOUTH)
                 return tank.getCapability().cast();
         }else{
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.DOWN)
+            if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.DOWN)
                 return tank.getCapability().cast();
         }
         return super.getCapability(cap, side);
@@ -158,6 +159,7 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void tick() {
         super.tick();
+        state = getBlockState();
         updateGeneratedRotation();
         if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || (ConfigRegistry.FUEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) || (ConfigRegistry.BIODIESEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagBiodiesel))) {
             validFuel = true;
@@ -189,8 +191,10 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
                 tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
                         tank.getPrimaryHandler().getFluid().getAmount() - 1));
                 t = 0;
-                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 3f, 1.18f, false);
-                AllSoundEvents.STEAM.playAt(level, worldPosition, 0.2f, .8f, false);
+                if(!state.getValue(SILENCED)) {
+                    level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 3f, 1.18f, false);
+                    AllSoundEvents.STEAM.playAt(level, worldPosition, 0.05f, .8f, false);
+                }
             }
         }else {
             t++;

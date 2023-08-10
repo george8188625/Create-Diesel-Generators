@@ -1,21 +1,26 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinOperatingBlockEntity;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
+import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.ON_A_BASIN;
 import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.OPEN;
 
 public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
@@ -52,12 +57,6 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     public void tick() {
         super.tick();
 
-        boolean basinPresent = (level.getBlockEntity(worldPosition.below(1)) instanceof BasinBlockEntity);
-
-        if(getBlockState().getValue(ON_A_BASIN) != basinPresent){
-            level.setBlock(getBlockPos(), getBlockState().setValue(ON_A_BASIN, basinPresent), 3);
-        }
-
         if (!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) {
             this.running = false;
             this.processingTime = -1;
@@ -70,11 +69,24 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
                 this.applyBasinRecipe();
                 this.sendData();
             }
-
+            if(!this.level.isClientSide && processingTime % 20 == 0){
+                level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_AMBIENT,
+                        SoundSource.BLOCKS, .75f, speed < 65 ? .75f : 1.5f);
+            }
             if (this.processingTime > 0) --this.processingTime;
         }
     }
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void tickAudio() {
+        super.tickAudio();
 
+        boolean slow = Math.abs(getSpeed()) < 65;
+        if (slow && AnimationTickHolder.getTicks() % 2 == 0)
+            return;
+        if (processingTime == 20)
+            AllSoundEvents.MIXING.playAt(level, worldPosition, .75f, 1, true);
+    }
     @Override
     protected boolean updateBasin() {
         if (this.running) return true;

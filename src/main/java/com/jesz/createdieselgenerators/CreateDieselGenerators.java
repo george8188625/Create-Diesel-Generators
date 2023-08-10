@@ -56,7 +56,9 @@ public class CreateDieselGenerators
 
     public static void clientInit(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(FluidRegistry.ETHANOL.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(FluidRegistry.ETHANOL.getSource(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(FluidRegistry.ETHANOL.get().getSource(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.MODULAR_DIESEL_ENGINE.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.DIESEL_ENGINE.get(), RenderType.translucent());
         PonderIndex.register();
     }
 }
