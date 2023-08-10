@@ -1,0 +1,31 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "#Q#",
+    "SGS",
+    "OBO"
+  ],
+  "key": {
+    "#": {
+      "item": "create:andesite_alloy"
+    },
+    "Q": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "G": {
+      "item": "createdieselgenerators:diesel_engine"
+    },
+    "O": {
+      "item": "create:sturdy_sheet"
+    },
+    "S": {
+      "tag": "forge:plates/brass"
+    },
+    "B": {
+      "item": "create:precision_mechanism"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:large_diesel_engine"
+  }
+}

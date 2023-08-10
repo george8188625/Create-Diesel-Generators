@@ -4,7 +4,6 @@ import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
@@ -33,6 +32,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.*;
 import static com.simibubi.create.AllTags.optionalTag;
 
@@ -78,7 +78,10 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if (state.getValue(PIPE)) {
             if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.UP)
-                return tank.getCapability().cast();
+                if(FrontEngine != null)
+                    return FrontEngine.tank.getCapability().cast();
+                else
+                    return tank.getCapability().cast();
         }
         return super.getCapability(cap, side);
     }
@@ -177,7 +180,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (!IRotate.StressImpact.isEnabled() || FrontEngine == null)
+        if (!StressImpact.isEnabled() || FrontEngine == null)
             return added;
         float stressBase = FrontEngine.calculateAddedStressCapacity();
         if (Mth.equal(stressBase, 0))
@@ -189,7 +192,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
 
-            float stressTotal = FrontEngine.getGeneratedSpeed()* stressBase;
+            float stressTotal = Math.abs(FrontEngine.getGeneratedSpeed()* stressBase);
 
             Lang.number(stressTotal)
                     .translate("generic.unit.stress")
@@ -208,7 +211,6 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     }
     int t = 0;
     boolean lastp = true;
-    boolean lastf;
     @Override
     public void tick() {
         super.tick();
@@ -232,7 +234,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if(engineBack == null)
             UpdateStacked();
 
-        if(engineForward != null && FrontEngine != null){
+        if(!tank.isEmpty() && engineForward != null && FrontEngine != null){
             FrontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
             tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
@@ -271,7 +273,6 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         } else{
             powered = engineForward.powered;
             if (lastp != powered) {
-//                lastp = powered;
                 changeBlockState(getBlockState().setValue(POWERED, powered));
             }
         }
@@ -282,12 +283,12 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
                 tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
                         tank.getPrimaryHandler().getFluid().getAmount() - stacked));
             t = 0;
-            if (powered) {
-                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 3f, 1.18f, false);
-                AllSoundEvents.STEAM.playAt(level, worldPosition, 0.2f, .8f, false);
-            }
         } else {
             t++;
+        }
+        if(t > 2 && powered && !state.getValue(SILENCED)){
+            level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 0.4f, 1.18f, false);
+            AllSoundEvents.STEAM.playAt(level, worldPosition, 0.03f, .8f, false);
         }
 
 

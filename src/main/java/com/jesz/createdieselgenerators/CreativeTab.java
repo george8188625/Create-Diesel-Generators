@@ -14,12 +14,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class CreativeTab {
-//    public static final CreativeModeTab CREATIVE_TAB = new CreativeModeTab("cdg_creative_tab") {
-//        @Override
-//        public ItemStack makeIcon() {
-//            return new ItemStack(BlockRegistry.DIESEL_ENGINE.get());
-//        }
-//    };
 
     private static final DeferredRegister<CreativeModeTab> TAB_REGISTER =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "createdieselgenerators");
@@ -27,14 +21,15 @@ public class CreativeTab {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.cdg_creative_tab"))
                     .icon(BlockRegistry.DIESEL_ENGINE::asStack)
-                    .displayItems((pParameters, pOutput) -> {
-                        pOutput.accept(ItemRegistry.ENGINEPISTON.get());
-                        pOutput.accept(BlockRegistry.DIESEL_ENGINE.get());
-                        pOutput.accept(BlockRegistry.MODULAR_DIESEL_ENGINE.get());
-                        pOutput.accept(BlockRegistry.BASIN_LID.get());
-                        pOutput.accept(FluidRegistry.BIODIESEL.getBucket().get());
-                        pOutput.accept(FluidRegistry.ETHANOL.getBucket().get());
-                        pOutput.accept(FluidRegistry.PLANT_OIL.getBucket().get());
+                    .displayItems((pParameters, output) -> {
+                        output.accept(ItemRegistry.ENGINEPISTON.get());
+                        output.accept(ItemRegistry.ENGINESILENCER.get());
+                        output.accept(BlockRegistry.DIESEL_ENGINE.get());
+                        output.accept(BlockRegistry.MODULAR_DIESEL_ENGINE.get());
+                        output.accept(BlockRegistry.BASIN_LID.get());
+                        output.accept(FluidRegistry.BIODIESEL.getBucket().get());
+                        output.accept(FluidRegistry.ETHANOL.getBucket().get());
+                        output.accept(FluidRegistry.PLANT_OIL.getBucket().get());
                     })
                     .build());
 

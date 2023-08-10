@@ -2,7 +2,7 @@
   "type": "createdieselgenerators:basin_fermenting",
   "ingredients": [
     {
-      "item": "minecraft:potato"
+      "tag": "createdieselgenerators:fd_fermentable"
     },
     {
       "item": "minecraft:bone_meal"
@@ -12,7 +12,13 @@
   "results": [
     {
       "fluid": "createdieselgenerators:ethanol",
-      "amount": 25
+      "amount": 50
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
     }
   ]
 }

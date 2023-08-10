@@ -1,0 +1,19 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "fluid": "createdieselgenerators:plant_oil",
+      "amount": 100
+    },
+    {
+      "fluidTag": "forge:ethanol",
+      "amount": 100
+    }
+  ],
+  "results": [
+    {
+      "fluid": "createdieselgenerators:biodiesel",
+      "amount": 200
+    }
+  ]
+}

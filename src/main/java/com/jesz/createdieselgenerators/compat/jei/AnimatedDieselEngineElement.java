@@ -14,7 +14,7 @@ public class AnimatedDieselEngineElement extends AnimatedKinetics {
         PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xOffset, yOffset, 200);
-        matrixStack.mulPose(Axis.XP.rotationDegrees(-22.5f));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(-15.5f));
         matrixStack.mulPose(Axis.YP.rotationDegrees(22.5f + 90f));
         int scale = 25;
 

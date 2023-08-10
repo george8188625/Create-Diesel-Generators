@@ -1,22 +1,24 @@
 package com.jesz.createdieselgenerators.ponder;
 
 import com.jesz.createdieselgenerators.fluids.FluidRegistry;
+import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
-import com.simibubi.create.foundation.ponder.ElementLink;
-import com.simibubi.create.foundation.ponder.SceneBuilder;
-import com.simibubi.create.foundation.ponder.SceneBuildingUtil;
-import com.simibubi.create.foundation.ponder.Selection;
+import com.simibubi.create.foundation.ponder.*;
+import com.simibubi.create.foundation.ponder.element.EntityElement;
 import com.simibubi.create.foundation.ponder.element.InputWindowElement;
 import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
 import com.simibubi.create.foundation.utility.Pointing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.PIPE;
 
 public class DieselEngineScenes {
@@ -80,6 +82,40 @@ public class DieselEngineScenes {
         scene.world.showSection(util.select.position(util.grid.at(1, 2, 2)), Direction.DOWN);
         scene.world.modifyKineticSpeed(util.select.fromTo(1, 2, 0, 1, 2, 2),f -> 96f);
         scene.idle(60);
+    }
+    public static void silencer(SceneBuilder scene, SceneBuildingUtil util){
+        scene.title("engine_silencer", "Applying an Engine Silencer");
+        scene.configureBasePlate(0, 0, 3);
+        scene.showBasePlate();
+
+        BlockPos engine = util.grid.at(1, 1, 1);
+
+        ElementLink<EntityElement> entity1 =
+                scene.world.createItemEntity(new Vec3(1, 2, 1), util.vector.of(0, 0.2, 0), ItemRegistry.ENGINESILENCER.asStack());
+
+        scene.overlay.showText(60)
+                .attachKeyFrame()
+                .colored(PonderPalette.GREEN)
+                .text("Engine Silencers are used to make Diesel Engines Silent.")
+                .pointAt(util.vector.centerOf(engine))
+                .placeNearTarget();
+        scene.idle(70);
+        scene.world.modifyEntity(entity1, Entity::discard);
+        scene.world.showSection(util.select.position(engine), Direction.DOWN);
+        scene.world.modifyBlock(engine, s -> s.setValue(POWERED, true), false);
+        scene.world.modifyKineticSpeed(util.select.position(engine), f -> 96f);
+        scene.idle(20);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(ItemRegistry.ENGINESILENCER.asStack()),
+                20);
+        scene.world.modifyBlock(engine, s -> s.setValue(SILENCED, true), false);
+        scene.idle(20);
+        scene.overlay.showText(60)
+                .attachKeyFrame()
+                .colored(PonderPalette.GREEN)
+                .text("Once you apply an Engine Silencer, the Diesel Engine will stop making any noises.")
+                .pointAt(util.vector.centerOf(engine))
+                .placeNearTarget();
+        scene.idle(70);
     }
     public static void modular(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("large_diesel_engine", "Setting up a Modular Diesel Engine");

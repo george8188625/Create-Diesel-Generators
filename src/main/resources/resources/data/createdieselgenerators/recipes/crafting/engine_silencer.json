@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SWA",
+    "WPW",
+    " WS"
+  ],
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "S": {
+      "tag": "forge:plates/iron"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "P": {
+      "item": "create:fluid_pipe"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:engine_silencer"
+  }
+}

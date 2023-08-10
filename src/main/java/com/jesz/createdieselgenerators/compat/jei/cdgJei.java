@@ -61,7 +61,6 @@ public class CDGJEI implements IModPlugin {
 
 
     private final List<CreateRecipeCategory<?>> allCategories = new ArrayList<>();
-    private IIngredientManager ingredientManager;
 
     private void loadCategories() {
         allCategories.clear();
@@ -88,7 +87,6 @@ public class CDGJEI implements IModPlugin {
     }
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        ingredientManager = registration.getIngredientManager();
 
         List<FluidStack> fluids;
 
@@ -282,7 +280,7 @@ public class CDGJEI implements IModPlugin {
             }
 
             CreateRecipeCategory.Info<T> info = new CreateRecipeCategory.Info<>(
-                    new mezz.jei.api.recipe.RecipeType<>(new ResourceLocation("createdieselgenerators"), recipeClass),
+                    new mezz.jei.api.recipe.RecipeType<>(new ResourceLocation("createdieselgenerators", name), recipeClass),
                     translate("createdieselgenerators.recipe." + name), background, icon, recipesSupplier, catalysts);
             CreateRecipeCategory<T> category = factory.create(info);
             allCategories.add(category);

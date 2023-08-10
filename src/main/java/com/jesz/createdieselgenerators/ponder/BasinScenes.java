@@ -37,7 +37,7 @@ public class BasinScenes {
         scene.idle(60);
         scene.overlay.showText(30)
                 .attachKeyFrame()
-                .text("Give them some sugar...")
+                .text("Give them some Sugar and Bone Meal...")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(30);
@@ -47,7 +47,9 @@ public class BasinScenes {
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(new ItemStack(Items.SUGAR)),
                 30);
         scene.idle(30);
-
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(new ItemStack(Items.BONE_MEAL)),
+                30);
+        scene.idle(30);
         scene.world.showSection(basinLidSection, Direction.DOWN);
         scene.world.modifyBlock(util.grid.at(1, 2, 1), s -> s.setValue(ON_A_BASIN, false), false);
         scene.idle(20);

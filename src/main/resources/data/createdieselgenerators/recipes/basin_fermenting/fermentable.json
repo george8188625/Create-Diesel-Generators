@@ -2,7 +2,7 @@
   "type": "createdieselgenerators:basin_fermenting",
   "ingredients": [
     {
-      "item": "minecraft:sugar"
+      "tag": "forge:fermentable"
     },
     {
       "item": "minecraft:bone_meal"
@@ -12,7 +12,7 @@
   "results": [
     {
       "fluid": "createdieselgenerators:ethanol",
-      "amount": 25
+      "amount": 50
     }
   ]
 }

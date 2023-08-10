@@ -1,0 +1,35 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "#Q#",
+    "#G#",
+    "BFB",
+    "OSO"
+  ],
+  "key": {
+    "#": {
+      "item": "createdieselgenerators:engine_piston"
+    },
+    "Q": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "G": {
+      "item": "create:brass_block"
+    },
+    "B": {
+      "tag": "forge:plates/brass"
+    },
+    "O": {
+      "item": "create:sturdy_sheet"
+    },
+    "S": {
+      "item": "create:fluid_pipe"
+    },
+    "F": {
+      "item": "create:fluid_tank"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:diesel_engine"
+  }
+}

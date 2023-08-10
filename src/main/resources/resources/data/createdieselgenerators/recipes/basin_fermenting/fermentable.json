@@ -1,0 +1,18 @@
+{
+  "type": "createdieselgenerators:basin_fermenting",
+  "ingredients": [
+    {
+      "tag": "forge:fermentable"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    }
+  ],
+  "processingTime": 400,
+  "results": [
+    {
+      "fluid": "createdieselgenerators:ethanol",
+      "amount": 50
+    }
+  ]
+}

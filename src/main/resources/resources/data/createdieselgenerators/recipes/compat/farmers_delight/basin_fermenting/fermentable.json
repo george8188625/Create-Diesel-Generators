@@ -2,7 +2,7 @@
   "type": "createdieselgenerators:basin_fermenting",
   "ingredients": [
     {
-      "item": "minecraft:apple"
+      "tag": "createdieselgenerators:fd_fermentable"
     },
     {
       "item": "minecraft:bone_meal"
@@ -13,6 +13,12 @@
     {
       "fluid": "createdieselgenerators:ethanol",
       "amount": 50
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "farmersdelight"
     }
   ]
 }

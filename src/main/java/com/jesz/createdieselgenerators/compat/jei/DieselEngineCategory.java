@@ -67,12 +67,12 @@ public class DieselEngineCategory implements IRecipeCategory<DieselEngineJeiReci
     @Override
     public void draw(DieselEngineJeiRecipeType recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         AllGuiTextures.JEI_DOWN_ARROW.render(graphics, 40, 15);
-        AllGuiTextures.JEI_ARROW.render(graphics, 75, 40);
+        AllGuiTextures.JEI_LONG_ARROW.render(graphics, 75, 40);
         AllGuiTextures.JEI_SHADOW.render(graphics, 28, 50);
-        AllIcons.I_REFRESH.render(graphics, 120, 36);
-        graphics.drawString(Minecraft.getInstance().font, Component.literal("§l"+recipe.speed+"rpm"), 75,
+        AllIcons.I_REFRESH.render(graphics, 145, 36);
+        graphics.drawString(Minecraft.getInstance().font, Component.literal("§l"+recipe.speed+"rpm"), 80,
                 32, 0xeeeeee);
-        graphics.drawString(Minecraft.getInstance().font, Component.literal("§l"+recipe.stress+"su"), 75,
+        graphics.drawString(Minecraft.getInstance().font, Component.literal("§l"+recipe.stress+"su"), 80,
                 49, 0xeeeeee);
         engine.draw(graphics, 47, 62);
 

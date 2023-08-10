@@ -32,6 +32,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.List;
 
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.FACING;
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.simibubi.create.AllTags.optionalTag;
 
 public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
@@ -158,6 +159,7 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public void tick() {
         super.tick();
+        state = getBlockState();
         updateGeneratedRotation();
         if (tank.getPrimaryHandler().getFluid().getFluid().is(tagFS) || (ConfigRegistry.FUEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagFuel)) || (ConfigRegistry.BIODIESEL_TAG.get() && tank.getPrimaryHandler().getFluid().getFluid().is(tagBiodiesel))) {
             validFuel = true;
@@ -189,8 +191,10 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
                 tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
                         tank.getPrimaryHandler().getFluid().getAmount() - 1));
                 t = 0;
-                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 3f, 1.18f, false);
-                AllSoundEvents.STEAM.playAt(level, worldPosition, 0.2f, .8f, false);
+                if(!state.getValue(SILENCED)) {
+                    level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 3f, 1.18f, false);
+                    AllSoundEvents.STEAM.playAt(level, worldPosition, 0.05f, .8f, false);
+                }
             }
         }else {
             t++;
