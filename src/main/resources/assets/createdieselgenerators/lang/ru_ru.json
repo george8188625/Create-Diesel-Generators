@@ -25,7 +25,7 @@
   "createdieselgenerators.ponder.large_diesel_engine.text_1": "Модульные дизельные генераторы функционируют, как обычные дизельные генераторы.",
   "createdieselgenerators.ponder.large_diesel_engine.text_2": "Как только вы дадите им немного топлива, они начнут вырабатывать кинетическую энергию...",
   "createdieselgenerators.ponder.large_diesel_engine.text_3": "... они могут быть штабелированы.",
-  "createdieselgenerators.ponder.large_diesel_engine.text_4": "Они будут создавать нагрузку пропорционально тому, сколько двигателей вы установите.",
+  "createdieselgenerators.ponder.large_diesel_engine.text_4": "Допустимая нагрузка будет увеличиваться пропорционально количеству установленных двигателей.",
   "createdieselgenerators.ponder.engine_silencer.header": "Установкой глушителя двигателя",
   "createdieselgenerators.ponder.engine_silencer.text_1": "Глушители двигателя используются для обеспечения бесшумности дизельных двигателей.",
   "createdieselgenerators.ponder.engine_silencer.text_2": "Как только вы установите глушитель двигателя, дизельный двигатель перестанет издавать какие-либо звуки.",
@@ -38,4 +38,6 @@
   "createdieselgenerators.display_source.idle": "Простаивает",
 
   "_": "Этот перевод был сделан игроком VGamerGroup 14.08.2023"
+  "_": "Fix 1:",
+  "_": "Текст строки: createdieselgenerators.ponder.large_diesel_engine.text_4 был изменён с (Они будут создавать нагрузку пропорционально тому, сколько двигателей вы установите.) на (Допустимая нагрузка будет увеличиваться пропорционально количеству установленных двигателей.) игроком ProTerUga 22.08.2023"
 }
