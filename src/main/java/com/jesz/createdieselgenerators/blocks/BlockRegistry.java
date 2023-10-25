@@ -16,7 +16,7 @@ import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 
 public class BlockRegistry {
     static {
-        REGISTRATE.useCreativeTab(CreativeTab.CREATIVE_TAB);
+        REGISTRATE.setCreativeTab(CreativeTab.CREATIVE_TAB);
     }
 public static final BlockEntry<DieselGeneratorBlock> DIESEL_ENGINE = REGISTRATE.block("diesel_engine", DieselGeneratorBlock::new)
             .properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
