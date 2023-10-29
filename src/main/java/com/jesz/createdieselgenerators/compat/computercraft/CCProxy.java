@@ -23,6 +23,8 @@ public class CCProxy {
     private static Function<SmartBlockEntity, ? extends AbstractComputerBehaviour> computerFactory;
 
     public static AbstractComputerBehaviour behaviour(SmartBlockEntity sbe) {
+        fallbackFactory = FallbackComputerBehaviour::new;
+
         if (computerFactory == null)
             return fallbackFactory.apply(sbe);
         return computerFactory.apply(sbe);
