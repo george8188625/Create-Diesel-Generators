@@ -1,0 +1,8 @@
+{
+  "diesel_engine_sound": {
+    "subtitle": "sounds.createdieselgenerators.diesel_engine_sound",
+    "sounds": [
+      "createdieselgenerators:diesel_engine_sound"
+    ]
+  }
+}

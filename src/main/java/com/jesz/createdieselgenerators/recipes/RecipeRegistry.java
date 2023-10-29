@@ -20,7 +20,8 @@ import static com.simibubi.create.AllRecipeTypes.simpleType;
 
 public enum RecipeRegistry implements IRecipeTypeInfo {
 
-    BASIN_FERMENTING(BasinFermentingRecipe::new);
+    BASIN_FERMENTING(BasinFermentingRecipe::new),
+    DISTILLATION(DistillationRecipe::new);
     private final ResourceLocation id = new ResourceLocation("createdieselgenerators");;
     private final RegistryObject<RecipeSerializer<?>> serializerObject;
     @Nullable

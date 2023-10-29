@@ -4,6 +4,14 @@
     "minecraft:sugar",
     "minecraft:apple",
     "minecraft:potato",
-    "minecraft:sugar_cane"
+    "minecraft:sugar_cane",
+    {
+      "required": false,
+      "id": "#forge:vegetables/tomato"
+    },
+    {
+      "required": false,
+      "id": "#forge:vegetables/onion"
+    }
   ]
 }

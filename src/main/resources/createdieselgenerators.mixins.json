@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "priority": 1177,
+  "package": "com.jesz.createdieselgenerators.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ExplosionMixin",
+    "ItemEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

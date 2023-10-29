@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "createdieselgenerators:block/chip_wood_block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "createdieselgenerators:block/chip_wood_block"
+    },
+    "axis=z": {
+      "model": "createdieselgenerators:block/chip_wood_block",
+      "x": 90
+    }
+  }
+}

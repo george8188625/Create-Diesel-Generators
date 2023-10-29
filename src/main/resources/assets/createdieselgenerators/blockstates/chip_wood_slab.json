@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "createdieselgenerators:block/chip_wood_slab"
+    },
+    "type=double": {
+      "model": "createdieselgenerators:block/chip_wood_block"
+    },
+    "type=top": {
+      "model": "createdieselgenerators:block/chip_wood_slab_top"
+    }
+  }
+}

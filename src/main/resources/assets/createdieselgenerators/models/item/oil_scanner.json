@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "createdieselgenerators:item/oil_scanner_rotating"
+  },
+  "overrides": [
+	{
+      "predicate": {
+        "createdieselgenerators:oil_scanner_state": 0.0
+      },
+      "model": "createdieselgenerators:item/oil_scanner"
+    },
+    {
+      "predicate": {
+        "createdieselgenerators:oil_scanner_state": 1.0
+      },
+      "model": "createdieselgenerators:item/oil_scanner_none"
+    },
+    {
+      "predicate": {
+        "createdieselgenerators:oil_scanner_state": 2.0
+      },
+      "model": "createdieselgenerators:item/oil_scanner_medium"
+    },
+    {
+      "predicate": {
+        "createdieselgenerators:oil_scanner_state": 3.0
+      },
+      "model": "createdieselgenerators:item/oil_scanner_high"
+    }
+  ]
+}

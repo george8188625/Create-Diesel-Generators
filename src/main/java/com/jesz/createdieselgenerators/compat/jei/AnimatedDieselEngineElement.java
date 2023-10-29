@@ -6,6 +6,8 @@ import com.mojang.math.Vector3f;
 import com.simibubi.create.compat.jei.category.animations.AnimatedKinetics;
 import net.minecraft.core.Direction;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
+
 public class AnimatedDieselEngineElement extends AnimatedKinetics {
 
     @Override
@@ -22,7 +24,7 @@ public class AnimatedDieselEngineElement extends AnimatedKinetics {
                 .scale(scale)
                 .render(matrixStack);
 
-        blockElement(BlockRegistry.DIESEL_ENGINE.getDefaultState())
+        blockElement(BlockRegistry.DIESEL_ENGINE.getDefaultState().setValue(POWERED, true))
                 .rotateBlock(0, 90, 0)
                 .scale(scale)
                 .render(matrixStack);

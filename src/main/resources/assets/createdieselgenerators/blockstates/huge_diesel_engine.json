@@ -1,0 +1,108 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/north"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/down"
+      },
+      "when": {
+        "down": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/up"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/east"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/west"
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "create:block/fluid_pipe/rim/south"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+
+
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block",
+        "x": 270
+      },
+      "when": {
+        "facing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block",
+        "x": 90
+      },
+      "when": {
+        "facing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "createdieselgenerators:block/huge_diesel_engine/block",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    }
+
+  ]
+}

@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "createdieselgenerators:diesel_engine"
+    "createdieselgenerators:diesel_engine",
+    "createdieselgenerators:large_diesel_engine",
+    "createdieselgenerators:basin_lid",
+    "createdieselgenerators:distillation_tank",
+    "createdieselgenerators:pumpjack_hole",
+    "createdieselgenerators:pumpjack_head",
+    "createdieselgenerators:pumpjack_crank",
+    "createdieselgenerators:pumpjack_bearing",
+    "createdieselgenerators:canister"
   ]
 }

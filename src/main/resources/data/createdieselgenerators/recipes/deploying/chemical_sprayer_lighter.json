@@ -1,0 +1,16 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "item": "createdieselgenerators:chemical_sprayer"
+    },
+    {
+      "item": "createdieselgenerators:lighter"
+    }
+  ],
+  "results": [
+    {
+      "item": "createdieselgenerators:chemical_sprayer_lighter"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "createdieselgenerators:block/asphalt",
+    "side": "createdieselgenerators:block/asphalt",
+    "top": "createdieselgenerators:block/asphalt"
+  }
+}

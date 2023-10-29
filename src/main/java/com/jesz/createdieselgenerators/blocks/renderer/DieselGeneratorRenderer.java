@@ -1,5 +1,6 @@
-package com.jesz.createdieselgenerators.blocks.entity;
+package com.jesz.createdieselgenerators.blocks.renderer;
 
+import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
