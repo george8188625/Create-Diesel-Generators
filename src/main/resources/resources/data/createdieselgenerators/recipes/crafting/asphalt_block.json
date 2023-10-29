@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SCG",
+    "GGG"
+  ],
+  "key": {
+    "C": {
+      "item": "createdieselgenerators:crude_oil_bucket"
+    },
+    "S": {
+      "item": "minecraft:sand"
+    },
+    "G": {
+      "item": "minecraft:gravel"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:asphalt_block",
+    "count": 8
+  }
+}

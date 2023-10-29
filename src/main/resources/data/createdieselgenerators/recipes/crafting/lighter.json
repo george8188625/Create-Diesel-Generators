@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " SF",
+    "SWS",
+    "SAS"
+  ],
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "F": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "S": {
+      "tag": "forge:plates/brass"
+    },
+    "W": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:lighter",
+    "count": 1
+  }
+}

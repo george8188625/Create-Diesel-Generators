@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "createdieselgenerators:item/lighter"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "createdieselgenerators:lighter_state": 0.0
+      },
+      "model": "createdieselgenerators:item/lighter"
+    },
+    {
+      "predicate": {
+        "createdieselgenerators:lighter_state": 1.0
+      },
+      "model": "createdieselgenerators:item/lighter_open"
+    },
+    {
+      "predicate": {
+        "createdieselgenerators:lighter_state": 2.0
+      },
+      "model": "createdieselgenerators:item/lighter_ignited"
+    }
+  ]
+}

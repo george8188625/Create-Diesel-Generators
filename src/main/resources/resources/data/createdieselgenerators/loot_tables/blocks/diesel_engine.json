@@ -21,6 +21,25 @@
       ]
     },
     {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "createdieselgenerators:engine_turbocharger"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "createdieselgenerators:diesel_engine",
+          "properties": {
+            "turbocharged": "true"
+          }
+        }
+      ]
+    },
+    {
       "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [

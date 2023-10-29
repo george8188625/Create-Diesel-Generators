@@ -6,7 +6,7 @@ plugins {
 
 }
 
-version = '1.20.1-1.1d'
+version = '1.20.1-1.2'
 group = 'com.jesz.createdieselgenerators' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'createdieselgenerators'
 
@@ -53,6 +53,8 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'createdieselgenerators'
 
+            arg '-mixin.config=createdieselgenerators.mixins.json'
+
             mods {
                 createdieselgenerators {
                     source sourceSets.main
@@ -68,6 +70,8 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             property 'forge.enabledGameTestNamespaces', 'createdieselgenerators'
+
+            arg '-mixin.config=createdieselgenerators.mixins.json'
 
             mods {
                 createdieselgenerators {
@@ -88,6 +92,8 @@ minecraft {
 
             property 'forge.enabledGameTestNamespaces', 'createdieselgenerators'
 
+            arg '-mixin.config=createdieselgenerators.mixins.json'
+
             mods {
                 createdieselgenerators {
                     source sourceSets.main
@@ -97,6 +103,8 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
+
+            arg '-mixin.config=createdieselgenerators.mixins.json'
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -159,11 +167,16 @@ dependencies {
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
-    implementation fg.deobf("com.simibubi.create:create-1.20.1:0.5.1.d-9:slim")
+    implementation fg.deobf("com.simibubi.create:create-1.20.1:0.5.1.e-24:slim")
     implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.9-5")
     implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
     implementation fg.deobf("curse.maven:jei-238222:4644453")
+    compileOnly("cc.tweaked:cc-tweaked-1.20.1-core-api:1.105.0")
+    compileOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge-api:1.105.0")
+    runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.105.0")
 
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -178,7 +191,8 @@ jar {
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "createdieselgenerators",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs': 'createdieselgenerators.mixins.json'
         ])
     }
 }

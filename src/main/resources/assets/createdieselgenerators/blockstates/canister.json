@@ -1,0 +1,26 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "createdieselgenerators:block/canister/block"
+    },
+    "facing=down": {
+      "model": "createdieselgenerators:block/canister/block",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "createdieselgenerators:block/canister/horizontal",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "createdieselgenerators:block/canister/horizontal",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "createdieselgenerators:block/canister/horizontal",
+      "y": 180
+    },
+    "facing=north": {
+      "model": "createdieselgenerators:block/canister/horizontal"
+    }
+  }
+}

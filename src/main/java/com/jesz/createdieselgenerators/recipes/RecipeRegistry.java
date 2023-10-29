@@ -4,7 +4,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import com.simibubi.create.foundation.utility.Lang;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -18,7 +18,8 @@ import java.util.function.Supplier;
 
 public enum RecipeRegistry implements IRecipeTypeInfo {
 
-    BASIN_FERMENTING(BasinFermentingRecipe::new);
+    BASIN_FERMENTING(BasinFermentingRecipe::new),
+    DISTILLATION(DistillationRecipe::new);
     private final ResourceLocation id = new ResourceLocation("createdieselgenerators");;
     private final RegistryObject<RecipeSerializer<?>> serializerObject;
     @Nullable
@@ -56,6 +57,6 @@ public enum RecipeRegistry implements IRecipeTypeInfo {
 
     private static class Registers {
         private static final DeferredRegister<RecipeSerializer<?>> SERIALIZER_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, "createdieselgenerators");
-        private static final DeferredRegister<RecipeType<?>> TYPE_REGISTER = DeferredRegister.create(Registries.RECIPE_TYPE, "createdieselgenerators");
+        private static final DeferredRegister<RecipeType<?>> TYPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, "createdieselgenerators");
     }
 }

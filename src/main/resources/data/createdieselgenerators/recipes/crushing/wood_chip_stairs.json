@@ -1,0 +1,18 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "tag": "minecraft:wooden_stairs"
+    }
+  ],
+  "results": [
+    {
+      "item": "createdieselgenerators:wood_chip",
+      "count": 5
+    },
+    {
+      "item": "createdieselgenerators:wood_chip",
+      "chance": 0.5
+    }
+  ]
+}

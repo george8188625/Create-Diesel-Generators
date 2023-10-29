@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "createdieselgenerators:gasoline",
+    "createdieselgenerators:flowing_gasoline"
+
+  ]
+}

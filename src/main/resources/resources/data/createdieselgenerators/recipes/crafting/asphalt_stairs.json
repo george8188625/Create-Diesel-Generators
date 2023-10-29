@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A  ",
+    "AA ",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "createdieselgenerators:asphalt_block"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:asphalt_stairs",
+    "count": 4
+  }
+}

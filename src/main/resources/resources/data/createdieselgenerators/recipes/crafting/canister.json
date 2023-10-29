@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A A",
+    "ZBZ",
+    "AbA"
+  ],
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "B": {
+      "tag": "forge:barrels/wooden"
+    },
+    "b": {
+      "item": "create:basin"
+    },
+    "Z": {
+      "tag": "forge:plates/iron"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:canister",
+    "count": 1
+  }
+}

@@ -1,11 +1,9 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
-import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinOperatingBlockEntity;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -15,12 +13,12 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.ON_A_BASIN;
 import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.OPEN;
 
 public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
@@ -34,15 +32,19 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     protected void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        compound.putInt("MeltingTime", this.processingTime);
+        compound.putInt("ProcessingTime", this.processingTime);
         compound.putBoolean("Running", this.running);
+        compound.putBoolean("SteamInside", this.steamInside);
+
     }
 
     @Override
     protected void read(CompoundTag compound, boolean clientPacket) {
         super.read(compound, clientPacket);
-        this.processingTime = compound.getInt("MeltingTime");
+        this.processingTime = compound.getInt("ProcessingTime");
         this.running = compound.getBoolean("Running");
+        this.steamInside = compound.getBoolean("SteamInside");
+
     }
 
     @Override
@@ -52,40 +54,34 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
         this.currentRecipe = null;
         this.running = false;
     }
-
+    public boolean steamInside = false;
     @Override
     public void tick() {
         super.tick();
-
-        if (!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) {
+        if ((!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) || getBlockState().getValue(OPEN) || !getBlockState().getValue(ON_A_BASIN)) {
             this.running = false;
             this.processingTime = -1;
             this.basinChecker.scheduleUpdate();
         }
-
+        if(running)
+            steamInside = true;
         if (this.running && this.level != null) {
             if (!this.level.isClientSide && this.processingTime <= 0) {
                 this.processingTime = -1;
                 this.applyBasinRecipe();
                 this.sendData();
             }
-            if(!this.level.isClientSide && processingTime % 20 == 0){
-                level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_AMBIENT,
-                        SoundSource.BLOCKS, .75f, speed < 65 ? .75f : 1.5f);
+            if(!this.level.isClientSide && processingTime % 20 == 0 && new Random().nextInt() % 4 == 0){
+                level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT,
+                        SoundSource.BLOCKS, .15f, speed < 65 ? .75f : 1.5f);
+
             }
+
+            if (processingTime == 1)
+                level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW,
+                        SoundSource.BLOCKS, .15f, speed < 65 ? .75f : 1.5f);
             if (this.processingTime > 0) --this.processingTime;
         }
-    }
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void tickAudio() {
-        super.tickAudio();
-
-        boolean slow = Math.abs(getSpeed()) < 65;
-        if (slow && AnimationTickHolder.getTicks() % 2 == 0)
-            return;
-        if (processingTime == 20)
-            AllSoundEvents.MIXING.playAt(level, worldPosition, .75f, 1, true);
     }
     @Override
     protected boolean updateBasin() {
@@ -107,6 +103,10 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
         super.startProcessingBasin();
         this.running = true;
         this.processingTime = this.currentRecipe instanceof ProcessingRecipe<?> processed ? processed.getProcessingDuration() : 20;
+    }
+
+    public ProcessingRecipe<?> getRecipe(){
+        return this.currentRecipe instanceof ProcessingRecipe<?> processed ? processed : null;
     }
 
     @Override

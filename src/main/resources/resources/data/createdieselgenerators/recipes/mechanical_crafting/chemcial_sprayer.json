@@ -1,0 +1,28 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "HH  ",
+    "MCKP"
+  ],
+  "key": {
+    "M": {
+      "item": "create:precision_mechanism"
+    },
+    "P": {
+      "item": "create:fluid_pipe"
+    },
+    "C": {
+      "tag": "forge:storage_blocks/copper"
+    },
+    "H": {
+      "item": "createdieselgenerators:kelp_handle"
+    },
+    "K": {
+      "item": "minecraft:dried_kelp"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:chemical_sprayer",
+    "count": 1
+  }
+}

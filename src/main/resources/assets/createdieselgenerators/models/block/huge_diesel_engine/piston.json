@@ -1,0 +1,36 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "createdieselgenerators:block/engine_piston_block",
+		"1": "create:block/cam_linkage",
+		"particle": "createdieselgenerators:block/engine_piston_block"
+	},
+	"elements": [
+		{
+			"from": [4, -10.5, 4],
+			"to": [12, -4.5, 12],
+			"rotation": {"angle": 0, "axis": "x", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [13, 7, 16, 11], "rotation": 270, "texture": "#0"},
+				"east": {"uv": [13, 7, 16, 11], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [16, 7, 13, 11], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [16, 7, 13, 11], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [9.5, 7, 13.5, 11], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [9.5, 7, 13.5, 11], "texture": "#0"}
+			}
+		},
+		{
+			"from": [5, 3, 5],
+			"to": [11, 22, 11],
+			"rotation": {"angle": 0, "axis": "x", "origin": [8, 8, 7]},
+			"faces": {
+				"north": {"uv": [4, 6.5, 7, 16], "texture": "#1"},
+				"east": {"uv": [1, 6.5, 4, 16], "texture": "#1"},
+				"south": {"uv": [4, 6.5, 7, 16], "texture": "#1"},
+				"west": {"uv": [1, 6.5, 4, 16], "texture": "#1"},
+				"up": {"uv": [4, 3.5, 7, 6.5], "texture": "#1"}
+			}
+		}
+	]
+}

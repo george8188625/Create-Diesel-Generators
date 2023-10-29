@@ -2,7 +2,7 @@
   "type": "create:mixing",
   "ingredients": [
     {
-      "fluid": "createdieselgenerators:plant_oil",
+      "fluidTag": "forge:plantoil",
       "amount": 100
     },
     {

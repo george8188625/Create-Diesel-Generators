@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "createdieselgenerators:block/chip_wood_block",
+    "side": "createdieselgenerators:block/chip_wood_block_side"
+  }
+}

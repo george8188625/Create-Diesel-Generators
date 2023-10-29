@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "createdieselgenerators:biodiesel"
+    "createdieselgenerators:biodiesel",
+    "createdieselgenerators:diesel",
+    "createdieselgenerators:gasoline",
+    "createdieselgenerators:flowing_biodiesel",
+    "createdieselgenerators:flowing_diesel",
+    "createdieselgenerators:flowing_gasoline"
   ]
 }

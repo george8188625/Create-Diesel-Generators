@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "createdieselgenerators:block/ethanol"
+      "model": "createdieselgenerators:block/fluid/ethanol"
     }
   }
 }

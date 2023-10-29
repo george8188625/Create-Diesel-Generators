@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "createdieselgenerators:block/pumpjack_bearing_back",
+    "east": "createdieselgenerators:block/pumpjack_bearing_side",
+    "north": "createdieselgenerators:block/pumpjack_bearing_side",
+    "particle": "createdieselgenerators:block/pumpjack_bearing_side",
+    "south": "createdieselgenerators:block/pumpjack_bearing_side",
+    "up": "create:block/bearing_top",
+    "west": "createdieselgenerators:block/pumpjack_bearing_side"
+  }
+}

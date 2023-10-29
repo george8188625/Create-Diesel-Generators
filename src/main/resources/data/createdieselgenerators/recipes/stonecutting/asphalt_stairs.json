@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "createdieselgenerators:asphalt_block"
+  },
+  "result": "createdieselgenerators:asphalt_stairs",
+  "count": 1
+}

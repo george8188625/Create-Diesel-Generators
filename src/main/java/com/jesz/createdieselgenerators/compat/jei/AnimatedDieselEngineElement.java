@@ -7,15 +7,19 @@ import com.simibubi.create.compat.jei.category.animations.AnimatedKinetics;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Direction;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
+
 public class AnimatedDieselEngineElement extends AnimatedKinetics {
 
     @Override
     public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
         PoseStack matrixStack = graphics.pose();
+
         matrixStack.pushPose();
-        matrixStack.translate(xOffset, yOffset, 200);
+        matrixStack.translate(xOffset, yOffset, 0);
+
         matrixStack.mulPose(Axis.XP.rotationDegrees(-15.5f));
-        matrixStack.mulPose(Axis.YP.rotationDegrees(22.5f + 90f));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(22.5f + 90));
         int scale = 25;
 
         blockElement(shaft(Direction.Axis.X))
@@ -23,7 +27,7 @@ public class AnimatedDieselEngineElement extends AnimatedKinetics {
                 .scale(scale)
                 .render(graphics);
 
-        blockElement(BlockRegistry.DIESEL_ENGINE.getDefaultState())
+        blockElement(BlockRegistry.DIESEL_ENGINE.getDefaultState().setValue(POWERED, true))
                 .rotateBlock(0, 90, 0)
                 .scale(scale)
                 .render(graphics);

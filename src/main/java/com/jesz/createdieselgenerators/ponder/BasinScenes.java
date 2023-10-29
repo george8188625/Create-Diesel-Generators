@@ -37,7 +37,7 @@ public class BasinScenes {
         scene.idle(60);
         scene.overlay.showText(30)
                 .attachKeyFrame()
-                .text("Give them some Sugar and Bone Meal...")
+                .text("Give it some Sugar and Bone Meal...")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(30);
@@ -45,19 +45,20 @@ public class BasinScenes {
         scene.world.hideSection(basinLidSection, Direction.UP);
         scene.idle(10);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(new ItemStack(Items.SUGAR)),
-                30);
+                20);
         scene.idle(30);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(new ItemStack(Items.BONE_MEAL)),
-                30);
+                20);
         scene.idle(30);
         scene.world.showSection(basinLidSection, Direction.DOWN);
         scene.world.modifyBlock(util.grid.at(1, 2, 1), s -> s.setValue(ON_A_BASIN, false), false);
         scene.idle(20);
         scene.world.modifyBlock(util.grid.at(1, 2, 1), s -> s.setValue(ON_A_BASIN, true), false);
-        scene.idle(30);
+        scene.idle(50);
+
         scene.overlay.showText(30)
                 .attachKeyFrame()
-                .text("... It will create Ethanol.")
+                .text("... Ethanol will be created.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(40);

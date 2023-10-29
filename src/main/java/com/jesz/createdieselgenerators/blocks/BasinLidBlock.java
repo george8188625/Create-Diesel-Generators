@@ -2,13 +2,16 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BasinLidBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.mojang.logging.LogUtils;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -29,6 +32,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Random;
 
 public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<BasinLidBlockEntity>, IWrenchable {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -81,9 +86,18 @@ public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<
         else
             state = state.setValue(ON_A_BASIN, false);
         if (flag != state.getValue(POWERED)) {
-            if(flag != state.getValue(OPEN))
-                level.playSound(null, pos, flag ?  SoundEvents.IRON_TRAPDOOR_OPEN : SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1f, 1f);
+            if(flag != state.getValue(OPEN)) {
+                level.levelEvent(null, flag ? 1037 : 1036, pos, 0);
+            }
             level.setBlock(pos, state.setValue(POWERED, flag).setValue(OPEN, flag), 2);
+            if(flag && level.getBlockEntity(pos) instanceof BasinLidBlockEntity a && a.steamInside) {
+                level.playSound(null, pos, AllSoundEvents.STEAM.getMainEvent(), SoundSource.BLOCKS, 1.1f, 0.3f);
+                a.steamInside = false;
+
+                for (int i = 0; i < 3 ; i++) {
+                    ((ServerLevel)level).sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX()+0.5f + new Random().nextDouble(-0.3, 0.3), pos.getY(), pos.getZ()+0.5f + new Random().nextDouble(-0.3, 0.3), 0, 0, 1, 0, 0.01);
+                }
+            }
         }else {
             level.setBlock(pos, state, 2);
         }
@@ -91,14 +105,23 @@ public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+    public InteractionResult use( BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         boolean currentState = state.getValue(OPEN);
-        if(!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
-            level.setBlock(pos, state.setValue(OPEN, !currentState), 3);
-            level.playSound(null, pos, !currentState ?  SoundEvents.IRON_TRAPDOOR_OPEN : SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1f, 1f);
+        if(!currentState && level.getBlockEntity(pos) instanceof BasinLidBlockEntity a && a.steamInside) {
+            for (int i = 0; i < 3 ; i++) {
+                if(level instanceof ServerLevel sl) {
+                    sl.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5f + new Random().nextDouble(-0.3, 0.3), pos.getY(), pos.getZ() + 0.5f + new Random().nextDouble(-0.3, 0.3), 0, 0, 1, 0, 0.01);
+                    sl.playSound(null, pos, AllSoundEvents.STEAM.getMainEvent(), SoundSource.BLOCKS, 0.1f, 0.3f);
+                    a.steamInside = false;
+                }
+            }
         }
-
+        if(!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+            LogUtils.getLogger().debug(level + "");
+            level.setBlock(pos, state.setValue(OPEN, !currentState), 3);
+            level.levelEvent(null, currentState ? 1037:1036, pos, 0);
+        }
         return InteractionResult.SUCCESS;
     }
 

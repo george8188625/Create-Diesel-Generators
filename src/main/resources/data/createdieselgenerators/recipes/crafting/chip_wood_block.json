@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "createdieselgenerators:wood_chip"
+    },
+    {
+      "item": "createdieselgenerators:wood_chip"
+    },
+    {
+      "item": "createdieselgenerators:wood_chip"
+    },
+    {
+      "item": "createdieselgenerators:wood_chip"
+    }
+  ],
+  "result": {
+    "item": "createdieselgenerators:chip_wood_block",
+    "count": 1
+  }
+}
