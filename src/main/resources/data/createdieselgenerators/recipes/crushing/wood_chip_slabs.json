@@ -1,0 +1,18 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "tag": "minecraft:wooden_slabs"
+    }
+  ],
+  "results": [
+    {
+      "item": "createdieselgenerators:wood_chip",
+      "count": 3
+    },
+    {
+      "item": "createdieselgenerators:wood_chip",
+      "chance": 0.5
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "createdieselgenerators:block/chip_wood_block",
+    "side": "createdieselgenerators:block/chip_wood_block_side",
+    "top": "createdieselgenerators:block/chip_wood_block"
+  }
+}

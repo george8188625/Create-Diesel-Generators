@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "createdieselgenerators:block/asphalt_slab"
+    },
+    "type=double": {
+      "model": "createdieselgenerators:block/asphalt"
+    },
+    "type=top": {
+      "model": "createdieselgenerators:block/asphalt_slab_top"
+    }
+  }
+}

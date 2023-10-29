@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "createdieselgenerators:block/plant_oil"
+      "model": "createdieselgenerators:block/fluid/plant_oil"
     }
   }
 }

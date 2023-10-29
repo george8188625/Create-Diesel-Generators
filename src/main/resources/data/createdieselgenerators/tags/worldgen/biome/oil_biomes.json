@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:savanna",
+    "minecraft:savanna_plateau",
+    "minecraft:desert",
+    "minecraft:badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:eroded_badlands",
+    "minecraft:plains",
+    "minecraft:deep_ocean",
+    "minecraft:deep_lukewarm_ocean",
+    "minecraft:deep_cold_ocean",
+    "minecraft:deep_frozen_ocean",
+    "minecraft:ocean",
+    "minecraft:warm_ocean",
+    "minecraft:lukewarm_ocean",
+    "minecraft:cold_ocean",
+    "minecraft:frozen_ocean"
+  ]
+}

@@ -2,23 +2,33 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BasinLidBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.mojang.logging.LogUtils;
+import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import com.simibubi.create.foundation.placement.IPlacementHelper;
+import com.simibubi.create.foundation.placement.PlacementHelpers;
+import com.simibubi.create.foundation.placement.PlacementOffset;
+import com.simibubi.create.foundation.placement.PoleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Wearable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,14 +36,14 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Random;
+import java.util.function.Predicate;
 
 public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<BasinLidBlockEntity>, IWrenchable {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -86,23 +96,42 @@ public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<
         else
             state = state.setValue(ON_A_BASIN, false);
         if (flag != state.getValue(POWERED)) {
-            if(flag != state.getValue(OPEN))
-                level.levelEvent(null, flag ? 1037:1036, pos, 0);
+            if(flag != state.getValue(OPEN)) {
+                level.levelEvent(null, flag ? 1037 : 1036, pos, 0);
+            }
             level.setBlock(pos, state.setValue(POWERED, flag).setValue(OPEN, flag), 2);
+            if(flag && level.getBlockEntity(pos) instanceof BasinLidBlockEntity a && a.steamInside) {
+                level.playSound(null, pos, AllSoundEvents.STEAM.getMainEvent(), SoundSource.BLOCKS, 1.1f, 0.3f);
+                a.steamInside = false;
+
+                for (int i = 0; i < 3 ; i++) {
+                    ((ServerLevel)level).sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX()+0.5f + new Random().nextDouble(-0.3, 0.3), pos.getY(), pos.getZ()+0.5f + new Random().nextDouble(-0.3, 0.3), 0, 0, 1, 0, 0.01);
+                }
+            }
         }else {
             level.setBlock(pos, state, 2);
         }
+
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState state, Level level, BlockPos pos,
+    public InteractionResult use( BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
         boolean currentState = state.getValue(OPEN);
+        if(!currentState && level.getBlockEntity(pos) instanceof BasinLidBlockEntity a && a.steamInside) {
+            for (int i = 0; i < 3 ; i++) {
+                if(level instanceof ServerLevel sl) {
+                    sl.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5f + new Random().nextDouble(-0.3, 0.3), pos.getY(), pos.getZ() + 0.5f + new Random().nextDouble(-0.3, 0.3), 0, 0, 1, 0, 0.01);
+                    sl.playSound(null, pos, AllSoundEvents.STEAM.getMainEvent(), SoundSource.BLOCKS, 0.1f, 0.3f);
+                    a.steamInside = false;
+                }
+            }
+        }
         if(!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+            LogUtils.getLogger().debug(level + "");
             level.setBlock(pos, state.setValue(OPEN, !currentState), 3);
             level.levelEvent(null, currentState ? 1037:1036, pos, 0);
         }
-
         return InteractionResult.SUCCESS;
     }
 

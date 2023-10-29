@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "conditions": [
+                {
+                  "block": "createdieselgenerators:asphalt_slab",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "type": "double"
+                  }
+                }
+              ],
+              "count": 2,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:explosion_decay"
+            }
+          ],
+          "name": "createdieselgenerators:asphalt_slab"
+        }
+      ]
+    }
+  ]
+}

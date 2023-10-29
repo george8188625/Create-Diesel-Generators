@@ -1,24 +1,17 @@
 package com.jesz.createdieselgenerators.compat.jei;
 
+import com.jesz.createdieselgenerators.PartialModels;
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.compat.jei.category.animations.AnimatedKinetics;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import mezz.jei.api.gui.drawable.IDrawable;
 
 import static com.jesz.createdieselgenerators.blocks.BasinLidBlock.ON_A_BASIN;
 
-public class BasinFermentingStationElement implements IDrawable {
-    @Override
-    public int getWidth() {
-        return 50;
-    }
-
-    @Override
-    public int getHeight() {
-        return 50;
-    }
+public class BasinFermentingStationElement extends AnimatedKinetics {
 
     @Override
     public void draw(PoseStack poseStack, int xOffset, int yOffset) {
@@ -36,6 +29,10 @@ public class BasinFermentingStationElement implements IDrawable {
         GuiGameElement.of(AllBlocks.BASIN.getDefaultState())
                 .atLocal(0, 1, 0)
                 .scale(scale)
+                .render(poseStack);
+        blockElement(PartialModels.SMALL_GAUGE_DIAL).atLocal(0.5625f, 0.375, 0.5625f)
+                .scale(scale)
+                .rotate(0, 0, getCurrentAngle()/4)
                 .render(poseStack);
 
         poseStack.popPose();

@@ -2,11 +2,11 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
-import com.mojang.logging.LogUtils;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
-import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import net.minecraft.core.BlockPos;
@@ -33,23 +33,30 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.slf4j.Logger;
 
-import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINESILENCER;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINE_SILENCER;
+import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINE_TURBO;
 import static net.minecraft.core.Direction.NORTH;
 import static net.minecraft.core.Direction.SOUTH;
 
-public class DieselGeneratorBlock extends DirectionalKineticBlock implements IBE<DieselGeneratorBlockEntity>, ProperWaterloggedBlock {
+public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISpecialBlockItemRequirement, IBE<DieselGeneratorBlockEntity>, ProperWaterloggedBlock, ICDGKinetics {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
+    public static final BooleanProperty TURBOCHARGED = BooleanProperty.create("turbocharged");
 
     public DieselGeneratorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(super.defaultBlockState().setValue(POWERED, false));
-        registerDefaultState(super.defaultBlockState().setValue(WATERLOGGED, false));
-        registerDefaultState(super.defaultBlockState().setValue(SILENCED, false));
+        registerDefaultState(
+                super.defaultBlockState()
+                        .setValue(POWERED, false)
+                        .setValue(WATERLOGGED, false)
+                        .setValue(SILENCED, false)
+                        .setValue(TURBOCHARGED, false));
 
     }
     @Override
@@ -57,8 +64,16 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements IBE
         if(state.getValue(SILENCED))
             if(context.getPlayer() != null && !context.getLevel().isClientSide) {
                 if (!context.getPlayer().isCreative())
-                    context.getPlayer().getInventory().placeItemBackInInventory(ENGINESILENCER.asStack());
+                    context.getPlayer().getInventory().placeItemBackInInventory(ENGINE_SILENCER.asStack());
                 context.getLevel().setBlock(context.getClickedPos(), state.setValue(SILENCED, false), 3);
+                playRotateSound(context.getLevel(), context.getClickedPos());
+                return InteractionResult.SUCCESS;
+            }
+        if(state.getValue(TURBOCHARGED))
+            if(context.getPlayer() != null && !context.getLevel().isClientSide) {
+                if (!context.getPlayer().isCreative())
+                    context.getPlayer().getInventory().placeItemBackInInventory(ENGINE_TURBO.asStack());
+                context.getLevel().setBlock(context.getClickedPos(), state.setValue(TURBOCHARGED, false), 3);
                 playRotateSound(context.getLevel(), context.getClickedPos());
                 return InteractionResult.SUCCESS;
             }
@@ -68,9 +83,7 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements IBE
     }
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
-        builder.add(WATERLOGGED);
-        builder.add(SILENCED);
+        builder.add(POWERED, WATERLOGGED, SILENCED, TURBOCHARGED);
         super.createBlockStateDefinition(builder);
     }
 
@@ -96,20 +109,24 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements IBE
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
-                                 Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        ItemStack itemInHand = pPlayer.getItemInHand(pHand);
-        if(!ENGINESILENCER.isIn(itemInHand))
-            return InteractionResult.PASS;
-        if(pState.getValue(SILENCED))
-            return InteractionResult.PASS;
-
-        if(!pPlayer.isCreative())
-            itemInHand.shrink(1);
-        pPlayer.setItemInHand(pHand, itemInHand);
-        pLevel.setBlock(pPos, pState.setValue(SILENCED, true), 3);
-        playRotateSound(pLevel, pPos);
-        return InteractionResult.SUCCESS;
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack itemInHand = player.getItemInHand(hand);
+        if(ENGINE_SILENCER.isIn(itemInHand) && !state.getValue(SILENCED) && !state.getValue(TURBOCHARGED)) {
+            if(!player.isCreative())
+                itemInHand.shrink(1);
+            level.setBlock(pos, state.setValue(SILENCED, true), 3);
+            playRotateSound(level, pos);
+            return InteractionResult.SUCCESS;
+        }
+        if(ENGINE_TURBO.isIn(itemInHand) && !state.getValue(TURBOCHARGED) && !state.getValue(SILENCED)) {
+            if(!player.isCreative())
+                itemInHand.shrink(1);
+            level.setBlock(pos, state.setValue(TURBOCHARGED, true), 3);
+            playRotateSound(level, pos);
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(state, level, pos, player, hand, hit);
 
     }
 
@@ -138,5 +155,31 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements IBE
     public Direction.Axis getRotationAxis(BlockState blockState) {
         return blockState.getValue(FACING)
                 .getAxis();
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state, BlockEntity blockEntity) {
+        List<ItemStack> list = new ArrayList<>();
+        list.add(BlockRegistry.DIESEL_ENGINE.asStack());
+        if(state.getValue(SILENCED))
+            list.add(ItemRegistry.ENGINE_SILENCER.asStack());
+        if(state.getValue(TURBOCHARGED))
+            list.add(ItemRegistry.ENGINE_TURBO.asStack());
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, list);
+    }
+
+    @Override
+    public float getDefaultStressCapacity() {
+        return ConfigRegistry.STRONG_STRESS.get().floatValue();
+    }
+
+    @Override
+    public float getDefaultStressStressImpact() {
+        return 0;
+    }
+
+    @Override
+    public float getDefaultSpeed() {
+        return ConfigRegistry.FAST_SPEED.get().floatValue()*ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue();
     }
 }

@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "createdieselgenerators:block/gauge",
+		"particle": "createdieselgenerators:block/gauge"
+	},
+	"elements": [
+		{
+			"from": [-0.5, -0.5, 8.25],
+			"to": [0.5, 3.5, 9.25],
+			"faces": {
+				"north": {"uv": [8, 0, 9, 4], "texture": "#0"},
+				"east": {"uv": [8, 0, 9, 4], "texture": "#0"},
+				"south": {"uv": [8, 0, 9, 4], "texture": "#0"},
+				"west": {"uv": [8, 0, 9, 4], "texture": "#0"},
+				"up": {"uv": [8, 0, 9, 1], "texture": "#0"},
+				"down": {"uv": [8, 3, 9, 4], "texture": "#0"}
+			}
+		}
+	]
+}
