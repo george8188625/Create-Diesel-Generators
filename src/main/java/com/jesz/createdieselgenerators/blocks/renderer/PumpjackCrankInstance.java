@@ -126,7 +126,7 @@ public class PumpjackCrankInstance extends KineticBlockEntityInstance<PumpjackCr
         }else {
             msr.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateY(90).rotateZ(Math.atan2(dstZ, dstY)*180/Math.PI);
             if(blockEntity.crankSize.getValue() == 1)
-                msr.translate(0, Math.cos(Math.atan2(dstY, dstX))*0.4375, Math.sin(Math.atan2(dstY, dstX))*0.375);
+                msr.translate(0, Math.cos(Math.atan2(dstY, dstX))*-0.375, Math.sin(Math.atan2(dstY, dstX))*0.375);
         }
         (blockEntity.crankSize.getValue() == 0 ? crank_rod : large_crank_rod).setTransform(ms);
         (blockEntity.crankSize.getValue() == 0 ? large_crank_rod : crank_rod).setEmptyTransform();

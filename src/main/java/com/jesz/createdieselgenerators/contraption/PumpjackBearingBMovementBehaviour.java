@@ -1,9 +1,9 @@
 package com.jesz.createdieselgenerators.contraption;
 
+import com.jesz.createdieselgenerators.blocks.PumpjackBearingBBlock;
 import com.jesz.createdieselgenerators.blocks.PumpjackBearingBlock;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackBearingBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackCrankBlockEntity;
-import com.mojang.logging.LogUtils;
 import com.simibubi.create.content.contraptions.bearing.BearingContraption;
 import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
@@ -26,6 +26,8 @@ public class PumpjackBearingBMovementBehaviour implements MovementBehaviour {
     public boolean isActive(MovementContext context) {
         if(!(context.contraption instanceof BearingContraption))
             return false;
+        if(context.state.getValue(PumpjackBearingBBlock.FACING).getAxis() != ((BearingContraption) context.contraption).getFacing().getClockWise().getAxis())
+            return false;
         return context.world.getBlockEntity(context.contraption.anchor.relative(((BearingContraption) context.contraption).getFacing().getOpposite())) instanceof PumpjackBearingBlockEntity;
     }
     @Override
@@ -40,7 +42,7 @@ public class PumpjackBearingBMovementBehaviour implements MovementBehaviour {
                 context.contraption.anchor.getX() + context.localPos.getX(),
                 context.contraption.anchor.getY() + context.localPos.getY()-3,
                 context.contraption.anchor.getZ() + context.localPos.getZ());
-        if(context.world.getBlockEntity(crankPos) instanceof PumpjackCrankBlockEntity crankBE && crankBE.crankSize.getValue() == 0) {
+        if(context.world.getBlockEntity(crankPos) instanceof PumpjackCrankBlockEntity crankBE && crankBE.crankSize.getValue() == 0 && (crankBE.getBearing() == bearing || crankBE.getBearing() == null)) {
             bearing.bearingBPos = context.localPos;
             bearing.crankPos = crankPos;
             bearing.crankAngle = crankBE.angle;
@@ -50,7 +52,7 @@ public class PumpjackBearingBMovementBehaviour implements MovementBehaviour {
                     context.contraption.anchor.getX() + context.localPos.getX(),
                     context.contraption.anchor.getY() + context.localPos.getY()-4,
                     context.contraption.anchor.getZ() + context.localPos.getZ());
-            if(context.world.getBlockEntity(crankPos) instanceof PumpjackCrankBlockEntity crankBE && crankBE.crankSize.getValue() == 1) {
+            if(context.world.getBlockEntity(crankPos) instanceof PumpjackCrankBlockEntity crankBE && crankBE.crankSize.getValue() == 1 && (crankBE.getBearing() == bearing || crankBE.getBearing() == null)) {
                 bearing.bearingBPos = context.localPos;
                 bearing.crankPos = crankPos;
                 bearing.crankAngle = crankBE.angle;

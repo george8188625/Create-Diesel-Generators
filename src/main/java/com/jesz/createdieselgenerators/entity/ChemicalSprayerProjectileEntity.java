@@ -6,14 +6,19 @@ import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.fluids.OpenEndedPipe;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 import com.simibubi.create.foundation.fluid.FluidHelper;
+import com.simibubi.create.foundation.utility.BlockHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -26,6 +31,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.material.Fluids;
@@ -180,10 +186,11 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        if(cooling && level.getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof FireBlock)
+        if(cooling && getLevel().getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof FireBlock) {
             getLevel().setBlock(new BlockPos(getPosition(1)), Blocks.AIR.defaultBlockState(), 3);
-
-        if(fire)
+            getLevel().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+        }
+        if(fire && getLevel().getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof AirBlock && BlockHelper.hasBlockSolidSide(level.getBlockState(new BlockPos(getPosition(1)).below()), level, new BlockPos(getPosition(1)).below(), Direction.UP))
             getLevel().setBlock(new BlockPos(getPosition(1)), FireBlock.getState(getLevel(), new BlockPos(getPosition(1))), 3);
         remove(RemovalReason.DISCARDED);
     }

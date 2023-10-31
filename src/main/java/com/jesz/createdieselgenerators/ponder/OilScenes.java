@@ -1,14 +1,13 @@
 package com.jesz.createdieselgenerators.ponder;
 
+import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.blocks.PumpjackCrankBlock;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackBearingBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackCrankBlockEntity;
+import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.foundation.ponder.ElementLink;
-import com.simibubi.create.foundation.ponder.SceneBuilder;
-import com.simibubi.create.foundation.ponder.SceneBuildingUtil;
-import com.simibubi.create.foundation.ponder.Selection;
+import com.simibubi.create.foundation.ponder.*;
 import com.simibubi.create.foundation.ponder.element.InputWindowElement;
 import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
 import com.simibubi.create.foundation.utility.Pointing;
@@ -17,6 +16,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class OilScenes {
@@ -27,15 +27,30 @@ public class OilScenes {
         scene.world.showSection(util.select.fromTo(0, 1, 0, 8, 1, 8), Direction.UP);
 
         Selection pipes = util.select.fromTo(4, 2, 0, 8, 3, 3);
-        Selection pumpjackStand0 = util.select.fromTo(3, 2, 5, 3, 5, 5);
-        Selection pumpjackStand1 = util.select.fromTo(5, 2, 5, 6, 5, 5);
+        Selection pumpjackStand0 = util.select.fromTo(3, 2, 4, 3, 5, 4);
+        Selection pumpjackStand1 = util.select.fromTo(5, 2, 4, 5, 5, 4);
         Selection pumpjack = util.select.fromTo(4, 4, 0, 4, 6, 8);
 
         scene.world.showSection(pumpjackStand1, Direction.DOWN);
         scene.world.showSection(pumpjackStand0, Direction.DOWN);
         scene.idle(15);
         scene.world.showSection(pumpjack, Direction.DOWN);
-
+        scene.idle(30);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(4, 5, 8), Pointing.LEFT).withItem(AllItems.WRENCH.asStack()), 15);
+        scene.idle(15);
+        scene.world.setBlock(new BlockPos(4, 5, 8), BlockRegistry.PUMPJACK_BEARING_B.getDefaultState(), false);
+        scene.idle(30);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(4, 5, 8), Pointing.LEFT).withItem(AllItems.SUPER_GLUE.asStack()), 15);
+        scene.idle(25);
+        scene.overlay.showControls(new InputWindowElement(util.vector.centerOf(4, 4, 1), Pointing.LEFT).withItem(AllItems.SUPER_GLUE.asStack()), 15);
+        scene.idle(25);
+        scene.overlay.chaseBoundingBoxOutline(PonderPalette.GREEN, util.select.fromTo(4, 5, 9, 4, 4, 0), new AABB(4, 6, 9, 5, 4, 0), 30);
+        scene.idle(15);
+        scene.overlay.showControls(new InputWindowElement(util.vector.centerOf(4, 4, 1), Pointing.LEFT).withItem(AllItems.SUPER_GLUE.asStack()), 15);
+        scene.idle(25);
+        scene.overlay.showControls(new InputWindowElement(util.vector.centerOf(5, 4, 3), Pointing.LEFT).withItem(AllItems.SUPER_GLUE.asStack()), 15);
+        scene.idle(25);
+        scene.overlay.chaseBoundingBoxOutline(PonderPalette.GREEN, util.select.fromTo(4, 3, 0, 4, 5, 1), new AABB(4, 4, 0, 5, 7, 2), 30);
         scene.idle(15);
 
         scene.overlay.showText(50)
@@ -76,13 +91,21 @@ public class OilScenes {
                 .setValue(BlockStateProperties.SOUTH, true), false);
 
         scene.idle(15);
+        scene.overlay.showText(50)
+                .attachKeyFrame()
+                .text("Pumpjacks can only pump out oil from Oil Chunks.")
+                .pointAt(util.vector.topOf(6, 4, 5))
+                .placeNearTarget();
+        scene.idle(60);
 
         scene.overlay.showText(50)
                 .attachKeyFrame()
-                .text("When assembled, it will start producing oil.")
-                .pointAt(util.vector.topOf(4, 2, 0))
+                .text("Once assembled, it will start producing oil.")
+                .pointAt(util.vector.topOf(6, 4, 5))
                 .placeNearTarget();
         scene.idle(60);
+        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(6, 4, 5), Pointing.LEFT).rightClick(), 15);
+        scene.idle(50);
         scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(1));
         scene.idle(15);
         scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(0));

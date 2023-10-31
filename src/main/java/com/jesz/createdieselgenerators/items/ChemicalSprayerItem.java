@@ -108,7 +108,7 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
                 if(!level.isClientSide) {
                     if (count % 2 == 0) {
                         ChemicalSprayerProjectileEntity projectile = ChemicalSprayerProjectileEntity.spray(level, fluidStack, (CreateDieselGenerators.getGeneratedSpeed(fluidStack) != 0 && lighter) || fluidStack.getFluid().isSame(Fluids.LAVA), fluidStack.getFluid().isSame(Fluids.WATER));
-                        projectile.setPos(player.position().add(-0.5*Math.cos(player.getXRot()/180*Math.PI), 1.5f, -0.5*Math.sin(player.getXRot()/180*Math.PI)));
+                        projectile.setPos(player.position().add(0, 1.5f, 0));
                         projectile.shootFromRotation(player, player.getXRot() + new Random().nextFloat(-5, 5), player.getYRot() + new Random().nextFloat(-5, 5), 0.0f, 1.0f, 1.0f);
                         level.addFreshEntity(projectile);
                         fluidStack.setAmount(fluidStack.getAmount() - 1);
