@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.contraption;
 
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
+import com.jesz.createdieselgenerators.blocks.PumpjackBearingBBlock;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackBearingBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackHoleBlockEntity;
 import com.jozufozu.flywheel.core.virtual.VirtualRenderWorld;
@@ -39,6 +40,8 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
     @Override
     public boolean isActive(MovementContext context) {
         if(!(context.contraption instanceof BearingContraption))
+            return false;
+        if(context.state.getValue(PumpjackBearingBBlock.FACING).getAxis() != ((BearingContraption) context.contraption).getFacing().getClockWise().getAxis())
             return false;
         return context.world.getBlockEntity(context.contraption.anchor.relative(((BearingContraption) context.contraption).getFacing().getOpposite())) instanceof PumpjackBearingBlockEntity;
     }
@@ -112,8 +115,8 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
         }
 
         if(context.world.getBlockEntity(holePos) instanceof PumpjackHoleBlockEntity holeBE && bearing.crankSpeed >= 8) {
-            holeBE.headPos = bearing.getBlockState().getValue(FACING).getAxis() == Direction.Axis.X ? context.localPos.getY() : context.localPos.getX();
-            holeBE.bearingPos = bearing.getBlockState().getValue(FACING).getAxis() == Direction.Axis.X ? bearing.bearingBPos.getY() : bearing.bearingBPos.getX();
+            holeBE.headPos = bearing.getBlockState().getValue(FACING).getAxis() == Direction.Axis.X ? context.localPos.getZ() : context.localPos.getX();
+            holeBE.bearingPos = bearing.getBlockState().getValue(FACING).getAxis() == Direction.Axis.X ? bearing.bearingBPos.getZ() : bearing.bearingBPos.getX();
             if((bearing.crankAngle+180) % 360 < (context.data.getFloat("OldCrankAngle")+180) % 360)
                 holeBE.tickFluid(bearing.isLarge);
         }

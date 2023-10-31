@@ -31,12 +31,33 @@ public class PumpjackCrankBlockEntity extends KineticBlockEntity {
     @Override
     protected void read(CompoundTag compound, boolean clientPacket) {
         angle = compound.getFloat("Angle");
+        crankBearingLocation = new Vec3(compound.getDouble("BackPosX"), compound.getDouble("BackPosY"), compound.getDouble("BackPosZ"));
         super.read(compound, clientPacket);
     }
 
     @Override
+    public void handleUpdateTag(CompoundTag compound) {
+        angle = compound.getFloat("Angle");
+        crankBearingLocation = new Vec3(compound.getDouble("BackPosX"), compound.getDouble("BackPosY"), compound.getDouble("BackPosZ"));
+
+        super.handleUpdateTag(compound);
+    }
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag compound = super.getUpdateTag();
+        compound.putFloat("Angle", angle);
+        compound.putDouble("BackPosX", crankBearingLocation.x);
+        compound.putDouble("BackPosY", crankBearingLocation.y);
+        compound.putDouble("BackPosZ", crankBearingLocation.z);
+
+        return compound;
+    }
+    @Override
     protected void write(CompoundTag compound, boolean clientPacket) {
         compound.putFloat("Angle", angle);
+        compound.putDouble("BackPosX", crankBearingLocation.x);
+        compound.putDouble("BackPosY", crankBearingLocation.y);
+        compound.putDouble("BackPosZ", crankBearingLocation.z);
         super.write(compound, clientPacket);
     }
 
@@ -48,7 +69,7 @@ public class PumpjackCrankBlockEntity extends KineticBlockEntity {
     }
     public PumpjackBearingBlockEntity getBearing(){
         if(bearing.get() != null){
-            if(bearing.get().isRemoved()) {
+            if(bearing.get().isRemoved() || !bearing.get().isRunning()) {
                 bearing = new WeakReference<>(null);
                 return null;
             }

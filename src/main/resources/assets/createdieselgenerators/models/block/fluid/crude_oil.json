@@ -1,5 +1,5 @@
 {
   "textures": {
-    "particle": "createdieselgenerators:block/crude_oil_still"
+    "particle": "createdieselgenerators:fluid/crude_oil_still"
   }
 }

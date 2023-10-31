@@ -5,13 +5,17 @@ import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 import com.simibubi.create.foundation.fluid.FluidHelper;
+import com.simibubi.create.foundation.utility.BlockHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +28,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.material.Fluids;
@@ -182,11 +187,13 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        if(cooling && level().getBlockState(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)).getBlock() instanceof FireBlock)
-            level().setBlock(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z), Blocks.AIR.defaultBlockState(), 3);
-
-        if(fire)
-            level().setBlock(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z), FireBlock.getState(level(), new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)), 3);
+        BlockPos pos = new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z);
+        if(cooling && level().getBlockState(pos).getBlock() instanceof FireBlock) {
+            level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+        }
+        if(fire && level().getBlockState(pos).getBlock() instanceof AirBlock && BlockHelper.hasBlockSolidSide(level().getBlockState(pos.below()), level(), pos.below(), Direction.UP))
+            level().setBlock(pos, FireBlock.getState(level(), pos), 3);
         remove(RemovalReason.DISCARDED);
     }
 

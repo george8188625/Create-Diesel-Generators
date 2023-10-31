@@ -7,7 +7,6 @@ import net.minecraft.world.item.Item;
 import static com.jesz.createdieselgenerators.CreateDieselGenerators.REGISTRATE;
 
 public class ItemRegistry {
-    static { REGISTRATE.setCreativeTab(CreativeTab.CREATIVE_TAB); }
 
     public static final ItemEntry<Item> KELP_HANDLE = REGISTRATE.item("kelp_handle", Item::new).register();
     public static final ItemEntry<FurnaceBurnItem> WOOD_CHIPS = REGISTRATE.item("wood_chip", p -> new FurnaceBurnItem(p, 200)).register();

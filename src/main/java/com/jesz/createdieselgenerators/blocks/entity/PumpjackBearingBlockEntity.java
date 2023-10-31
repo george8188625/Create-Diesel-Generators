@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.simibubi.create.content.kinetics.base.DirectionalKineticBlock.FACING;
 
@@ -56,36 +56,58 @@ public class PumpjackBearingBlockEntity extends MechanicalBearingBlockEntity {
         if (getBlockState().getValue(FACING).getAxis() == Direction.Axis.Y)
             return;
         crankPos = BlockPos.ZERO;
+        bearingBPos = BlockPos.ZERO;
+
         crankSpeed = 0;
+        angle = 0;
         if (!(level.getBlockState(worldPosition)
                 .getBlock() instanceof BearingBlock))
             return;
 
         Direction direction = getBlockState().getValue(BearingBlock.FACING);
         BearingContraption contraption = new BearingContraption(false, direction);
-        AtomicBoolean hasHinge = new AtomicBoolean(false);
-        AtomicBoolean hasHead = new AtomicBoolean(false);
+        AtomicInteger hinges = new AtomicInteger(0);
+        AtomicInteger heads = new AtomicInteger(0);
+        AtomicInteger hingeDistance = new AtomicInteger(0);
+        AtomicInteger hingeHeight = new AtomicInteger(0);
+
         try {
-            if(!contraption.searchMovedStructure(level, getBlockPos().relative(getBlockState().getValue(FACING)), null));
+            contraption.searchMovedStructure(level, getBlockPos().relative(getBlockState().getValue(FACING)), null);
         } catch (AssemblyException e) {
             return;
         }
         contraption.getBlocks().forEach((pos, info) -> {
             if(info.state().getBlock() instanceof PumpjackHeadBlock)
-                hasHead.set(!hasHead.get());
+                heads.set(heads.get()+1);
             else if(info.state().getBlock() instanceof PumpjackBearingBBlock && info.state().getValue(PumpjackBearingBBlock.FACING).getAxis() == getBlockState().getValue(FACING).getClockWise().getAxis()){
                 int f = Math.abs(pos.getZ());
                 if (getBlockState().getValue(FACING).getAxis() == Direction.Axis.Z)
                     f = Math.abs(pos.getX());
-                if(f < 17 && f > 3 && pos.getY() == 0)
-                    hasHinge.set(!hasHinge.get());
+                hingeHeight.set(pos.getY());
+                hingeDistance.set(f);
+                hinges.set(hinges.get()+1);
             }
         });
-        if(hasHinge.get() && hasHead.get()) {
+
+        if(hinges.get() == 0)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.bearing_missing"));
+        else if(hinges.get() > 1)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.too_many_bearings"));
+        else if(heads.get() == 0)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.head_missing"));
+        else if(heads.get() > 1)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.too_many_heads"));
+        else if(hingeDistance.get() < 4)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.arm_too_short"));
+        else if(hingeDistance.get() > 16)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.arm_too_long"));
+        else if(hingeHeight.get() != 0)
+            lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.back_bearing_not_centered"));
+        else {
             super.assemble();
+
             return;
         }
-        lastException = new AssemblyException(Component.translatable("createdieselgenerators.gui.assembly.exception.invalid_pumpjack"));
         sendData();
     }
 

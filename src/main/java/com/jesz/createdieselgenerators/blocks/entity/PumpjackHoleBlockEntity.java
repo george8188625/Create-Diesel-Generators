@@ -126,7 +126,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
 
     @Override
     public CompoundTag getUpdateTag() {
-        CompoundTag compound = new CompoundTag();
+        CompoundTag compound = super.getUpdateTag();
         compound.putInt("OilAmount", oilAmount);
         return compound;
     }
@@ -137,13 +137,17 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         behaviours.add(tank);
     }
     public void tickFluid(boolean isCrankLarge) {
-        if(!level.isClientSide) {
+        if(!level.isClientSide && valid) {
+            ChunkPos chunkPos = new ChunkPos(getBlockPos());
+            OilChunksSavedData sd = OilChunksSavedData.load((ServerLevel)level);
+            int amount = sd.getChunkOilAmount(chunkPos);
+            if(amount == -1)
+                amount = CreateDieselGenerators.getOilAmount(level.getBiome(new BlockPos(chunkPos.x * 16, 64,  chunkPos.z * 16)), chunkPos.x, chunkPos.z, ((ServerLevel)level).getSeed());
+            oilAmount = amount;
+            if(amount == 0)
+                return;
+
             if(storedOilAmount == 0){
-                ChunkPos chunkPos = new ChunkPos(getBlockPos().getX()/16, getBlockPos().getZ()/16);
-                int amount = CreateDieselGenerators.getOilAmount(level.getBiome(new BlockPos(chunkPos.x * 16, 64,  chunkPos.z * 16)), chunkPos.x, chunkPos.z, ((ServerLevel)level).getSeed());
-                OilChunksSavedData sd = OilChunksSavedData.load((ServerLevel)level);
-                if (sd.getChunkOilAmount(chunkPos) >= 0)
-                    amount = sd.getChunkOilAmount(chunkPos);
                 sd.setChunkAmount(chunkPos, amount-1);
                 oilAmount = amount -1;
                 storedOilAmount = 1000;

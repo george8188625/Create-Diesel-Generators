@@ -81,7 +81,7 @@
       "y": 90
     },
     "facing=east,turbocharged=true": {
-      "model": "createdieselgenerators:block/diesel_engine/block_turbo",
+      "model": "createdieselgenerators:block/diesel_engine/block_turbocharged",
       "y": 270
     },
     "facing=up,turbocharged=true": {
