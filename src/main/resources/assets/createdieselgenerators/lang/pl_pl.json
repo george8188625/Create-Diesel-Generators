@@ -14,9 +14,9 @@
   "item.createdieselgenerators.engine_turbocharger": "Turbosprężarka Silnika",
   "item.createdieselgenerators.plant_oil_bucket": "Wiadro Oleju Roślinnego",
   "item.createdieselgenerators.distillation_controller": "Distillation Controller",
-  "block.createdieselgenerators.plant_oil": "Olej Roślinny",
+  "fluid.createdieselgenerators.plant_oil": "Olej Roślinny",
   "item.createdieselgenerators.crude_oil_bucket": "Wiadro Ropy Naftowej",
-  "block.createdieselgenerators.crude_oil": "Ropa Naftowa",
+  "fluid.createdieselgenerators.crude_oil": "Ropa Naftowa",
   "item.createdieselgenerators.biodiesel_bucket": "Wiadro Biodiesla",
   "item.createdieselgenerators.ethanol_bucket": "Wiadro Etanolu",
   "block.createdieselgenerators.biodiesel": "Biodiesel",
@@ -73,7 +73,8 @@
   "createdieselgenerators.ponder.pumpjack.text_1": "Żurawie pompowe pozwalają ci zdobyć ropę naftową ...",
   "createdieselgenerators.ponder.pumpjack.text_2": "... żeby zacząć używać Żurawi pompowych, dodaj Korbę Żurawia Pompowego ...",
   "createdieselgenerators.ponder.pumpjack.text_3": "... i dodaj rurę do Skały Macierzystej.",
-  "createdieselgenerators.ponder.pumpjack.text_4": "... Zaczną wydobywać Ropę Naftową po uruchomieniu.",
+  "createdieselgenerators.ponder.pumpjack.text_4": "Żurawia Pompowe mogą wydobywać Ropę Naftową tylko z pewnych Chunków, króte posiadają Ropę Naftową, możesz je znaleść używając Detektora Ropy Naftowej",
+  "createdieselgenerators.ponder.pumpjack.text_5": "... Zaczną wydobywać Ropę Naftową po uruchomieniu.",
   "createdieselgenerators.ponder.diesel_engine.header": "Używanie Silników Spalinowych",
   "createdieselgenerators.ponder.diesel_engine.text_1": "Silniki Spalinowe są kompaktowym źródłem Energii Kinetycznej.",
   "createdieselgenerators.ponder.diesel_engine.text_2": "Daj im trochę paliwa i zaczną tworzyć Energię Kinetyczną.",
@@ -106,6 +107,16 @@
   "sounds.createdieselgenerators.diesel_engine_sound": "Hałas Silnika Spalinowego",
   "createdieselgenerators.pumpjack_crank.crank_size": "Rozmiar Korby",
 
-  "createdieselgenerators.gui.assembly.exception.invalid_pumpjack": "Niepoprawna Struktura Żurawia Pompowego",
-  "createdieselgenerators.distillation_controller.tooltip.summary": "Use on a _block Tank_ to create a _Distillation Tower_."
+  "createdieselgenerators.gui.assembly.exception.bearing_missing": "Brakuje Łożyska Żurawia Pompowego!",
+  "createdieselgenerators.gui.assembly.exception.too_many_bearings": "Za dużo Łożysk Żurawia Pompowego!",
+  "createdieselgenerators.gui.assembly.exception.head_missing": "Brakuje głowy Żurawia Pompowego!",
+  "createdieselgenerators.gui.assembly.exception.too_many_heads": "Zbyt dużo Głów Żurawia Pompowego!",
+  "createdieselgenerators.gui.assembly.exception.arm_too_short": "Tył Żurawia Pompowego za Długi!",
+  "createdieselgenerators.gui.assembly.exception.arm_too_long": "Tył Żurawia Pompowego za Któtki!",
+
+  "createdieselgenerators.actionbar.oil_scanner.searching": "§lSzukanie Ropy Naftowej ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_none": "§lNie znaleziono Ropy Naftowej ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_low": "§lZnaleziono trochę Ropy Naftowej!",
+  "createdieselgenerators.actionbar.oil_scanner.oil_high": "§lZnaleziono dużo Ropy Naftowej!",
+  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "§lJesteś za wysoko aby szukać Złóż Ropy Naftowej!."
 }

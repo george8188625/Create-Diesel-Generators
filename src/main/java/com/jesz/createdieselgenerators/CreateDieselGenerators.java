@@ -77,6 +77,7 @@ public class CreateDieselGenerators
 
     public static void onClient(IEventBus modEventBus, IEventBus forgeEventBus) {
         PartialModels.Init();
+        SpriteShifts.init();
         modEventBus.addListener(CreateDieselGenerators::clientInit);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigRegistry.CLIENT_SPEC, "createdieselgenerators-client.toml");
     }
@@ -91,7 +92,6 @@ public class CreateDieselGenerators
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.DISTILLATION_TANK.get(), RenderType.translucent());
 
         PonderIndex.register();
-        SpriteShifts.init();
     }
 
     public static int getOilAmount(Holder<Biome> biome, int x, int z, long seed){

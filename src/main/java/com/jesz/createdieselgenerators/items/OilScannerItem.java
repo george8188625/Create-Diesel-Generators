@@ -5,11 +5,15 @@ import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.world.OilChunksSavedData;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
+import com.simibubi.create.foundation.utility.Components;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -35,8 +39,15 @@ public class OilScannerItem extends Item {
         if(player.getY() < ConfigRegistry.MAX_OIL_SCANNER_LEVEL.get()) {
             stack.getOrCreateTag().putInt("Time", 20);
             stack.getOrCreateTag().putInt("Type", 0);
-        }else
+            if(player instanceof ServerPlayer sp){
+                sp.connection.send(new ClientboundSetActionBarTextPacket(Components.translatable("createdieselgenerators.actionbar.oil_scanner.searching")));
+            }
+        }else {
             level.playLocalSound(player.getX(), player.getY(), player.getZ(), AllSoundEvents.DENY.getMainEvent(), SoundSource.PLAYERS, 1.2f, 1, true);
+            if(player instanceof ServerPlayer sp){
+                sp.connection.send(new ClientboundSetActionBarTextPacket(Components.translatable("createdieselgenerators.actionbar.oil_scanner.too_high_up").withStyle(ChatFormatting.GRAY)));
+            }
+        }
         return InteractionResultHolder.success(stack);
     }
 
@@ -62,6 +73,16 @@ public class OilScannerItem extends Item {
                                 stack.getTag().putInt("Type", 3);
                             else
                                 stack.getTag().putInt("Type", 2);
+
+                            if(entity instanceof ServerPlayer sp){
+                                if (amount <= 0)
+                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Components.translatable("createdieselgenerators.actionbar.oil_scanner.oil_none").withStyle(ChatFormatting.GRAY)));
+                                else if (amount > 50000)
+                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Components.translatable("createdieselgenerators.actionbar.oil_scanner.oil_high").withStyle(ChatFormatting.GOLD)));
+                                else
+                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Components.translatable("createdieselgenerators.actionbar.oil_scanner.oil_low").withStyle(ChatFormatting.GREEN)));
+
+                            }
                         }
                         stack.getTag().putInt("Time", stack.getTag().getInt("Time")-1);
                     }else

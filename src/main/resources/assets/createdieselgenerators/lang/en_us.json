@@ -50,10 +50,10 @@
   "createdieselgenerators.pumpjack_bearing.tooltip.summary": "Acts as a _Hinge_ for _Pumpjacks_. Click on it with a _Wrench_ to change it to a _Hinge_ for _Pumpjack Cranks_.",
   "createdieselgenerators.engine_silencer.tooltip.summary": "Use on a _Diesel Engine_ to _silence_ it.",
   "createdieselgenerators.engine_turbocharger.tooltip.summary": "Use on a _Diesel Engine_ make it _faster_.",
-  "createdieselgenerators.canister.tooltip.summary": "Stores _blocks_ for you. It doesn't lose its _contents_ when _picked up_.",
+  "createdieselgenerators.canister.tooltip.summary": "Stores _Fluids_ for you. It doesn't lose its _contents_ when _picked up_.",
   "createdieselgenerators.lighter.tooltip.summary": "A _Lighter_. Fill with _Liquid Fuel_ to use.",
-  "createdieselgenerators.chemical_sprayer.tooltip.summary": "Fill with any _block_ to spray your _friends_ or _enemies_ with it!",
-  "createdieselgenerators.chemical_sprayer_lighter.tooltip.summary": "Fill with any _block_ to spray your _friends_ or _enemies_ with it! _Functions_ like a _Flamethrower_ when filled with a _combustible block_.",
+  "createdieselgenerators.chemical_sprayer.tooltip.summary": "Fill with any _fluid_ to spray your _friends_ or _enemies_ with it!",
+  "createdieselgenerators.chemical_sprayer_lighter.tooltip.summary": "Fill with any _fluid_ to spray your _friends_ or _enemies_ with it! _Functions_ like a _Flamethrower_ when filled with a _combustible fluid_.",
   "createdieselgenerators.oil_scanner.tooltip.summary": "Use to check for _Crude Oil Deposits_.",
 
   "createdieselgenerators.tooltip.holdForFuelStats": "Hold [%1$s] for Fuel Stats",
@@ -64,7 +64,7 @@
   "createdieselgenerators.tooltip.fuelBurnRate": "Burn Rate: %1$s mb/s",
 
   "createdieselgenerators.ponder.distillation_tower.header": "Setting up a Distillation Tower",
-  "createdieselgenerators.ponder.distillation_tower.text_1": "Apply a Distillation Controller to a block tank to create a Distillation Tower.",
+  "createdieselgenerators.ponder.distillation_tower.text_1": "Apply a Distillation Controller to a Fluid tank to create a Distillation Tower.",
   "createdieselgenerators.ponder.distillation_tower.text_2": "Pump in some Crude oil...",
   "createdieselgenerators.ponder.distillation_tower.text_3": "... give the Blaze Burners some heat ...",
   "createdieselgenerators.ponder.distillation_tower.text_4": "... Gasoline and Diesel will be created",
@@ -73,7 +73,8 @@
   "createdieselgenerators.ponder.pumpjack.text_1": "Pumpjacks allow you to acquire Crude Oil ...",
   "createdieselgenerators.ponder.pumpjack.text_2": "... to start using pumpjacks, attach a Pumpjack Crank ...",
   "createdieselgenerators.ponder.pumpjack.text_3": "... and add a pipe to bedrock.",
-  "createdieselgenerators.ponder.pumpjack.text_4": "... When assembled, it will start producing oil.",
+  "createdieselgenerators.ponder.pumpjack.text_4": "Pumpjacks can only pump out Oil from Oil Chunks, you can look for them using Oil Detectors",
+  "createdieselgenerators.ponder.pumpjack.text_5": "When assembled, it will start producing Oil.",
   "createdieselgenerators.ponder.diesel_engine.header": "Setting up a Diesel Engine",
   "createdieselgenerators.ponder.diesel_engine.text_1": "Diesel Generators are a compact way of generating kinetic energy.",
   "createdieselgenerators.ponder.diesel_engine.text_2": "Give it some fuel and it will produce kinetic energy.",
@@ -106,5 +107,17 @@
   "sounds.createdieselgenerators.diesel_engine_sound": "Diesel Engine Roars",
   "createdieselgenerators.pumpjack_crank.crank_size": "Crank Size",
 
-  "createdieselgenerators.gui.assembly.exception.invalid_pumpjack": "Pumpjack Structure Invalid"
+  "createdieselgenerators.gui.assembly.exception.bearing_missing": "Back Bearing Missing!",
+  "createdieselgenerators.gui.assembly.exception.too_many_bearings": "Too many Back Bearings Attached!",
+  "createdieselgenerators.gui.assembly.exception.head_missing": "Pumpjack Head Missing!",
+  "createdieselgenerators.gui.assembly.exception.too_many_heads": "Too many Pumpjack Heads Attached!",
+  "createdieselgenerators.gui.assembly.exception.arm_too_short": "Back arm too short!",
+  "createdieselgenerators.gui.assembly.exception.arm_too_long": "Back arm too long!",
+  "createdieselgenerators.gui.assembly.exception.back_bearing_not_centered": "Back Bearing not centered!",
+
+  "createdieselgenerators.actionbar.oil_scanner.searching": "§lSearching for Oil ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_none": "§lFound no Oil ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_low": "§lFound some Oil!",
+  "createdieselgenerators.actionbar.oil_scanner.oil_high": "§lFound lots of Oil!",
+  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "§lYou Are too high up to Check for Oil Deposits!."
 }

@@ -87,9 +87,9 @@ public class ConfigRegistry {
                     HUGE_ENGINE_MULTIPLIER = SERVER_BUILDER.comment("Huge Diesel Engine Generated Stress Multiplier")
                             .define("Huge Diesel Engine Stress Multiplier", 1.75d);
                     TURBOCHARGED_ENGINE_MULTIPLIER = SERVER_BUILDER.comment("Turbocharged Diesel Engine Speed Multiplier")
-                            .define("Turbocharged Diesel Engine Multiplier", 2d);
-                    TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER = SERVER_BUILDER.comment("Turbocharged Diesel Engine Speed Multiplier")
-                            .define("Turbocharged Diesel Engine Multiplier", 1d);
+                            .define("Turbocharged Diesel Engine Speed Multiplier", 2d);
+                    TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER = SERVER_BUILDER.comment("Turbocharged Diesel Engine Burn Rate Multiplier")
+                            .define("Turbocharged Diesel Engine Burn Rate Multiplier", 1d);
                 SERVER_BUILDER.pop();
 
                 FAST_BURN_RATE = SERVER_BUILDER.comment("Diesel Engine Fuel fast burn rate per second")
