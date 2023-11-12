@@ -118,19 +118,20 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
-        stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
-        fire = getEntityData().get(DATA).getBoolean("Fire");
-        cooling = getEntityData().get(DATA).getBoolean("Cooling");
-        if(t>=1) {
-            if (getLevel() instanceof ClientLevel clientLevel) {
+        if (getLevel() instanceof ClientLevel clientLevel) {
+            stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
+            fire = getEntityData().get(DATA).getBoolean("Fire");
+            cooling = getEntityData().get(DATA).getBoolean("Cooling");
+            if (t >= 1) {
                 if (fire) {
                     clientLevel.addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
-                }if (stack != null && !stack.isEmpty())
+                }
+                if (stack != null && !stack.isEmpty())
                     clientLevel.addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
-            }
+
+            } else
+                t++;
         }
-        else
-            t++;
         setDeltaMovement(getDeltaMovement().add(0, -0.015, 0));
 
         if(fire) {
@@ -183,10 +184,20 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        if(cooling && getLevel().getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof FireBlock) {
-            getLevel().setBlock(new BlockPos(getPosition(1)), Blocks.AIR.defaultBlockState(), 3);
-            getLevel().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+        if(cooling) {
+            if (getLevel().getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof FireBlock) {
+                getLevel().setBlock(new BlockPos(getPosition(1)), Blocks.AIR.defaultBlockState(), 3);
+                getLevel().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+            }
+
+            for (int i = 0; i < 6; i++) {
+                if (getLevel().getBlockState(new BlockPos(getPosition(1)).relative(Direction.values()[i], 1)).getBlock() instanceof FireBlock) {
+                    getLevel().setBlock(new BlockPos(getPosition(1)).relative(Direction.values()[i], 1), Blocks.AIR.defaultBlockState(), 3);
+                    getLevel().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+                }
+            }
         }
+
         if(fire && getLevel().getBlockState(new BlockPos(getPosition(1))).getBlock() instanceof AirBlock && BlockHelper.hasBlockSolidSide(level.getBlockState(new BlockPos(getPosition(1)).below()), level, new BlockPos(getPosition(1)).below(), Direction.UP))
             getLevel().setBlock(new BlockPos(getPosition(1)), FireBlock.getState(getLevel(), new BlockPos(getPosition(1))), 3);
         remove(RemovalReason.DISCARDED);
@@ -194,6 +205,6 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
 
     public static EntityType.Builder<?> build(EntityType.Builder<?> builder) {
         EntityType.Builder<ChemicalSprayerProjectileEntity> entityBuilder = (EntityType.Builder<ChemicalSprayerProjectileEntity>) builder;
-        return entityBuilder.sized(.25f, .25f);
+        return entityBuilder.sized(.5f, .5f);
     }
 }

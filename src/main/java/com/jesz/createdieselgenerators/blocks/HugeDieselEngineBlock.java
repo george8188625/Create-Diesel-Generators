@@ -2,6 +2,7 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.HugeDieselEngineBlockEntity;
+import com.jesz.createdieselgenerators.blocks.entity.PoweredEngineShaftBlockEntity;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -9,6 +10,7 @@ import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 import com.simibubi.create.content.kinetics.steamEngine.PoweredShaftBlock;
 import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import com.simibubi.create.foundation.placement.PlacementOffset;
@@ -27,6 +29,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,6 +37,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -42,13 +47,16 @@ import java.util.function.Predicate;
 
 import static com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock.AXIS;
 
-public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngineBlockEntity>, IWrenchable, ICDGKinetics {
+public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngineBlockEntity>, IWrenchable, ICDGKinetics, ProperWaterloggedBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public HugeDieselEngineBlock(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState()
+                .setValue(WATERLOGGED, false)
                 .setValue(BlockStateProperties.NORTH, false)
                 .setValue(BlockStateProperties.EAST, false)
                 .setValue(BlockStateProperties.SOUTH, false)
@@ -67,10 +75,20 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
                     .placeInWorld(world, (BlockItem) heldItem.getItem(), player, hand, ray);
         return InteractionResult.PASS;
     }
+    @Override
+    public FluidState getFluidState(BlockState pState) {
+        return fluidState(pState);
+    }
 
     @Override
+    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
+                                  LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+        updateWater(pLevel, pState, pCurrentPos);
+        return pState;
+    }
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, BlockStateProperties.NORTH, BlockStateProperties.EAST, BlockStateProperties.WEST, BlockStateProperties.SOUTH, BlockStateProperties.UP, BlockStateProperties.DOWN);
+        builder.add(FACING, BlockStateProperties.NORTH, BlockStateProperties.EAST, BlockStateProperties.WEST, BlockStateProperties.SOUTH, BlockStateProperties.UP, BlockStateProperties.DOWN, WATERLOGGED);
         super.createBlockStateDefinition(builder);
     }
 
@@ -79,8 +97,13 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
         boolean c = state.getValue(BooleanProperty.create(context.getClickedFace().toString()));
         if(context.getClickedFace().getAxis() == state.getValue(FACING).getAxis())
             return IWrenchable.super.onWrenched(state, context);
+        if(context.getLevel().getBlockEntity(context.getClickedPos()) instanceof  HugeDieselEngineBlockEntity be){
+            PoweredEngineShaftBlockEntity shaft = be.getShaft();
+            if(shaft != null)
+                shaft.removeGenerator(context.getClickedPos());
+        }
         context.getLevel().setBlock(context.getClickedPos(), state.setValue(BooleanProperty.create(context.getClickedFace().toString()), !c), 3);
-        return  InteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
 
@@ -125,9 +148,9 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
                 .isShiftKeyDown())) {
             Direction nearestLookingDirection = context.getNearestLookingDirection();
             return defaultBlockState().setValue(FACING, context.getPlayer() != null && context.getPlayer()
-                    .isShiftKeyDown() ? nearestLookingDirection : nearestLookingDirection.getOpposite());
+                    .isShiftKeyDown() ? nearestLookingDirection : nearestLookingDirection.getOpposite()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
         }
-        return defaultBlockState().setValue(FACING, preferred.getOpposite());
+        return defaultBlockState().setValue(FACING, preferred.getOpposite()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
     }
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {

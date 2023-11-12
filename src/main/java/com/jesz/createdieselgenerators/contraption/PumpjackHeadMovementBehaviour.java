@@ -41,7 +41,7 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
     public boolean isActive(MovementContext context) {
         if(!(context.contraption instanceof BearingContraption))
             return false;
-        if(context.state.getValue(PumpjackBearingBBlock.FACING).getAxis() != ((BearingContraption) context.contraption).getFacing().getClockWise().getAxis())
+        if(((BearingContraption) context.contraption).getFacing().getAxis() == Direction.Axis.Y || context.state.getValue(PumpjackBearingBBlock.FACING).getAxis() != ((BearingContraption) context.contraption).getFacing().getClockWise().getAxis())
             return false;
         return context.world.getBlockEntity(context.contraption.anchor.relative(((BearingContraption) context.contraption).getFacing().getOpposite())) instanceof PumpjackBearingBlockEntity;
     }
@@ -64,7 +64,7 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
             float distanceFromHole = (float) Math.sqrt(zDst*zDst + yDst*yDst);
             double angle = -((ControlledContraptionEntity) context.contraption.entity).getAngle(AnimationTickHolder.getPartialTicks())-(180 * Math.atan2(yDst,zDst)/Math.PI)+90;
             PoseStack ms = matrices.getModel();
-            cover.transform(ms).translate(0.5, 0.5,  0.5625).rotateX(angle)
+            cover.transform(ms).translate(0.5, 0.5,  0.5).rotateX(angle)
                     .scale(1, distanceFromHole, 1)
                     .light(matrices.getWorld(), ContraptionRenderDispatcher.getContraptionWorldLight(context, renderWorld))
                     .renderInto(matrices.getViewProjection(), buffer.getBuffer(RenderType.cutoutMipped()));
@@ -75,7 +75,7 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
         float distanceFromHole = (float) Math.sqrt(xDst*xDst + yDst*yDst);
         double angle = -((ControlledContraptionEntity) context.contraption.entity).getAngle(AnimationTickHolder.getPartialTicks())+(180 * Math.atan2(yDst,xDst)/Math.PI)-90;
         PoseStack ms = matrices.getModel();
-        cover.transform(ms).translate(0.5625, 0.5,  0.5).rotateZ(angle)
+        cover.transform(ms).translate(0.5, 0.5,  0.5).rotateZ(angle)
                 .scale(1, distanceFromHole, 1)
                 .light(matrices.getWorld(), ContraptionRenderDispatcher.getContraptionWorldLight(context, renderWorld))
                 .renderInto(matrices.getViewProjection(), buffer.getBuffer(RenderType.cutoutMipped()));

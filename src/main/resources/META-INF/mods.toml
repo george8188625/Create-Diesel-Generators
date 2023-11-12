@@ -19,7 +19,7 @@ modId="createdieselgenerators" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
-version="1.18.2-1.2c" #mandatory
+version="1.18.2-1.2d" #mandatory
  # A display name for the mod
 displayName="Create Diesel Generators" #m
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
@@ -65,3 +65,10 @@ You can add custom fuel types by adding "createdieselgenerators:diesel_engine_fu
     versionRange="[0.5.1.a,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.createdieselgenerators]]
+modId="flywheel"
+mandatory=false
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="[0.0.0,)"
+ordering="AFTER"
+side="CLIENT"

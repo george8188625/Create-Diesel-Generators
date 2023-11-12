@@ -31,6 +31,7 @@ import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.minecraftforge.fml.ModList;
 
 import java.util.List;
 import java.util.Random;
@@ -146,7 +147,9 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-        return new FluidHandlerItemStack(stack, 100 + EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)*50);
+        if(!ModList.get().isLoaded("dungeons_libraries"))
+            return new FluidHandlerItemStack(stack, 100 + EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)*50);
+        return new FluidHandlerItemStack(stack, 100);
     }
     @Override
     @OnlyIn(Dist.CLIENT)

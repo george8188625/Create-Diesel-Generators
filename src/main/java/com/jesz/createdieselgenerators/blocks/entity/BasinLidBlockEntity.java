@@ -1,5 +1,6 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
+import com.jesz.createdieselgenerators.recipes.BasinFermentingRecipe;
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinOperatingBlockEntity;
@@ -25,6 +26,8 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
 
     public int processingTime;
     public boolean running;
+    public float progress;
+
     public BasinLidBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
@@ -58,6 +61,10 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     public void tick() {
         super.tick();
+        if(currentRecipe != null)
+            progress = (float) processingTime /((BasinFermentingRecipe)currentRecipe).getProcessingDuration();
+        else
+            progress = 0;
         if ((!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) || getBlockState().getValue(OPEN) || !getBlockState().getValue(ON_A_BASIN)) {
             this.running = false;
             this.processingTime = -1;
@@ -86,7 +93,7 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     protected boolean updateBasin() {
         if (this.running) return true;
-        if (this.level == null || this.level.isClientSide) return true;
+        if (this.level == null) return true;
         if (this.getBasin().filter(BasinBlockEntity::canContinueProcessing).isEmpty()) return true;
 
         List<Recipe<?>> recipes = this.getMatchingRecipes();

@@ -55,7 +55,7 @@ public class HugeDieselEngineRenderer extends SafeBlockEntityRenderer<HugeDiesel
         Direction.Axis axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
 
         boolean roll90 = facingAxis.isHorizontal() && axis == Direction.Axis.Y || facingAxis.isVertical() && axis == Direction.Axis.Z;
-        float shaftR = facing == Direction.DOWN ? -90 : facing == Direction.UP ? 90 : 0;
+        float shaftR = facing == Direction.DOWN ? -90 : facing == Direction.UP ? 90 : facing == Direction.WEST ? -90 : facing == Direction.EAST ? 90 : 0;
         if(roll90)
             shaftR = facing == Direction.NORTH ? 180 : facing == Direction.SOUTH ? 0 : facing == Direction.EAST ? -90 : facing == Direction.WEST ? 90 : 0;
         angle += (float)(shaftR*Math.PI/180);

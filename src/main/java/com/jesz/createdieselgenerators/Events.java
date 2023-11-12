@@ -1,5 +1,7 @@
 package com.jesz.createdieselgenerators;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.jesz.createdieselgenerators.blocks.ICDGKinetics;
 import com.jesz.createdieselgenerators.commands.CDGCommands;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
@@ -13,9 +15,12 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CKinetics;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +28,10 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.loot.LootModifierManager;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -32,6 +41,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.command.ConfigCommand;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = "createdieselgenerators")
@@ -62,8 +75,11 @@ public class Events {
             return;
         List<Component> tooltip = event.getToolTip();
         Item item = event.getItemStack().getItem();
-        if(item instanceof BucketItem bi && ConfigRegistry.FUEL_TOOLTIPS.get()){
-            FluidStack stack = new FluidStack(bi.getFluid(), 1);
+        if((item instanceof BucketItem || item instanceof MilkBucketItem) && ConfigRegistry.FUEL_TOOLTIPS.get()){
+            FluidStack stack = new FluidStack(ForgeMod.MILK.get(), 1);
+            if(item instanceof BucketItem bi)
+                stack = new FluidStack(bi.getFluid(), 1);
+
             if(CreateDieselGenerators.getGeneratedSpeed(stack) != 0){
                 if(Screen.hasAltDown()) {
                     tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Components.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));

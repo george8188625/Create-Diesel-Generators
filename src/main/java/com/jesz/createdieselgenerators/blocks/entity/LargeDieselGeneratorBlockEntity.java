@@ -201,8 +201,6 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     }
     int t = 0;
     int totalSize = 0;
-    int silencedSize = 0;
-    boolean lastp = true;
     @Override
     public void tick() {
         super.tick();
@@ -215,22 +213,9 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         end = engineForward == null;
 
 
-        lastp = getBlockState().getValue(POWERED);
-        if (end) {
-            if(lastp != validFuel){
-                changeBlockState(getBlockState().setValue(POWERED, powered));
-            }
-            updateGeneratedRotation();
-            powered = getGeneratedSpeed() != 0;
-        } else{
-            powered = engineForward.powered;
-            if (lastp != powered) {
-                changeBlockState(getBlockState().setValue(POWERED, powered));
-            }
-        }
+        updateGeneratedRotation();
 
         if (reActivateSource) {
-            updateGeneratedRotation();
             reActivateSource = false;
         }
 
@@ -248,7 +233,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
 
 
 
-        if(t > 2 && powered && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
+        if(t > 2 && FrontEngine != null && FrontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
             level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 3f,1.08f, false);
 
             t = 0;

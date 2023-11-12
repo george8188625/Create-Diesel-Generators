@@ -33,7 +33,6 @@ import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.*;
 
 public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     BlockState state;
-    boolean weak;
     public boolean validFuel;
 
     public DieselGeneratorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
@@ -134,16 +133,11 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         return containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability().cast());
     }
     int t = 0;
-    float lastsp = 0;
     @Override
     public void tick() {
         super.tick();
         state = getBlockState();
 
-        if(lastsp != getGeneratedSpeed() || validFuel != state.getValue(DieselGeneratorBlock.POWERED)){
-            changeBlockState(state.setValue(DieselGeneratorBlock.POWERED, validFuel));
-            lastsp = getGeneratedSpeed();
-        }
         updateGeneratedRotation();
 
         if(state.getValue(TURBOCHARGED) ? t > 0 : t > 1){

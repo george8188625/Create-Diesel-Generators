@@ -17,7 +17,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.PIPE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
@@ -40,7 +39,6 @@ public class DieselEngineScenes {
         ElementLink<WorldSectionElement> engineElement =
                 scene.world.showIndependentSection(engine, Direction.DOWN);
         scene.world.moveSection(engineElement, util.vector.of(0, -1, 0), 0);
-        scene.world.modifyBlock(util.grid.at(1, 2, 1), s -> s.setValue(POWERED, false)  , false);
         scene.idle(15);
         scene.overlay.showText(50)
                 .attachKeyFrame()
@@ -52,7 +50,7 @@ public class DieselEngineScenes {
         scene.idle(15);
         scene.world.moveSection(engineElement, util.vector.of(0, 1, 0), 0);
         scene.world.showIndependentSection(engine, Direction.DOWN);
-        scene.world.modifyBlock(enginePos, s -> s.setValue(POWERED, false)  , false);
+
         scene.world.showSection(pipe, Direction.WEST);
         scene.world.showSection(tank, Direction.NORTH);
         scene.idle(30);
@@ -73,7 +71,6 @@ public class DieselEngineScenes {
         scene.world.modifyBlockEntity(util.grid.at(4, 0, 1), FluidTankBlockEntity.class, be -> be.getTankInventory()
                 .drain(content, IFluidHandler.FluidAction.EXECUTE));
         scene.world.modifyKineticSpeed(engine, f -> 96f);
-        scene.world.modifyBlock(enginePos, s -> s.setValue(POWERED, true)  , false);
         scene.effects.rotationSpeedIndicator(enginePos);
         scene.idle(20);
         scene.world.modifyKineticSpeed(cogs, f -> 0f);
@@ -159,7 +156,7 @@ public class DieselEngineScenes {
         scene.idle(70);
         scene.world.modifyEntity(entity1, Entity::discard);
         scene.world.showSection(util.select.position(engine), Direction.DOWN);
-        scene.world.modifyBlock(engine, s -> s.setValue(POWERED, true), false);
+
         scene.world.modifyKineticSpeed(util.select.position(engine), f -> 96f);
         scene.idle(20);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 1), Pointing.DOWN).withItem(ItemRegistry.ENGINE_SILENCER.asStack()),
@@ -192,7 +189,7 @@ public class DieselEngineScenes {
 
         scene.idle(15);
         scene.world.showSection(mainEngine, Direction.DOWN);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, false), false);
+
         scene.idle(15);
         scene.overlay.showText(50)
                 .attachKeyFrame()
@@ -231,7 +228,6 @@ public class DieselEngineScenes {
                 .drain(content, IFluidHandler.FluidAction.EXECUTE));
 
         scene.world.modifyKineticSpeed(mainEngine, s -> 96f);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
 
         scene.effects.rotationSpeedIndicator(util.grid.at(1, 1, 1));
 
@@ -242,7 +238,7 @@ public class DieselEngineScenes {
                 .text("... They can be stacked.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
+
         scene.idle(60);
 
         scene.world.showSection(engines, Direction.EAST);
@@ -250,28 +246,18 @@ public class DieselEngineScenes {
         scene.world.modifyBlocks(engines, s -> s.setValue(PIPE, true), false);
 
         scene.world.modifyKineticSpeed(engines, s -> 96f);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
         scene.idle(20);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 2), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
         scene.world.modifyBlock(util.grid.at(1,1,2), s -> s.setValue(PIPE, false), false);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
         scene.idle(30);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 3), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
         scene.world.modifyBlock(util.grid.at(1,1,3), s -> s.setValue(PIPE, false), false);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
         scene.idle(30);
         scene.overlay.showText(50)
                 .attachKeyFrame()
                 .text("They will generate stress proportionally to how much engines you stack.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
-        scene.world.modifyBlocks(engines, s -> s.setValue(POWERED, true), false);
-        scene.world.modifyBlock(util.grid.at(1, 1, 1), s -> s.setValue(POWERED, true), false);
         scene.idle(60);
     }
 }
