@@ -1,130 +1,66 @@
 {
   "variants": {
-    "silenced=false,pipe=false,powered=false,facing=north": {
+    "silenced=false,pipe=false,facing=north": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block",
       "y": 180
     },
-    "silenced=false,pipe=false,powered=false,facing=south": {
+    "silenced=false,pipe=false,facing=south": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block",
       "y": 180
     },
-    "silenced=false,pipe=false,powered=false,facing=west": {
+    "silenced=false,pipe=false,facing=west": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block",
       "y": 90
     },
-    "silenced=false,pipe=false,powered=false,facing=east": {
+    "silenced=false,pipe=false,facing=east": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block",
       "y": 90
     },
-    "silenced=false,pipe=false,powered=true,facing=north": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on",
-      "y": 180
-    },
-    "silenced=false,pipe=false,powered=true,facing=south": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on",
-      "y": 180
-    },
-    "silenced=false,pipe=false,powered=true,facing=west": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on",
-      "y": 90
-    },
-    "silenced=false,pipe=false,powered=true,facing=east": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on",
-      "y": 90
-    },
-    "silenced=false,pipe=true,powered=false,facing=north": {
+    "silenced=false,pipe=true,facing=north": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe",
       "y": 180
     },
-    "silenced=false,pipe=true,powered=false,facing=south": {
+    "silenced=false,pipe=true,facing=south": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe",
       "y": 180
     },
-    "silenced=false,pipe=true,powered=false,facing=west": {
+    "silenced=false,pipe=true,facing=west": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe",
       "y": 90
     },
-    "silenced=false,pipe=true,powered=false,facing=east": {
+    "silenced=false,pipe=true,facing=east": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe",
       "y": 90
     },
-    "silenced=false,pipe=true,powered=true,facing=north": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on_pipe",
-      "y": 180
-    },
-    "silenced=false,pipe=true,powered=true,facing=south": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on_pipe",
-      "y": 180
-    },
-    "silenced=false,pipe=true,powered=true,facing=west": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on_pipe",
-      "y": 90
-    },
-    "silenced=false,pipe=true,powered=true,facing=east": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_on_pipe",
-      "y": 90
-    },
-    "silenced=true,pipe=false,powered=false,facing=north": {
+    "silenced=true,pipe=false,facing=north": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
       "y": 180
     },
-    "silenced=true,pipe=false,powered=false,facing=south": {
+    "silenced=true,pipe=false,facing=south": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
       "y": 180
     },
-    "silenced=true,pipe=false,powered=false,facing=west": {
+    "silenced=true,pipe=false,facing=west": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
       "y": 90
     },
-    "silenced=true,pipe=false,powered=false,facing=east": {
+    "silenced=true,pipe=false,facing=east": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
       "y": 90
     },
-    "silenced=true,pipe=false,powered=true,facing=north": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
-      "y": 180
-    },
-    "silenced=true,pipe=false,powered=true,facing=south": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
-      "y": 180
-    },
-    "silenced=true,pipe=false,powered=true,facing=west": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
-      "y": 90
-    },
-    "silenced=true,pipe=false,powered=true,facing=east": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_silenced",
-      "y": 90
-    },
-    "silenced=true,pipe=true,powered=false,facing=north": {
+    "silenced=true,pipe=true,facing=north": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
       "y": 180
     },
-    "silenced=true,pipe=true,powered=false,facing=south": {
+    "silenced=true,pipe=true,facing=south": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
       "y": 180
     },
-    "silenced=true,pipe=true,powered=false,facing=west": {
+    "silenced=true,pipe=true,facing=west": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
       "y": 90
     },
-    "silenced=true,pipe=true,powered=false,facing=east": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
-      "y": 90
-    },
-    "silenced=true,pipe=true,powered=true,facing=north": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
-      "y": 180
-    },
-    "silenced=true,pipe=true,powered=true,facing=south": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
-      "y": 180
-    },
-    "silenced=true,pipe=true,powered=true,facing=west": {
-      "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
-      "y": 90
-    },
-    "silenced=true,pipe=true,powered=true,facing=east": {
+    "silenced=true,pipe=true,facing=east": {
       "model": "createdieselgenerators:block/modular_diesel_engine/block_pipe_silenced",
       "y": 90
     }

@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -136,11 +137,11 @@ public class BasinLidBlock extends Block implements ProperWaterloggedBlock, IBE<
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        if (pContext.getPlayer().isShiftKeyDown()) {
-            return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getPlayer().isShiftKeyDown()) {
+            return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
         } else {
-            return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection());
+            return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
         }
     }
 

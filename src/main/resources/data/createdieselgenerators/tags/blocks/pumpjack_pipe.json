@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "required": false,
+      "id": "createindustry:industrial_pipe"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import com.jesz.createdieselgenerators.sounds.SoundRegistry;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
+import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
@@ -33,7 +34,6 @@ import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.*;
 
 public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     BlockState state;
-    boolean weak;
     public boolean validFuel;
 
     public DieselGeneratorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
@@ -125,7 +125,7 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (!StressImpact.isEnabled())
+        if (!IRotate.StressImpact.isEnabled())
             return added;
 
         float stressBase = calculateAddedStressCapacity();
@@ -134,16 +134,11 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         return containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability().cast());
     }
     int t = 0;
-    float lastsp = 0;
     @Override
     public void tick() {
         super.tick();
         state = getBlockState();
 
-        if(lastsp != getGeneratedSpeed() || validFuel != state.getValue(DieselGeneratorBlock.POWERED)){
-            changeBlockState(state.setValue(DieselGeneratorBlock.POWERED, validFuel));
-            lastsp = getGeneratedSpeed();
-        }
         updateGeneratedRotation();
 
         if(state.getValue(TURBOCHARGED) ? t > 0 : t > 1){

@@ -4,15 +4,14 @@ import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.content.equipment.armor.CapacityEnchantment;
+import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,14 +33,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LighterItem extends Item implements CapacityEnchantment.ICapacityEnchantable {
     public LighterItem(Properties properties) {
@@ -203,15 +205,14 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-        return new FluidHandlerItemStack(stack, 100 + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get())*50);
+        if(!ModList.get().isLoaded("dungeons_libraries"))
+            return new FluidHandlerItemStack(stack, 100 + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get()) * 50);
+        return new FluidHandlerItemStack(stack, 100);
     }
-    public void registerModelOverrides() {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ItemProperties.register(ItemRegistry.LIGHTER.get(), new ResourceLocation("createdieselgenerators:lighter_state"), (pStack, pLevel, pEntity, pSeed) -> {
-                CompoundTag tag = pStack.getTag();
-                return tag == null ? 0 : tag.getInt("Type");
-            });
-        });
 
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(SimpleCustomRenderer.create(this, new LighterItemRenderer()));
     }
 }

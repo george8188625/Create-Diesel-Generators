@@ -157,24 +157,24 @@ public class PumpjackBearingBlockEntity extends MechanicalBearingBlockEntity {
             if(f == 15) b = 3.2f;
             if(f == 16) b = 3f;
 
-            float[] angleLkUpTb = {
+            float[] angleAnimation = {
                     0, 70, 130, 180, 220, 255, 280, 300, 260, 199, 127, 67};
             if(isLarge)
-                angleLkUpTb = new float[]{
-                    0, 27, 60, 90, 120, 145, 166, 189, 205, 220, 240, 260, 280, 305, 330, 310, 290, 245, 200, 163, 127, 93, 60, 30};
+                angleAnimation = new float[]{
+                        0, 27, 60, 90, 120, 145, 166, 189, 205, 220, 240, 260, 280, 305, 330, 310, 290, 245, 200, 163, 127, 93, 60, 30};
 //                  0, 15, 30, 45,  60,  75,  90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300,315,330,345
-            int lIndex = (int) Math.abs(Math.floor(crankAngle/((double) 360 /angleLkUpTb.length)) % angleLkUpTb.length);
+            int lIndex = (int) Math.abs(Math.floor(crankAngle/((double) 360 /angleAnimation.length)) % angleAnimation.length);
 
-            float partialAngle = (float) Math.abs(Math.abs(crankAngle/((double) 360 /angleLkUpTb.length)) - lIndex);
+            float partialAngle = (float) Math.abs(Math.abs(crankAngle/((double) 360 /angleAnimation.length)) - lIndex);
             float newCrankAngle;
 
-            if ((getBlockState().getValue(FACING).getAxis() == Direction.Axis.Z && bearingBPos.getX() < 0 ) || getBlockState().getValue(FACING).getAxis() == Direction.Axis.X)
-                newCrankAngle = AngleHelper.angleLerp(partialAngle, angleLkUpTb[(angleLkUpTb.length - lIndex) % angleLkUpTb.length], angleLkUpTb[(angleLkUpTb.length - (lIndex+1)) % angleLkUpTb.length]);
+            if ((getBlockState().getValue(FACING).getAxis() == Direction.Axis.Z && bearingBPos.getX() < 0 ) || (getBlockState().getValue(FACING).getAxis() == Direction.Axis.X && bearingBPos.getZ() > 0 ))
+                newCrankAngle = AngleHelper.angleLerp(partialAngle, angleAnimation[(angleAnimation.length - lIndex) % angleAnimation.length], angleAnimation[(angleAnimation.length - (lIndex+1)) % angleAnimation.length]);
             else
-                newCrankAngle = AngleHelper.angleLerp(partialAngle, angleLkUpTb[lIndex], angleLkUpTb[(lIndex+1) % angleLkUpTb.length]);
+                newCrankAngle = AngleHelper.angleLerp(partialAngle, angleAnimation[lIndex], angleAnimation[(lIndex+1) % angleAnimation.length]);
 
 
-            float a = (float) Math.pow(Math.sin((double) newCrankAngle/((double) 360 /angleLkUpTb.length) /Math.PI / (isLarge ? 4.4 : 2.2)), 2)*2+1;
+            float a = (float) Math.pow(Math.sin((double) newCrankAngle/((double) 360 /angleAnimation.length) /Math.PI / (isLarge ? 4.4 : 2.2)), 2)*2+1;
             if(Math.abs(newCrankAngle) >= 359.5)
                 a = 0.99f;
 

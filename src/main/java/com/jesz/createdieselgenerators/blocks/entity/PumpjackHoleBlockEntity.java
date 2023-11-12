@@ -98,7 +98,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
     public void tick() {
         super.tick();
         timeOutTime++;
-        if (timeOutTime >= 15) {
+        if (timeOutTime >= 5) {
             level.setBlock(getBlockPos(), AllBlocks.ENCASED_FLUID_PIPE.getDefaultState().setValue(NORTH, state.getValue(NORTH)).setValue(EAST, state.getValue(EAST)).setValue(WEST, state.getValue(WEST)).setValue(SOUTH, state.getValue(SOUTH)).setValue(UP, true).setValue(DOWN, true), 3);
         }
         tt++;
@@ -110,10 +110,12 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
                 if (bs.getBlock() instanceof PipeBlock || bs.getBlock() instanceof EncasedPipeBlock) {
                     if (!(bs.getValue(BlockStateProperties.UP) && bs.getValue(BlockStateProperties.DOWN)))
                         break;
-                }else if(bs.getBlock() instanceof GlassFluidPipeBlock){
+                }else if(bs.getBlock() instanceof GlassFluidPipeBlock) {
                     if (!(bs.getValue(AXIS) == Direction.Axis.Y))
                         break;
-                } else if (bs.is(Blocks.BEDROCK)) {
+                }else if(bs.is(optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("createdieselgenerators:pumpjack_pipe")))){
+                    continue;
+                } else if (bs.is(optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("createdieselgenerators:oil_deposit")))) {
                     v = true;
                     break;
                 } else

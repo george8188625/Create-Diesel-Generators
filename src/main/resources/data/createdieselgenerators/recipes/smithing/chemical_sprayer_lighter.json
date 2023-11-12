@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "createdieselgenerators:chemical_sprayer"
+  },
+  "addition": {
+    "item": "createdieselgenerators:lighter"
+  },
+  "result": {
+    "item": "createdieselgenerators:chemical_sprayer_lighter"
+  }
+}

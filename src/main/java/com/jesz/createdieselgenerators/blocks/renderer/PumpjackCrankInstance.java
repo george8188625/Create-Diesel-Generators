@@ -16,7 +16,6 @@ import net.minecraft.world.phys.Vec2;
 
 import static com.simibubi.create.content.kinetics.base.HorizontalKineticBlock.HORIZONTAL_FACING;
 import static com.simibubi.create.foundation.utility.AngleHelper.angleLerp;
-import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 
 public class PumpjackCrankInstance extends KineticBlockEntityInstance<PumpjackCrankBlockEntity> implements DynamicInstance {
     protected final ModelData crank;
@@ -42,8 +41,6 @@ public class PumpjackCrankInstance extends KineticBlockEntityInstance<PumpjackCr
     public void beginFrame() {
         float partialTicks = AnimationTickHolder.getPartialTicks()*0;
         float angle = angleLerp(partialTicks, blockEntity.prevAngle, blockEntity.angle);
-        if(blockState.getValue(FACING) == Direction.SOUTH || blockState.getValue(FACING) == Direction.SOUTH)
-            angle *= -1;
         PoseStack ms = new PoseStack();
         TransformStack msr = TransformStack.cast(ms);
 
@@ -94,10 +91,6 @@ public class PumpjackCrankInstance extends KineticBlockEntityInstance<PumpjackCr
             crankBearingLocation = crankBearingLocation.add(new Vec2((float) blockEntity.bearingPos.getX(), (float) blockEntity.bearingPos.getY()));
         else
             crankBearingLocation = crankBearingLocation.add(new Vec2((float) blockEntity.bearingPos.getZ(), (float) blockEntity.bearingPos.getY()));
-//        blockEntity.getLevel().addParticle(ParticleTypes.CRIT.getType(), 2321, 67 + Math.sin((angle+120)/180 * Math.PI), -5251, 0, 0, 0);
-//        if(blockEntity.getLevel().getBlockEntity(new BlockPos(2323, 66, -5251)) instanceof AnalogLeverBlockEntity be)
-//            if(blockEntity.getLevel().getBlockEntity(new BlockPos(2322, 66, -5251)) instanceof AnalogLeverBlockEntity be2)
-//                angle += Math.sin((angle + (((double) be.getState() /16)*360))/180 * Math.PI)*be2.getState();
         if(isXAxis) {
             msr.translate(0.5, 1.25, 0).rotateZ(angle);
         }else {

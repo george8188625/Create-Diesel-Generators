@@ -23,52 +23,31 @@
       "model": "createdieselgenerators:block/diesel_engine/vertical_silenced",
       "x": 180
     },
-    "powered=false,silenced=false,facing=north,turbocharged=false": {
+
+    "silenced=false,facing=north,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/block",
       "y": 180
     },
-    "powered=false,silenced=false,facing=south,turbocharged=false": {
+    "silenced=false,facing=south,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/block"
     },
-    "powered=false,silenced=false,facing=west,turbocharged=false": {
+    "silenced=false,facing=west,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/block",
       "y": 90
     },
-    "powered=false,silenced=false,facing=east,turbocharged=false": {
+    "silenced=false,facing=east,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/block",
       "y": 270
     },
-    "powered=false,silenced=false,facing=up,turbocharged=false": {
+    "silenced=false,facing=up,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/vertical",
       "y": 90
     },
-    "powered=false,silenced=false,facing=down,turbocharged=false": {
+    "silenced=false,facing=down,turbocharged=false": {
       "model": "createdieselgenerators:block/diesel_engine/vertical",
       "x": 180
     },
-    "powered=true,silenced=false,facing=north,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/block_on",
-      "y": 180
-    },
-    "powered=true,silenced=false,facing=south,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/block_on"
-    },
-    "powered=true,silenced=false,facing=west,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/block_on",
-      "y": 90
-    },
-    "powered=true,silenced=false,facing=east,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/block_on",
-      "y": 270
-    },
-    "powered=true,silenced=false,facing=up,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/vertical_on",
-      "y": 90
-    },
-    "powered=true,silenced=false,facing=down,turbocharged=false": {
-      "model": "createdieselgenerators:block/diesel_engine/vertical_on",
-      "x": 180
-    },
+
     "facing=north,turbocharged=true": {
       "model": "createdieselgenerators:block/diesel_engine/block_turbocharged",
       "y": 180
