@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +46,6 @@ import static net.minecraft.core.Direction.SOUTH;
 
 public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISpecialBlockItemRequirement, IBE<DieselGeneratorBlockEntity>, ProperWaterloggedBlock, ICDGKinetics {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
     public static final BooleanProperty TURBOCHARGED = BooleanProperty.create("turbocharged");
@@ -53,12 +54,17 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
         super(properties);
         registerDefaultState(
                 super.defaultBlockState()
-                        .setValue(POWERED, false)
                         .setValue(WATERLOGGED, false)
                         .setValue(SILENCED, false)
                         .setValue(TURBOCHARGED, false));
 
     }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
+    }
+
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
         if(state.getValue(SILENCED))
@@ -83,7 +89,7 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
     }
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(POWERED, WATERLOGGED, SILENCED, TURBOCHARGED);
+        builder.add(WATERLOGGED, SILENCED, TURBOCHARGED);
         super.createBlockStateDefinition(builder);
     }
 

@@ -10,6 +10,7 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.ponder.*;
 import com.simibubi.create.foundation.ponder.element.InputWindowElement;
 import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
+import com.simibubi.create.foundation.ponder.instruction.PonderInstruction;
 import com.simibubi.create.foundation.utility.Pointing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +24,9 @@ public class OilScenes {
     public static void pumpjack(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("pumpjack", "Setting up a Pumpjack");
         scene.configureBasePlate(0, 0, 9);
+        scene.setSceneOffsetY(-2);
         scene.showBasePlate();
+        scene.scaleSceneView(0.75f);
         scene.world.showSection(util.select.fromTo(0, 1, 0, 8, 1, 8), Direction.UP);
 
         Selection pipes = util.select.fromTo(4, 2, 0, 8, 3, 3);
@@ -107,12 +110,13 @@ public class OilScenes {
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(6, 4, 5), Pointing.LEFT).rightClick(), 15);
         scene.idle(50);
         scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(1));
-        scene.idle(15);
-        scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(0));
-        scene.idle(15);
-        scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(1));
-        scene.idle(15);
-        scene.world.modifyBlockEntity(new BlockPos(4, 2, 8), PumpjackCrankBlockEntity.class, be -> be.crankSize.setValue(0));
+        scene.world.moveSection(scene.world.makeSectionIndependent(util.select.fromTo(3, 4, 0, 5, 6, 8)), new Vec3(0, 1, 0), 10);
+        scene.world.showSection(util.select.fromTo(3, 4, 4, 5, 4, 4), Direction.EAST);
+        scene.overlay.showText(50)
+                .attachKeyFrame()
+                .text("Pumpjack Cranks can be large, or small")
+                .pointAt(util.vector.topOf(4, 2, 8))
+                .placeNearTarget();
 
         scene.idle(60);
     }

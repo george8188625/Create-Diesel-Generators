@@ -116,9 +116,9 @@ public class ConfigRegistry {
             MAX_OIL_SCANNER_LEVEL = SERVER_BUILDER.comment("Max Oil Scanner Level")
                 .define("Max Oil Scanner Level", 10000);
             OIL_PERCENTAGE = SERVER_BUILDER.comment("Normal oil chunks percentage")
-                    .defineInRange("Normal oil chunks percentage", 5d, 0d, 100d);
+                    .defineInRange("Normal oil chunks percentage", 10d, 0d, 100d);
             HIGH_OIL_PERCENTAGE = SERVER_BUILDER.comment("High oil chunks percentage")
-                    .defineInRange("High oil chunks percentage", 5d, 0d, 100d);
+                    .defineInRange("High oil chunks percentage", 10d, 0d, 100d);
             SERVER_BUILDER.push("Distillation");
                 DISTILLATION_WIDE_TANK_FASTER = SERVER_BUILDER.comment("Whenever wide Distillation Towers go faster than the thin ones")
                         .define("Wide Distillation Tower Distill Faster", true);

@@ -51,15 +51,12 @@ import static net.minecraft.core.Direction.SOUTH;
 public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements IBE<LargeDieselGeneratorBlockEntity>, ISpecialBlockItemRequirement, ICDGKinetics {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public LargeDieselGeneratorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(super.defaultBlockState().setValue(POWERED, false));
         registerDefaultState(super.defaultBlockState().setValue(PIPE, true));
         registerDefaultState(super.defaultBlockState().setValue(SILENCED, false));
     }
@@ -111,9 +108,7 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
     }
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
-        builder.add(PIPE);
-        builder.add(SILENCED);
+        builder.add(PIPE, SILENCED);
         super.createBlockStateDefinition(builder);
     }
     @Override

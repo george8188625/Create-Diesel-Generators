@@ -1,13 +1,11 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
+import com.jesz.createdieselgenerators.recipes.BasinFermentingRecipe;
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
-import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinOperatingBlockEntity;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,8 +14,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +26,8 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
 
     public int processingTime;
     public boolean running;
+    public float progress;
+
     public BasinLidBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
@@ -63,6 +61,10 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     public void tick() {
         super.tick();
+        if(currentRecipe != null)
+            progress = (float) processingTime /((BasinFermentingRecipe)currentRecipe).getProcessingDuration();
+        else
+            progress = 0;
         if ((!this.level.isClientSide && (this.currentRecipe == null || this.processingTime == -1)) || getBlockState().getValue(OPEN) || !getBlockState().getValue(ON_A_BASIN)) {
             this.running = false;
             this.processingTime = -1;
@@ -91,7 +93,7 @@ public class BasinLidBlockEntity extends BasinOperatingBlockEntity {
     @Override
     protected boolean updateBasin() {
         if (this.running) return true;
-        if (this.level == null || this.level.isClientSide) return true;
+        if (this.level == null) return true;
         if (this.getBasin().filter(BasinBlockEntity::canContinueProcessing).isEmpty()) return true;
 
         List<Recipe<?>> recipes = this.getMatchingRecipes();
