@@ -12,12 +12,12 @@ import static com.jesz.createdieselgenerators.CreateDieselGenerators.REGISTRATE;
 public class BlockEntityRegistry {
 
     public static final BlockEntityEntry<DieselGeneratorBlockEntity> DIESEL_ENGINE = REGISTRATE.blockEntity("diesel_engine_tile_entity", DieselGeneratorBlockEntity::new)
-            .instance(() -> ShaftInstance::new, false)
+            .instance(() -> ShaftInstance::new)
             .validBlocks(BlockRegistry.DIESEL_ENGINE)
             .renderer(() -> DieselGeneratorRenderer::new)
             .register();
     public static final BlockEntityEntry<LargeDieselGeneratorBlockEntity> LARGE_DIESEL_ENGINE = REGISTRATE.blockEntity("large_diesel_engine_tile_entity", LargeDieselGeneratorBlockEntity::new)
-            .instance(() -> ShaftInstance::new, false)
+            .instance(() -> ShaftInstance::new)
             .validBlocks(BlockRegistry.MODULAR_DIESEL_ENGINE)
             .renderer(() -> LargeDieselGeneratorRenderer::new)
             .register();

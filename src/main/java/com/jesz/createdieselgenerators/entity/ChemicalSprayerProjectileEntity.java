@@ -118,15 +118,18 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
-        stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
-        fire = getEntityData().get(DATA).getBoolean("Fire");
-        cooling = getEntityData().get(DATA).getBoolean("Cooling");
-        if(t>=1) {
-            if (level() instanceof ClientLevel clientLevel) {
+        if (level() instanceof ClientLevel clientLevel) {
+            stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
+            fire = getEntityData().get(DATA).getBoolean("Fire");
+            cooling = getEntityData().get(DATA).getBoolean("Cooling");
+            if (t >= 1) {
+
                 if (fire) {
                     clientLevel.addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
-                }if (stack != null && !stack.isEmpty())
+                }
+                if (stack != null && !stack.isEmpty())
                     clientLevel.addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
+
             }
         }
         else
@@ -188,9 +191,18 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
         BlockPos pos = new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z);
-        if(cooling && level().getBlockState(pos).getBlock() instanceof FireBlock) {
-            level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-            level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+        if(cooling) {
+            if (level().getBlockState(pos).getBlock() instanceof FireBlock) {
+                level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+            }
+
+            for (int i = 0; i < 6; i++) {
+                if (level().getBlockState(pos.relative(Direction.values()[i], 1)).getBlock() instanceof FireBlock) {
+                    level().setBlock(pos.relative(Direction.values()[i], 1), Blocks.AIR.defaultBlockState(), 3);
+                    level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
+                }
+            }
         }
         if(fire && level().getBlockState(pos).getBlock() instanceof AirBlock && BlockHelper.hasBlockSolidSide(level().getBlockState(pos.below()), level(), pos.below(), Direction.UP))
             level().setBlock(pos, FireBlock.getState(level(), pos), 3);

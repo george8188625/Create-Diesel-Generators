@@ -1,73 +1,73 @@
 {
   "variants": {
     "bottom=false,shape=plain,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle"
+      "model": "createdieselgenerators:block/distillation_tower/block"
     },
     "bottom=true,shape=plain,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle_window"
+      "model": "createdieselgenerators:block/distillation_tower/block_window"
     },
     "bottom=true,shape=window,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_nw,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle_window_nw"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_nw"
     },
     "bottom=true,shape=window_nw,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_sw,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle_window_sw"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_sw"
     },
     "bottom=true,shape=window_sw,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_ne,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle_window_ne"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_ne"
     },
     "bottom=true,shape=window_ne,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_se,top=false": {
-      "model": "createdieselgenerators:block/distillation_tower/block_middle_window_se"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_se"
     },
     "bottom=true,shape=window_se,top=false": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=plain,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top"
+      "model": "createdieselgenerators:block/distillation_tower/block"
     },
     "bottom=true,shape=plain,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top_window"
+      "model": "createdieselgenerators:block/distillation_tower/block_window"
     },
     "bottom=true,shape=window,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_nw,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top_window_nw"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_nw"
     },
     "bottom=true,shape=window_nw,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_sw,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top_window_sw"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_sw"
     },
     "bottom=true,shape=window_sw,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_ne,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top_window_ne"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_ne"
     },
     "bottom=true,shape=window_ne,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"
     },
     "bottom=false,shape=window_se,top=true": {
-      "model": "createdieselgenerators:block/distillation_tower/block_top_window_se"
+      "model": "createdieselgenerators:block/distillation_tower/block_window_se"
     },
     "bottom=true,shape=window_se,top=true": {
       "model": "createdieselgenerators:block/distillation_tower/block_bottom"

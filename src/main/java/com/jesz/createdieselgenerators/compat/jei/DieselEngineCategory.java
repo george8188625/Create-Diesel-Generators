@@ -74,17 +74,17 @@ public class DieselEngineCategory implements IRecipeCategory<DieselEngineJeiReci
         AllGuiTextures.JEI_SHADOW.render(graphics, 28, 52);
         AllIcons.I_REFRESH.render(graphics, 145, 36);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.burnRate).component().append(Component.translatable("createdieselgenerators.generic.unit.mbps")).withStyle(ChatFormatting.BOLD), 81,
-                15, 0xaaaaaa);
+                15, 0xaaaaaa, false);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.burnRate).component().append(Component.translatable("createdieselgenerators.generic.unit.mbps")).withStyle(ChatFormatting.BOLD), 81,
-                14, 0xeeeeee);
+                14, 0xeeeeee, false);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.speed).component().append(Component.translatable("create.generic.unit.rpm")).withStyle(ChatFormatting.BOLD), 81,
-                33, 0xaaaaaa);
+                33, 0xaaaaaa, false);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.stress).component().append(Component.translatable("create.generic.unit.stress")).withStyle(ChatFormatting.BOLD), 81,
-                50, 0xaaaaaa);
+                50, 0xaaaaaa, false);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.speed).component().append(Component.translatable("create.generic.unit.rpm")).withStyle(ChatFormatting.BOLD), 80,
-                32, 0xeeeeee);
+                32, 0xeeeeee, false);
         graphics.drawString(Minecraft.getInstance().font, Lang.number(recipe.stress).component().append(Component.translatable("create.generic.unit.stress")).withStyle(ChatFormatting.BOLD), 80,
-                49, 0xeeeeee);
+                49, 0xeeeeee, false);
         engine.draw(graphics, 47, 62);
 
     }

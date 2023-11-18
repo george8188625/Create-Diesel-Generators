@@ -89,6 +89,6 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
 
         heatBar.render(graphics, 4, 170);
         graphics.drawString(Minecraft.getInstance().font, Lang.translateDirect(requiredHeat.getTranslationKey()), 9,
-                176, requiredHeat.getColor());
+                176, requiredHeat.getColor(), false);
     }
 }

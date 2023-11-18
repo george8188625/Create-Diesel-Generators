@@ -10,7 +10,7 @@
       "item": "create:steam_engine"
     },
     "B": {
-      "item": "create:precision_mechanism"
+      "tag": "forge:storage_blocks/brass"
     },
     "S": {
       "tag": "forge:plates/brass"

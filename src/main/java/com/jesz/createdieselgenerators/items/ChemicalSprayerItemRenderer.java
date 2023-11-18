@@ -18,8 +18,7 @@ public class ChemicalSprayerItemRenderer extends CustomRenderedItemModelRenderer
     protected static final PartialModel COG = new PartialModel(new ResourceLocation("createdieselgenerators:item/chemical_sprayer_cog"));
 
     @Override
-    protected void render(ItemStack stack, CustomRenderedItemModel model, PartialItemModelRenderer renderer,
-                          ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+    protected void render(ItemStack stack, CustomRenderedItemModel model, PartialItemModelRenderer renderer, ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         renderer.render(model.getOriginalModel(), light);
         LocalPlayer player = Minecraft.getInstance().player;
 

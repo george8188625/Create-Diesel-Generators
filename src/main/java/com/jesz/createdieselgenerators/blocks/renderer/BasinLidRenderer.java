@@ -22,17 +22,13 @@ public class BasinLidRenderer extends SafeBlockEntityRenderer<BasinLidBlockEntit
         if(!be.getBlockState().getValue(ON_A_BASIN))
             return;
 
-
         Direction facing = be.getBlockState().getValue(HORIZONTAL_FACING);
 
-        float i = 0.4375f;
-
-        if(facing == Direction.EAST || facing == Direction.NORTH)
-            i = 0.5625f;
-
         CachedBufferer.partial(PartialModels.SMALL_GAUGE_DIAL, be.getBlockState())
-                .translate( facing.getAxis() == Direction.Axis.Z ? i : 0.5, -0.375, facing.getAxis() == Direction.Axis.X ? i : 0.5)
+                .centre()
                 .rotateY(-facing.toYRot()+180)
-                .rotateZ((double) be.processingTime / (be.getRecipe() != null ? be.getRecipe().getProcessingDuration() : 20)*-9/2+90).renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
+                .translate(0.5625f, -0.375, 0.5f)
+                .unCentre()
+                .rotateZ( be.progress*-90+90).renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
     }
 }

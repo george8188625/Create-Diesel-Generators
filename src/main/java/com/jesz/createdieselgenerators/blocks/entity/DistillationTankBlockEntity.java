@@ -21,6 +21,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -134,20 +135,40 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                     List<Recipe<?>> r = getMatchingRecipes();
                     if (!r.isEmpty()) {
                         currentRecipe = (DistillationRecipe) r.get(0);
-                        startProcessing();
+                        if(getHeat(currentRecipe.getRequiredHeat()) <= heat)
+                            startProcessing();
+                        else
+                            currentRecipe = null;
                     } else {
                         currentRecipe = null;
                     }
                 }
 
             if(processingTime > -1 && currentRecipe != null){
-                processingTime -= ConfigRegistry.DISTILLATION_WIDE_TANK_FASTER.get() ? (width*width) : 1;
-                if(!(tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount()  && getHeat(currentRecipe.getRequiredHeat()) <= heat)){
+                boolean canFill = true;
+                for (int i = 0; i < currentRecipe.getFluidResults().size()*ConfigRegistry.DISTILLATION_LEVEL_HEIGHT.get(); i++) {
+                    if(level.getBlockEntity(getBlockPos().above(i+1)) instanceof DistillationTankBlockEntity be){
+                        if(be.getControllerBE().width != getControllerBE().width) {
+                            canFill = false;
+                            break;
+                        }
+                        if(!(i % ConfigRegistry.DISTILLATION_LEVEL_HEIGHT.get() == 0 && be.getTank(0).getFluidAmount() <= getCapacityMultiplier() * width * width - (currentRecipe.getFluidResults().get(i / ConfigRegistry.DISTILLATION_LEVEL_HEIGHT.get()).getAmount()))) {
+                            canFill = false;
+                            break;
+                        }
+                    }else{
+                        canFill = false;
+                        break;
+                    }
+                }
+                if(canFill)
+                    processingTime -= Mth.clamp(ConfigRegistry.DISTILLATION_WIDE_TANK_FASTER.get() ? (width * width) : 1, 1, processingTime);
+                if (!(tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount() && getHeat(currentRecipe.getRequiredHeat()) <= heat)) {
                     currentRecipe = null;
                     processingTime = -1;
                     onFluidStackChanged(tankInventory.getFluid());
-                }
 
+                }
             }
             if(processingTime == 0 && currentRecipe != null){
                 if(tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount()  && getHeat(currentRecipe.getRequiredHeat()) <= heat){

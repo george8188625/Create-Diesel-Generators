@@ -22,6 +22,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -61,8 +62,11 @@ public class Events {
             return;
         List<Component> tooltip = event.getToolTip();
         Item item = event.getItemStack().getItem();
-        if(item instanceof BucketItem bi && ConfigRegistry.FUEL_TOOLTIPS.get()){
-            FluidStack stack = new FluidStack(bi.getFluid(), 1);
+        if((item instanceof BucketItem || item instanceof MilkBucketItem) && ConfigRegistry.FUEL_TOOLTIPS.get()){
+            FluidStack stack = new FluidStack(ForgeMod.MILK.get(), 1);
+            if(item instanceof BucketItem bi)
+                stack = new FluidStack(bi.getFluid(), 1);
+
             if(CreateDieselGenerators.getGeneratedSpeed(stack) != 0){
                 if(Screen.hasAltDown()) {
                     tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Component.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));

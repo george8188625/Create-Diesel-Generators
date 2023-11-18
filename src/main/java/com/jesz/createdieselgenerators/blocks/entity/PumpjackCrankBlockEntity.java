@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.ref.WeakReference;
@@ -31,7 +32,10 @@ public class PumpjackCrankBlockEntity extends KineticBlockEntity {
     @Override
     protected void read(CompoundTag compound, boolean clientPacket) {
         angle = compound.getFloat("Angle");
-        crankBearingLocation = new Vec3(compound.getDouble("BackPosX"), compound.getDouble("BackPosY"), compound.getDouble("BackPosZ"));
+        crankBearingLocation = new Vec3(
+                compound.getDouble("BackPosX"),
+                compound.getDouble("BackPosY"),
+                compound.getDouble("BackPosZ"));
         super.read(compound, clientPacket);
     }
 
@@ -77,6 +81,12 @@ public class PumpjackCrankBlockEntity extends KineticBlockEntity {
         }
         return null;
     }
+
+    @Override
+    protected AABB createRenderBoundingBox() {
+        return super.createRenderBoundingBox().inflate(3);
+    }
+
 
     @Override
     public void tick() {
