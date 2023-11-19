@@ -39,6 +39,13 @@
   "block.createdieselgenerators.asphalt_slab": "Плита из асфальта",
   "block.createdieselgenerators.pumpjack_crank": "Кривошип",
 
+  "block.createdieselgenerators.biodiesel": "Биодизель",
+  "block.createdieselgenerators.diesel": "Дизель",
+  "block.createdieselgenerators.crude_oil": "Сырая нефть",
+  "block.createdieselgenerators.gasoline": "Бензин",
+  "block.createdieselgenerators.plant_oil": "Растительное масло",
+  "block.createdieselgenerators.ethanol": "Этанол",
+
   "createdieselgenerators.recipe.basin_fermenting": "Чашная ферментация",
   "createdieselgenerators.recipe.diesel_combustion": "Cгорание в дизельном двигателе",
   "createdieselgenerators.recipe.distillation": "Дистилляция",
