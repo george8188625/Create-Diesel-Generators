@@ -38,7 +38,14 @@
   "block.createdieselgenerators.asphalt_stairs": "Asphalt Stairs",
   "block.createdieselgenerators.asphalt_slab": "Asphalt Slab",
   "block.createdieselgenerators.pumpjack_crank": "Pumpjack Crank",
-
+  
+  "block.createdieselgenerators.biodiesel": "Biodiesel",
+  "block.createdieselgenerators.diesel": "Diesel",
+  "block.createdieselgenerators.crude_oil": "Crude oil",
+  "block.createdieselgenerators.gasoline": "Gasoline",
+  "block.createdieselgenerators.plant_oil": "Plant oil",
+  "block.createdieselgenerators.ethanol": "Ethanol",
+  
   "createdieselgenerators.recipe.basin_fermenting": "Basin Fermenting",
   "createdieselgenerators.recipe.diesel_combustion": "Diesel Engine Combustion",
   "createdieselgenerators.recipe.distillation": "Distillation",
