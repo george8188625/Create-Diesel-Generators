@@ -16,7 +16,7 @@ plugins {
 
 }
 
-version = '1.18.2-1.2d'
+version = '1.18.2-1.2e'
 group = 'com.jesz.createdieselgenerators' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'createdieselgenerators'
 

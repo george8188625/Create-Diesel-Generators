@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.mixins;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -37,7 +38,7 @@ public abstract class ItemEntityMixin extends Entity {
                     getLevel().playLocalSound(this.getPosition(1).x, this.getPosition(1).y, this.getPosition(1).z, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1f, 1f, false);
                     return;
                 }
-                if(CreateDieselGenerators.getGeneratedSpeed(new FluidStack(fState.getType(), 1)) != 0)
+                if(FuelTypeManager.getGeneratedSpeed(fState.getType()) != 0)
                     getLevel().explode(null, null, null, this.getPosition(1).x, this.getPosition(1).y, this.getPosition(1).z, 3, true, Explosion.BlockInteraction.BREAK);
             }
     }

@@ -108,8 +108,6 @@ public class DistillationTankBlock extends Block implements IBE<DistillationTank
             return;
         withBlockEntityDo(level, pos, DistillationTankBlockEntity::updateConnectivity);
         withBlockEntityDo(level, pos, DistillationTankBlockEntity::updateVerticalMulti);
-
-        level.setBlock(pos, state, 6);
     }
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {

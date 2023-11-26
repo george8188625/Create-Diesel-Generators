@@ -93,12 +93,12 @@ public class CreateDieselGenerators
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigRegistry.CLIENT_SPEC, "createdieselgenerators-client.toml");
     }
     public static void onModelRegistry(final ModelRegistryEvent event){
+        lighterSkins.clear();
         Minecraft.getInstance().getResourceManager().getNamespaces().stream().toList().forEach(n -> {
             try {
                 Resource resource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(n, "lighter_skins.json"));
                 JsonParser parser = new JsonParser();
                 JsonElement data = parser.parse(new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)));
-                CreateDieselGenerators.lighterSkins.clear();
                 data.getAsJsonArray().forEach(jsonElement -> {
                     CreateDieselGenerators.lighterSkins.put(jsonElement.getAsJsonObject().getAsJsonPrimitive("name").getAsString(), jsonElement.getAsJsonObject().getAsJsonPrimitive("id").getAsString());
                 });
@@ -132,117 +132,5 @@ public class CreateDieselGenerators
         if(isHighInOil)
             return (int) (Mth.clamp(amount % 400000, 8000, 400000)*ConfigRegistry.HIGH_OIL_MULTIPLIER.get());
         return (int) (Mth.clamp(amount % 200, 0, 1000)*ConfigRegistry.OIL_MULTIPLIER.get());
-    }
-
-    public static float getGeneratedSpeed(FluidStack stack){
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_slow_burn"))))
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_slow_burn"))))
-            return ConfigRegistry.SLOW_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_slow_burn"))))
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_slow_burn"))))
-            return ConfigRegistry.SLOW_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_fast_burn"))))
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_fast_burn"))))
-            return ConfigRegistry.SLOW_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_fast_burn"))))
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_fast_burn"))))
-            return ConfigRegistry.SLOW_SPEED.get().floatValue();
-
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel"))) && ConfigRegistry.FUEL_TAG.get())
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:gasoline"))) && ConfigRegistry.GASOLINE_TAG.get())
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel"))) && ConfigRegistry.BIODIESEL_TAG.get())
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:diesel"))) && ConfigRegistry.DIESEL_TAG.get())
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol"))) && ConfigRegistry.ETHANOL_TAG.get())
-            return ConfigRegistry.FAST_SPEED.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil"))) && ConfigRegistry.PLANTOIL_TAG.get())
-            return ConfigRegistry.SLOW_SPEED.get().floatValue();
-        return 0;
-    }
-    public static List<FluidStack> getAllFluidTypes( String type ){
-        List<FluidStack> fluids = new ArrayList<>(List.of());
-        if(type == "fws")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_slow_burn")), 1000).getMatchingFluidStacks());
-        if(type == "sws")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_slow_burn")), 1000).getMatchingFluidStacks());
-        if(type == "fss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_slow_burn")), 1000).getMatchingFluidStacks());
-        if(type == "sss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_slow_burn")), 1000).getMatchingFluidStacks());
-        if(type == "fwf")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_fast_burn")), 1000).getMatchingFluidStacks());
-        if(type == "swf")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_fast_burn")), 1000).getMatchingFluidStacks());
-        if(type == "fsf")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_fast_burn")), 1000).getMatchingFluidStacks());
-        if(type == "ssf")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_fast_burn")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.FUEL_TAG.get() && type == "fss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.GASOLINE_TAG.get() && type == "fss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:gasoline")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.BIODIESEL_TAG.get() && type == "fss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.DIESEL_TAG.get() && type == "fss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:diesel")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.ETHANOL_TAG.get() && type == "fws")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol")), 1000).getMatchingFluidStacks());
-        if(ConfigRegistry.PLANTOIL_TAG.get() && type == "sss")
-            fluids.addAll(FluidIngredient.fromTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil")), 1000).getMatchingFluidStacks());
-
-        return fluids;
-    }
-    public static float getGeneratedStress(FluidStack stack) {
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_slow_burn"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_slow_burn"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_slow_burn"))))
-            return ConfigRegistry.WEAK_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_slow_burn"))))
-            return ConfigRegistry.WEAK_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_fast_burn"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_fast_burn"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_fast_burn"))))
-            return ConfigRegistry.WEAK_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_fast_burn"))))
-            return ConfigRegistry.WEAK_STRESS.get().floatValue();
-
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:fuel"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:gasoline"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:biodiesel"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:diesel"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:ethanol"))))
-            return ConfigRegistry.WEAK_STRESS.get().floatValue();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("forge:plantoil"))))
-            return ConfigRegistry.STRONG_STRESS.get().floatValue();
-        return 0;
-    }
-
-    public static int getBurnRate(FluidStack stack) {
-
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_strong_fast_burn"))))
-            return ConfigRegistry.FAST_BURN_RATE.get();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_strong_fast_burn"))))
-            return ConfigRegistry.FAST_BURN_RATE.get();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_fast_weak_fast_burn"))))
-            return ConfigRegistry.FAST_BURN_RATE.get();
-        if(stack.getFluid().is(AllTags.optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:diesel_engine_fuel_slow_weak_fast_burn"))))
-            return ConfigRegistry.FAST_BURN_RATE.get();
-
-        return ConfigRegistry.SLOW_BURN_RATE.get();
     }
 }

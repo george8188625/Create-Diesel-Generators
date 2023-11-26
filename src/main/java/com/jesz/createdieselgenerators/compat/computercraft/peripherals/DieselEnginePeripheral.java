@@ -1,7 +1,7 @@
 package com.jesz.createdieselgenerators.compat.computercraft.peripherals;
 
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.compat.computercraft.implementation.peripherals.SyncedPeripheral;
 import dan200.computercraft.api.lua.LuaFunction;
 
@@ -43,6 +43,6 @@ public class DieselEnginePeripheral extends SyncedPeripheral<DieselGeneratorBloc
     }
     @LuaFunction
     public final float getFuelBurnRate(){
-        return CreateDieselGenerators.getBurnRate(blockEntity.tank.getPrimaryHandler().getFluid());
+        return FuelTypeManager.getBurnRate(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid());
     }
 }

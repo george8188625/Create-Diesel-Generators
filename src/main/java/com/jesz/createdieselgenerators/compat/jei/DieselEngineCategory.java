@@ -21,6 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -38,7 +39,7 @@ public class DieselEngineCategory implements IRecipeCategory<DieselEngineJeiReci
 
     @Override
     public RecipeType<DieselEngineJeiRecipeType> getRecipeType() {
-        return DieselEngineJeiRecipeType.DIESEL_BURNING;
+        return DieselEngineJeiRecipeType.DIESEL_COMBUSTION;
     }
 
     @Override
@@ -58,33 +59,26 @@ public class DieselEngineCategory implements IRecipeCategory<DieselEngineJeiReci
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, DieselEngineJeiRecipeType recipe, IFocusGroup iFocusGroup) {
-
-
         builder
                 .addSlot(RecipeIngredientRole.INPUT, 10, 10)
                 .setBackground(getRenderedSlot(), -1, -1)
-                .addIngredients(ForgeTypes.FLUID_STACK, withImprovedVisibility(recipe.fluids))
-                .addTooltipCallback(addFluidTooltip(1000));
+                .addIngredient(ForgeTypes.FLUID_STACK, withImprovedVisibility(new FluidStack(recipe.fluid, 1000)))
+                .addTooltipCallback(addFluidTooltip(recipe.burnRate));
     }
 
     @Override
     public void draw(DieselEngineJeiRecipeType recipe, IRecipeSlotsView iRecipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         AllGuiTextures.JEI_DOWN_ARROW.render(matrixStack, 40, 15);
-        AllGuiTextures.JEI_LONG_ARROW.render(matrixStack, 75, 40);
+        AllGuiTextures.JEI_ARROW.render(matrixStack, 82, 40);
         AllGuiTextures.JEI_SHADOW.render(matrixStack, 28, 52);
-        AllIcons.I_REFRESH.render(matrixStack, 145, 36);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.burnRate).component().append(Components.translatable("createdieselgenerators.generic.unit.mbps")).withStyle(ChatFormatting.BOLD), 81,
-                15, 0xaaaaaa);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.burnRate).component().append(Components.translatable("createdieselgenerators.generic.unit.mbps")).withStyle(ChatFormatting.BOLD), 81,
-                14, 0xeeeeee);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.speed).component().append(Components.translatable("create.generic.unit.rpm")).withStyle(ChatFormatting.BOLD), 81,
-                33, 0xaaaaaa);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.stress).component().append(Components.translatable("create.generic.unit.stress")).withStyle(ChatFormatting.BOLD), 81,
-                50, 0xaaaaaa);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.speed).component().append(Components.translatable("create.generic.unit.rpm")).withStyle(ChatFormatting.BOLD), 80,
-                32, 0xeeeeee);
-        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.stress).component().append(Components.translatable("create.generic.unit.stress")).withStyle(ChatFormatting.BOLD), 80,
-                49, 0xeeeeee);
+        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.burnRate).component().append(Components.translatable("createdieselgenerators.generic.unit.mbps")), 5,
+                40, 0x888888);
+        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.stress/recipe.speed).component().append("x").append(Components.translatable("create.generic.unit.rpm")), 125,
+                41, 0x888888);
+        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.speed).component().append(Components.translatable("create.generic.unit.rpm")), 85,
+                33, 0x888888);
+        Minecraft.getInstance().font.draw(matrixStack, Lang.number(recipe.stress).component().append(Components.translatable("create.generic.unit.stress")), 81,
+                50, 0x888888);
         engine.draw(matrixStack, 47, 62);
 
     }

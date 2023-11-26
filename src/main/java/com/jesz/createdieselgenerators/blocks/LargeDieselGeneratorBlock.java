@@ -2,7 +2,6 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.LargeDieselGeneratorBlockEntity;
-import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -158,7 +157,7 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
     }
     @Override
     public float getDefaultStressCapacity() {
-        return ConfigRegistry.STRONG_STRESS.get().floatValue()*ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue();
+        return 2048;
     }
 
     @Override
@@ -168,7 +167,7 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
 
     @Override
     public float getDefaultSpeed() {
-        return ConfigRegistry.FAST_SPEED.get().floatValue();
+        return 96;
     }
 
     private static class PlacementHelper extends PoleHelper<Direction>{

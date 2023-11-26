@@ -3,7 +3,6 @@ package com.jesz.createdieselgenerators.blocks;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.HugeDieselEngineBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.PoweredEngineShaftBlockEntity;
-import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -182,7 +181,7 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
 
     @Override
     public float getDefaultStressCapacity() {
-        return ConfigRegistry.STRONG_STRESS.get().floatValue()*ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue();
+        return 2048;
     }
 
     @Override
@@ -192,7 +191,7 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
 
     @Override
     public float getDefaultSpeed() {
-        return ConfigRegistry.FAST_SPEED.get().floatValue();
+        return 96;
     }
 
     public enum HugeEngineDirection implements StringRepresentable{

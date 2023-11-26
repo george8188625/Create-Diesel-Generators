@@ -6,7 +6,6 @@ import com.jesz.createdieselgenerators.recipes.DistillationRecipe;
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
-import com.simibubi.create.content.fluids.tank.BoilerData;
 import com.simibubi.create.content.fluids.tank.BoilerHeaters;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
@@ -60,8 +59,6 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     protected int height;
     protected BlockPos bottomCPos;
 
-    public BoilerData boiler;
-
     private static final int SYNC_RATE = 8;
     protected int syncCooldown;
     protected boolean queuedSync;
@@ -79,7 +76,6 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
         window = false;
         height = 1;
         width = 1;
-        boiler = new BoilerData();
         refreshCapability();
     }
     private BlockPos getBottomControllerPos(){
@@ -339,7 +335,6 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
         controller = null;
         width = 1;
         height = 1;
-        boiler.clear();
         onFluidStackChanged(tankInventory.getFluid());
 
         BlockState state = getBlockState();
@@ -357,8 +352,6 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     public void toggleWindows() {
         DistillationTankBlockEntity be = getControllerBE();
         if (be == null)
-            return;
-        if (be.boiler.isActive())
             return;
         be.setWindows(!be.window);
     }
@@ -430,7 +423,7 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     }
 
     private IFluidHandler handlerForCapability() {
-        return isController() ? boiler.isActive() ? boiler.createHandler() : tankInventory
+        return isController() ? tankInventory
                 : getControllerBE() != null ? getControllerBE().handlerForCapability() : new FluidTank(0);
     }
 

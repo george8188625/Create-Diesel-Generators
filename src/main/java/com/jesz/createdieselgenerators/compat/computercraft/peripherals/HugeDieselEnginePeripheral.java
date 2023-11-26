@@ -1,8 +1,7 @@
 package com.jesz.createdieselgenerators.compat.computercraft.peripherals;
 
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.blocks.entity.HugeDieselEngineBlockEntity;
-import com.jesz.createdieselgenerators.config.ConfigRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.compat.computercraft.implementation.peripherals.SyncedPeripheral;
 import dan200.computercraft.api.lua.LuaFunction;
 
@@ -30,12 +29,12 @@ public class HugeDieselEnginePeripheral extends SyncedPeripheral<HugeDieselEngin
 
     @LuaFunction
     public final float getStressCapacity(){
-        return (CreateDieselGenerators.getGeneratedStress(blockEntity.tank.getPrimaryHandler().getFluid()) * ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue())/CreateDieselGenerators.getGeneratedSpeed(blockEntity.tank.getPrimaryHandler().getFluid());
+        return (FuelTypeManager.getGeneratedStress(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid()))/FuelTypeManager.getGeneratedSpeed(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid());
     }
 
     @LuaFunction
     public final float getSpeed(){
-        return CreateDieselGenerators.getGeneratedSpeed(blockEntity.tank.getPrimaryHandler().getFluid());
+        return FuelTypeManager.getGeneratedSpeed(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid());
     }
 
     @LuaFunction
@@ -44,6 +43,6 @@ public class HugeDieselEnginePeripheral extends SyncedPeripheral<HugeDieselEngin
     }
     @LuaFunction
     public final float getFuelBurnRate(){
-        return CreateDieselGenerators.getBurnRate(blockEntity.tank.getPrimaryHandler().getFluid());
+        return FuelTypeManager.getBurnRate(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid());
     }
 }
