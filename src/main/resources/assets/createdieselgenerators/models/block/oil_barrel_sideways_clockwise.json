@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+  	"north": "createdieselgenerators:block/oil_barrel/top",
+  	"south": "createdieselgenerators:block/oil_barrel/top",
+  	"east": "createdieselgenerators:block/oil_barrel/sideways/iron",
+  	"west": "createdieselgenerators:block/oil_barrel/sideways/iron",
+  	"up": "createdieselgenerators:block/oil_barrel/vertical/iron",
+  	"down": "createdieselgenerators:block/oil_barrel/vertical/iron",
+    "particle": "createdieselgenerators:block/oil_barrel/sideways/iron"
+  }
+}

@@ -182,7 +182,7 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
 
     @Override
     public float getDefaultStressCapacity() {
-        return ConfigRegistry.STRONG_STRESS.get().floatValue()*ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue();
+        return 2048;
     }
 
     @Override
@@ -192,7 +192,7 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
 
     @Override
     public float getDefaultSpeed() {
-        return ConfigRegistry.FAST_SPEED.get().floatValue();
+        return 96;
     }
 
     public enum HugeEngineDirection implements StringRepresentable{

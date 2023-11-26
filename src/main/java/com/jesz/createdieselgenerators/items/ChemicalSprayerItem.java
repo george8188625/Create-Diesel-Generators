@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.items;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.entity.ChemicalSprayerProjectileEntity;
 import com.jesz.createdieselgenerators.entity.EntityRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.content.equipment.armor.CapacityEnchantment;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonItemRenderer;
@@ -108,7 +109,7 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
 //                player.setDeltaMovement(player.getDeltaMovement().add(f*-0.1, f1*-0.1, f2*-0.1));
                 if(!level.isClientSide) {
                     if (count % 2 == 0) {
-                        ChemicalSprayerProjectileEntity projectile = ChemicalSprayerProjectileEntity.spray(level, fluidStack, (CreateDieselGenerators.getGeneratedSpeed(fluidStack) != 0 && lighter) || fluidStack.getFluid().isSame(Fluids.LAVA), fluidStack.getFluid().isSame(Fluids.WATER));
+                        ChemicalSprayerProjectileEntity projectile = ChemicalSprayerProjectileEntity.spray(level, fluidStack, (FuelTypeManager.getGeneratedSpeed(fluidStack.getFluid()) != 0 && lighter) || fluidStack.getFluid().isSame(Fluids.LAVA), fluidStack.getFluid().isSame(Fluids.WATER));
                         projectile.setPos(player.position().add(0, 1.5f, 0));
                         projectile.shootFromRotation(player, player.getXRot() + new Random().nextFloat(-5, 5), player.getYRot() + new Random().nextFloat(-5, 5), 0.0f, 1.0f, 1.0f);
                         level.addFreshEntity(projectile);

@@ -4,12 +4,15 @@ import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.world.OilChunksSavedData;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.content.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.fluids.pipes.EncasedPipeBlock;
 import com.simibubi.create.content.fluids.pipes.GlassFluidPipeBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
+import com.simibubi.create.foundation.item.TooltipHelper;
+import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -41,13 +44,13 @@ import java.util.stream.Collectors;
 import static com.simibubi.create.AllTags.optionalTag;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
-public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
+public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation {
     BlockState state;
 
     SmartFluidTankBehaviour tank;
     public int headPos = 0;
     public int bearingPos = 0;
-
+    public boolean started = false;
     public PumpjackHoleBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         this.state = state;
@@ -59,22 +62,30 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         tank.write(compound, false);
         compound.putInt("StoredOilAmount", storedOilAmount);
         compound.putInt("OilAmount", oilAmount);
-
+        compound.putBoolean("Started", started);
     }
     public int oilAmount = 0;
     public int storedOilAmount = 0;
 
     @Override
+    public boolean addToTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        if(valid)
+            return false;
+
+        Lang.builder().add(Components.translatable("createdieselgenerators.goggle.problem_encountered")).style(ChatFormatting.GOLD).forGoggles(tooltip);
+        Lang.builder().add(Components.translatable("createdieselgenerators.goggle.pumpjack_invalid_pipes")).style(ChatFormatting.GRAY).forGoggles(tooltip);
+
+        return true;
+    }
+
+    @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         IHaveGoggleInformation.super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if(!valid){
-            Lang.builder().add(CreateDieselGenerators.translate("createdieselgenerators.goggle.problem_encountered")).style(ChatFormatting.RED).forGoggles(tooltip);
-
-            Lang.builder().add(CreateDieselGenerators.translate("createdieselgenerators.goggle.pumpjack_invalid_pipes")).style(ChatFormatting.GRAY).forGoggles(tooltip);
+        if(!valid || !started)
             return false;
-        }
-        Lang.builder().add(CreateDieselGenerators.translate("createdieselgenerators.goggle.oil_amount")).style(ChatFormatting.GRAY).forGoggles(tooltip);
-                Lang.number(oilAmount).add(Lang.translate("generic.unit.buckets")).style(ChatFormatting.GOLD).forGoggles(tooltip);
+
+        Lang.builder().add(Components.translatable("createdieselgenerators.goggle.oil_amount")).style(ChatFormatting.GRAY).forGoggles(tooltip);
+        Lang.number(oilAmount).add(Lang.translate("generic.unit.buckets")).style(ChatFormatting.GOLD).forGoggles(tooltip);
 
         return true;
     }
@@ -85,16 +96,16 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         tank.read(compound, false);
         storedOilAmount = compound.getInt("StoredOilAmount");
         oilAmount = compound.getInt("OilAmount");
-
-
+        started = compound.getBoolean("Started");
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        oilAmount = tag.getInt("OilAmount");
+    public void handleUpdateTag(CompoundTag compound) {
+        super.handleUpdateTag(compound);
+        oilAmount = compound.getInt("OilAmount");
+        started = compound.getBoolean("Started");
     }
-
+    boolean first = true;
     public byte timeOutTime = 0;
     byte tt = 0;
     boolean valid = false;
@@ -134,6 +145,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
     public CompoundTag getUpdateTag() {
         CompoundTag compound = super.getUpdateTag();
         compound.putInt("OilAmount", oilAmount);
+        compound.putBoolean("Started", started);
         return compound;
     }
 
@@ -150,6 +162,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
             if(amount == -1)
                 amount = CreateDieselGenerators.getOilAmount(level.getBiome(new BlockPos(chunkPos.x * 16, 64,  chunkPos.z * 16)), chunkPos.x, chunkPos.z, ((ServerLevel)level).getSeed());
             oilAmount = amount;
+            started = true;
             if(amount == 0)
                 return;
 
@@ -164,7 +177,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
                             .getTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:pumpjack_output")))
                             .stream()
                             .distinct()
-                            .toList();;
+                            .toList();
             if(stackList.isEmpty())
                 return;
             FluidStack oilStack = new FluidStack(stackList.get(0), subtractedAmount);

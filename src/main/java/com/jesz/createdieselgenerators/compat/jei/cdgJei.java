@@ -1,25 +1,22 @@
 package com.jesz.createdieselgenerators.compat.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
+import com.jesz.createdieselgenerators.fluids.FluidRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
+import com.jesz.createdieselgenerators.other.CDGFuelType;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.jesz.createdieselgenerators.recipes.DistillationRecipe;
 import com.jesz.createdieselgenerators.recipes.RecipeRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.compat.jei.*;
 import com.simibubi.create.compat.jei.category.CreateRecipeCategory;
-import com.simibubi.create.content.equipment.blueprint.BlueprintScreen;
-import com.simibubi.create.content.logistics.filter.AbstractFilterScreen;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.redstone.link.controller.LinkedControllerScreen;
-import com.simibubi.create.content.trains.schedule.ScheduleScreen;
 import com.simibubi.create.foundation.config.ConfigBase;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
+import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CRecipes;
 import mezz.jei.api.IModPlugin;
@@ -30,27 +27,20 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.material.Fluid;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static com.jesz.createdieselgenerators.CreateDieselGenerators.translate;
-import static com.simibubi.create.AllTags.optionalTag;
 import static com.simibubi.create.compat.jei.CreateJEI.*;
 
 @JeiPlugin
@@ -101,40 +91,23 @@ public class CDGJEI implements IModPlugin {
         allCategories.forEach(c -> c.registerRecipes(registration));
         if(!ConfigRegistry.DIESEL_ENGINE_IN_JEI.get())
             return;
-        if(!CreateDieselGenerators.getAllFluidTypes("sws").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("sws", CreateDieselGenerators.getAllFluidTypes("sws"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("fws").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("fws", CreateDieselGenerators.getAllFluidTypes("fws"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("sss").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("sss", CreateDieselGenerators.getAllFluidTypes("sss"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("fss").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("fss", CreateDieselGenerators.getAllFluidTypes("fss"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("swf").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("swf", CreateDieselGenerators.getAllFluidTypes("swf"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("fwf").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("fwf", CreateDieselGenerators.getAllFluidTypes("fwf"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("ssf").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("ssf", CreateDieselGenerators.getAllFluidTypes("ssf"))));
-        if(!CreateDieselGenerators.getAllFluidTypes("fsf").isEmpty())
-            registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_BURNING, ImmutableList.of(new DieselEngineJeiRecipeType("fsf", CreateDieselGenerators.getAllFluidTypes("fsf"))));
+        FuelTypeManager.tryPopulateTags();
+        for(Map.Entry<Fluid, CDGFuelType> entry : FuelTypeManager.fuelTypes.entrySet())
+            if(entry.getKey().isSource(entry.getKey().defaultFluidState()))
+                registration.addRecipes(DieselEngineJeiRecipeType.DIESEL_COMBUSTION, ImmutableList.of(new DieselEngineJeiRecipeType(entry.getKey())));
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         allCategories.forEach(c -> c.registerCatalysts(registration));
-        registration.addRecipeCatalyst(BlockRegistry.DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_BURNING);
-        registration.addRecipeCatalyst(BlockRegistry.MODULAR_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_BURNING);
-        registration.addRecipeCatalyst(BlockRegistry.HUGE_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_BURNING);
+        registration.addRecipeCatalyst(BlockRegistry.DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
+        registration.addRecipeCatalyst(BlockRegistry.MODULAR_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
+        registration.addRecipeCatalyst(BlockRegistry.HUGE_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addGenericGuiContainerHandler(AbstractSimiContainerScreen.class, new SlotMover());
-
-        registration.addGhostIngredientHandler(AbstractFilterScreen.class, new GhostIngredientHandler());
-        registration.addGhostIngredientHandler(BlueprintScreen.class, new GhostIngredientHandler());
-        registration.addGhostIngredientHandler(LinkedControllerScreen.class, new GhostIngredientHandler());
-        registration.addGhostIngredientHandler(ScheduleScreen.class, new GhostIngredientHandler());
     }
 
     private class CategoryBuilder<T extends Recipe<?>> {
@@ -283,7 +256,7 @@ public class CDGJEI implements IModPlugin {
 
             CreateRecipeCategory.Info<T> info = new CreateRecipeCategory.Info<>(
                     new mezz.jei.api.recipe.RecipeType<>(new ResourceLocation("createdieselgenerators", name), recipeClass),
-                    translate("createdieselgenerators.recipe." + name), background, icon, recipesSupplier, catalysts);
+                    Components.translatable("createdieselgenerators.recipe." + name), background, icon, recipesSupplier, catalysts);
             CreateRecipeCategory<T> category = factory.create(info);
             allCategories.add(category);
             return category;

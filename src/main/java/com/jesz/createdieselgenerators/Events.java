@@ -4,6 +4,7 @@ import com.jesz.createdieselgenerators.blocks.ICDGKinetics;
 import com.jesz.createdieselgenerators.commands.CDGCommands;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.equipment.goggles.GogglesItem;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -16,24 +17,37 @@ import com.simibubi.create.infrastructure.config.CKinetics;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.command.ConfigCommand;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = "createdieselgenerators")
@@ -43,6 +57,46 @@ public class Events {
         new CDGCommands(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
+    }
+    @SubscribeEvent
+    public static void addReloadListeners(AddReloadListenerEvent event){
+        event.addListener(FuelTypeManager.ReloadListener.INSTANCE);
+    }
+    @SubscribeEvent
+    public static void onExplosion(ExplosionEvent event){
+        Level level = event.getLevel();
+        if(ConfigRegistry.COMBUSTIBLES_BLOW_UP.get() && !level.isClientSide)
+            for (int x = -2; x < 2; x++) {
+                for (int y = -2; y < 2; y++) {
+                    for (int z = -2; z < 2; z++) {
+                        BlockPos pos = new BlockPos(x+event.getExplosion().getPosition().x, y+event.getExplosion().getPosition().y, z+event.getExplosion().getPosition().z);
+
+                        if (!level.isInWorldBounds(pos)) continue;
+                        if(Math.abs(Math.sqrt(x*x+y*y+z*z)) < 2) {
+                            FluidState fluidState = level.getFluidState(pos);
+
+                            if (FuelTypeManager.getGeneratedSpeed(fluidState.getType()) != 0) {
+                                level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                                try {
+                                    level.explode(null, null, null, pos.getX(), pos.getY(), pos.getZ(), 3, true, Explosion.BlockInteraction.BREAK);
+                                }catch (StackOverflowError ignored){}
+                            }
+                            BlockEntity be = level.getBlockEntity(pos);
+                            if(be == null)
+                                continue;
+                            IFluidHandler tank = be.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+                            if(tank == null)
+                                continue;
+                            if(FuelTypeManager.getGeneratedSpeed(tank.getFluidInTank(0).getFluid()) == 0)
+                                continue;
+                            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                            try {
+                                level.explode(null, null, null, pos.getX(), pos.getY(), pos.getZ(), 3 + ((float) tank.getFluidInTank(0).getAmount() / 500), true, Explosion.BlockInteraction.BREAK);
+                            }catch (StackOverflowError ignored){}
+                        }
+                    }
+                }
+            }
     }
     @SubscribeEvent
     public static void addTrade(VillagerTradesEvent event) {
@@ -65,17 +119,17 @@ public class Events {
         List<Component> tooltip = event.getToolTip();
         Item item = event.getItemStack().getItem();
         if((item instanceof BucketItem || item instanceof MilkBucketItem) && ConfigRegistry.FUEL_TOOLTIPS.get()){
-            FluidStack stack = new FluidStack(ForgeMod.MILK.get(), 1);
+            Fluid fluid = ForgeMod.MILK.get();
             if(item instanceof BucketItem bi)
-                stack = new FluidStack(bi.getFluid(), 1);
+                fluid = bi.getFluid();
 
-            if(CreateDieselGenerators.getGeneratedSpeed(stack) != 0){
+            if(FuelTypeManager.getGeneratedSpeed(fluid) != 0){
                 if(Screen.hasAltDown()) {
                     tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Component.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
                     tooltip.add(2, Components.immutableEmpty());
-                    tooltip.add(3, Components.translatable("createdieselgenerators.tooltip.fuelSpeed", Lang.number(CreateDieselGenerators.getGeneratedSpeed(stack)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
-                    tooltip.add(4, Components.translatable("createdieselgenerators.tooltip.fuelStress", Lang.number(CreateDieselGenerators.getGeneratedStress(stack)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
-                    tooltip.add(5, Components.translatable("createdieselgenerators.tooltip.fuelBurnRate", Lang.number(CreateDieselGenerators.getBurnRate(stack)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
+                    tooltip.add(3, Components.translatable("createdieselgenerators.tooltip.fuelSpeed", Lang.number(FuelTypeManager.getGeneratedSpeed(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
+                    tooltip.add(4, Components.translatable("createdieselgenerators.tooltip.fuelStress", Lang.number(FuelTypeManager.getGeneratedStress(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
+                    tooltip.add(5, Components.translatable("createdieselgenerators.tooltip.fuelBurnRate", Lang.number(FuelTypeManager.getBurnRate(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
                 }else {
                     tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Component.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
                 }
@@ -84,15 +138,27 @@ public class Events {
         if(ForgeRegistries.ITEMS.getKey(item).getNamespace() != "createdieselgenerators")
             return;
         String path = "createdieselgenerators." + ForgeRegistries.ITEMS.getKey(item).getPath();
-        if(!Component.translatable(path + ".tooltip.summary").getString().equals(path + ".tooltip.summary"))
-            if(Screen.hasShiftDown()) {
-                tooltip.add(1, Lang.translateDirect("tooltip.holdForDescription", Component.translatable("create.tooltip.keyShift").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
-                tooltip.add(2, Components.immutableEmpty());
-                tooltip.addAll(3,  TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.summary").getString(), TooltipHelper.Palette.STANDARD_CREATE));
+        List<Component> tooltipList = new ArrayList<>();
+        if(!Component.translatable(path + ".tooltip.summary").getString().equals(path + ".tooltip.summary")) {
+            if (Screen.hasShiftDown()) {
+                tooltipList.add(Lang.translateDirect("tooltip.holdForDescription", Component.translatable("create.tooltip.keyShift").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
+                tooltipList.add(Components.immutableEmpty());
+                tooltipList.addAll(TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.summary").getString(), TooltipHelper.Palette.STANDARD_CREATE));
 
-            }else {
-                tooltip.add(1, Lang.translateDirect("tooltip.holdForDescription", Component.translatable("create.tooltip.keyShift").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
+                if(!Component.translatable(path + ".tooltip.condition1").getString().equals(path + ".tooltip.condition1")) {
+                    tooltipList.add(Components.immutableEmpty());
+                    tooltipList.add(Component.translatable(path + ".tooltip.condition1").withStyle(ChatFormatting.GRAY));
+                    tooltipList.addAll(TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.behaviour1").getString(), TooltipHelper.Palette.STANDARD_CREATE.primary(), TooltipHelper.Palette.STANDARD_CREATE.highlight(), 1));
+                    if(!Component.translatable(path + ".tooltip.condition2").getString().equals(path + ".tooltip.condition2")) {
+                        tooltipList.add(Component.translatable(path + ".tooltip.condition2").withStyle(ChatFormatting.GRAY));
+                        tooltipList.addAll(TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.behaviour2").getString(), TooltipHelper.Palette.STANDARD_CREATE.primary(), TooltipHelper.Palette.STANDARD_CREATE.highlight(), 1));
+                    }
+                }
+            } else {
+                tooltipList.add(Lang.translateDirect("tooltip.holdForDescription", Component.translatable("create.tooltip.keyShift").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
             }
+        }
+        tooltip.addAll(1,tooltipList);
         CKinetics config = AllConfigs.server().kinetics;
 
         if(item instanceof BlockItem bi)

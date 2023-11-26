@@ -176,7 +176,7 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
 
     @Override
     public float getDefaultStressCapacity() {
-        return ConfigRegistry.STRONG_STRESS.get().floatValue();
+        return 2048;
     }
 
     @Override
@@ -186,6 +186,6 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
 
     @Override
     public float getDefaultSpeed() {
-        return ConfigRegistry.FAST_SPEED.get().floatValue()*ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue();
+        return 96;
     }
 }

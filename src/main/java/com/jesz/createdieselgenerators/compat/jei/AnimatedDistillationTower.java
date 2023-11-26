@@ -27,18 +27,21 @@ public class AnimatedDistillationTower extends AnimatedKinetics {
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(22.5f));
         int scale = 23;
 
-        blockElement(BlockRegistry.DISTILLATION_TANK.getDefaultState())
+        blockElement(PartialModels.JEI_DISTILLER_BOTTOM)
                 .atLocal(0, 1, 0)
+                .rotateBlock(0, 90, 0)
                 .scale(scale)
                 .render(matrixStack);
         for (int i = 0; i < height-1; i++) {
-            blockElement(BlockRegistry.DISTILLATION_TANK.getDefaultState().setValue(DistillationTankBlock.BOTTOM, false).setValue(DistillationTankBlock.TOP, false))
+            blockElement(PartialModels.JEI_DISTILLER_MIDDLE)
                     .atLocal(0, -i, 0)
+                    .rotateBlock(0, 90, 0)
                     .scale(scale)
                     .render(matrixStack);
         }
-        blockElement(BlockRegistry.DISTILLATION_TANK.getDefaultState().setValue(DistillationTankBlock.BOTTOM, false))
+        blockElement(PartialModels.JEI_DISTILLER_TOP)
                 .atLocal(0, -height+1, 0)
+                .rotateBlock(0, 90, 0)
                 .scale(scale)
                 .render(matrixStack);
         blockElement(PartialModels.DISTILLATION_GAUGE).atLocal(1, 1, 0.125).rotate(0, -90, 0).scale(scale).render(matrixStack);

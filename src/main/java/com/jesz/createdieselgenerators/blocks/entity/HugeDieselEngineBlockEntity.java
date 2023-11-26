@@ -5,6 +5,7 @@ import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.blocks.PoweredEngineShaftBlock;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.jesz.createdieselgenerators.sounds.SoundRegistry;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
@@ -82,14 +83,14 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         PoweredEngineShaftBlockEntity shaft = getShaft();
         if (shaft == null)
             return;
-        validFuel = CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()) != 0;
+        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
         partialSecond++;
         if(partialSecond >= 20){
             partialSecond = 0;
             if(validFuel) {
-                if(tank.getPrimaryHandler().getFluid().getAmount() >= CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid()))
+                if(tank.getPrimaryHandler().getFluid().getAmount() >= FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid()))
                     tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
-                            tank.getPrimaryHandler().getFluid().getAmount() - CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid())));
+                            tank.getPrimaryHandler().getFluid().getAmount() - FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid())));
                 else
                     tank.getPrimaryHandler().setFluid(FluidStack.EMPTY);
             }
@@ -100,7 +101,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
                 onDirectionChanged();
                 return;
             }
-            shaft.update(worldPosition, movementDirection.get() == WindmillBearingBlockEntity.RotationDirection.CLOCKWISE ? 1 : -1, CreateDieselGenerators.getGeneratedStress(tank.getPrimaryHandler().getFluid())*ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue(), CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()));
+            shaft.update(worldPosition, movementDirection.get() == WindmillBearingBlockEntity.RotationDirection.CLOCKWISE ? 1 : -1, FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid()), FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()));
             if(!level.isClientSide)
                 return;
             Float angle = getTargetAngle();
@@ -181,7 +182,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         PoweredEngineShaftBlockEntity shaft = getShaft();
         if(shaft == null)
             return false;
-        float stressBase = CreateDieselGenerators.getGeneratedStress(tank.getPrimaryHandler().getFluid())* ConfigRegistry.HUGE_ENGINE_MULTIPLIER.get().floatValue();
+        float stressBase = FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid());
         if (Mth.equal(stressBase, 0))
             return false;
         Lang.translate("gui.goggles.generator_stats")

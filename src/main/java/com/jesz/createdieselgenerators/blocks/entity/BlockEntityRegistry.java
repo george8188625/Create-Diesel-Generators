@@ -48,7 +48,9 @@ public class BlockEntityRegistry {
             .validBlocks(BlockRegistry.DISTILLATION_TANK)
             .renderer(() -> DistillationTankRenderer::new)
             .register();
-
+    public static final BlockEntityEntry<OilBarrelBlockEntity> OIL_BARREL = REGISTRATE.blockEntity("oil_barrel_block_entity", OilBarrelBlockEntity::new)
+            .validBlocks(BlockRegistry.OIL_BARREL)
+            .register();
     public static final BlockEntityEntry<PumpjackHoleBlockEntity> PUMPJACK_HOLE = REGISTRATE.blockEntity("pumpjack_hole_block_entity", PumpjackHoleBlockEntity::new)
             .validBlocks(BlockRegistry.PUMPJACK_HOLE)
             .register();

@@ -2,7 +2,6 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.DistillationTankBlockEntity;
-import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -12,7 +11,6 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -110,8 +108,6 @@ public class DistillationTankBlock extends Block implements IBE<DistillationTank
             return;
         withBlockEntityDo(level, pos, DistillationTankBlockEntity::updateConnectivity);
         withBlockEntityDo(level, pos, DistillationTankBlockEntity::updateVerticalMulti);
-
-        level.setBlock(pos, state, 6);
     }
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {

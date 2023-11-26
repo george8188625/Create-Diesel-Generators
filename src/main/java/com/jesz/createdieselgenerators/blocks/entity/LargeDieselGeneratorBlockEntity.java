@@ -4,6 +4,7 @@ import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.jesz.createdieselgenerators.sounds.SoundRegistry;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
@@ -132,14 +133,14 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if (getGeneratedSpeed() == 0 || !end)
             return 0;
 
-        return CreateDieselGenerators.getGeneratedStress(tank.getPrimaryHandler().getFluid()) / Math.abs(getGeneratedSpeed()) * stacked * ConfigRegistry.MODULAR_ENGINE_MULTIPLIER.get().floatValue();
+        return FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid()) / Math.abs(getGeneratedSpeed()) * stacked;
     }
 
     @Override
     public float getGeneratedSpeed() {
         if(!end)
             return 0;
-        return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()), getBlockState().getValue(LargeDieselGeneratorBlock.FACING));
+        return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()), getBlockState().getValue(LargeDieselGeneratorBlock.FACING));
     }
     public LargeDieselGeneratorBlockEntity FrontEngine;
     public void UpdateStacked(){
@@ -232,13 +233,13 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
             FrontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
             tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
-        validFuel = CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()) != 0;
+        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
 
 
 
 
 
-        if(t > 2 && FrontEngine != null && FrontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
+        if(FrontEngine != null && t > FuelTypeManager.getSoundSpeed(FrontEngine.tank.getPrimaryHandler().getFluid().getFluid()) && FrontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
             level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 3f,1.08f, false);
 
             t = 0;
@@ -249,9 +250,9 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if(partialSecond >= 20){
             partialSecond = 0;
             if(validFuel)
-                if(tank.getPrimaryHandler().getFluid().getAmount() >= CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid()) * stacked)
+                if(tank.getPrimaryHandler().getFluid().getAmount() >= FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid()) * stacked)
                     tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
-                            tank.getPrimaryHandler().getFluid().getAmount() - CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid()) * stacked));
+                            tank.getPrimaryHandler().getFluid().getAmount() - FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid()) * stacked));
                 else
                     tank.getPrimaryHandler().setFluid(FluidStack.EMPTY);
         }

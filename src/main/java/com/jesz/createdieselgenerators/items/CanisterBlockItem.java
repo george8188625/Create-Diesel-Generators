@@ -22,6 +22,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +86,9 @@ public class CanisterBlockItem extends BlockItem implements CapacityEnchantment.
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-        return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get() + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get()) * AllConfigs.server().equipment.enchantedBacktankCapacity.get());
+        if(!ModList.get().isLoaded("dungeons_libraries"))
+            return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get() + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get()) * AllConfigs.server().equipment.enchantedBacktankCapacity.get());
+        return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get());
     }
     static class CanisterFluidHandlerItemStack extends FluidHandlerItemStack{
         public CanisterFluidHandlerItemStack(@NotNull ItemStack container, int capacity) {
