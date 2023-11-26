@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AZA",
+    "S S",
+    "AZA"
+  ],
+  "key": {
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "S": {
+      "tag": "forge:plates/iron"
+    },
+    "Z": {
+      "tag": "forge:nuggets/zinc"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:oil_barrel",
+    "count": 2
+  }
+}

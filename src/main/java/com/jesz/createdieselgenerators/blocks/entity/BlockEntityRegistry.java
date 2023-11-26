@@ -12,12 +12,12 @@ import static com.jesz.createdieselgenerators.CreateDieselGenerators.REGISTRATE;
 public class BlockEntityRegistry {
 
     public static final BlockEntityEntry<DieselGeneratorBlockEntity> DIESEL_ENGINE = REGISTRATE.blockEntity("diesel_engine_tile_entity", DieselGeneratorBlockEntity::new)
-            .instance(() -> ShaftInstance::new)
+            .instance(() -> ShaftInstance::new )
             .validBlocks(BlockRegistry.DIESEL_ENGINE)
             .renderer(() -> DieselGeneratorRenderer::new)
             .register();
     public static final BlockEntityEntry<LargeDieselGeneratorBlockEntity> LARGE_DIESEL_ENGINE = REGISTRATE.blockEntity("large_diesel_engine_tile_entity", LargeDieselGeneratorBlockEntity::new)
-            .instance(() -> ShaftInstance::new)
+            .instance(() -> ShaftInstance::new )
             .validBlocks(BlockRegistry.MODULAR_DIESEL_ENGINE)
             .renderer(() -> LargeDieselGeneratorRenderer::new)
             .register();
@@ -47,7 +47,9 @@ public class BlockEntityRegistry {
             .validBlocks(BlockRegistry.DISTILLATION_TANK)
             .renderer(() -> DistillationTankRenderer::new)
             .register();
-
+    public static final BlockEntityEntry<OilBarrelBlockEntity> OIL_BARREL = REGISTRATE.blockEntity("oil_barrel_block_entity", OilBarrelBlockEntity::new)
+            .validBlocks(BlockRegistry.OIL_BARREL)
+            .register();
     public static final BlockEntityEntry<PumpjackHoleBlockEntity> PUMPJACK_HOLE = REGISTRATE.blockEntity("pumpjack_hole_block_entity", PumpjackHoleBlockEntity::new)
             .validBlocks(BlockRegistry.PUMPJACK_HOLE)
             .register();

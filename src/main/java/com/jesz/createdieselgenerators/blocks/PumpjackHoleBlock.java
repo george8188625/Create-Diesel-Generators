@@ -8,13 +8,17 @@ import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequi
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
@@ -25,6 +29,21 @@ public class PumpjackHoleBlock extends Block implements IBE<PumpjackHoleBlockEnt
                 .setValue(SOUTH, false)
                 .setValue(WEST, false)
                 .setValue(EAST, false));
+    }
+
+    @Override
+    public Item asItem() {
+        return AllBlocks.COPPER_CASING.asStack().getItem();
+    }
+
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if(context.getClickedFace().getAxis().isHorizontal()){
+            context.getLevel().setBlock(context.getClickedPos(), state.setValue(BooleanProperty.create(context.getClickedFace().getName()), !state.getValue(BooleanProperty.create(context.getClickedFace().getName()))), 3);
+            playRotateSound(context.getLevel(), context.getClickedPos());
+            return InteractionResult.SUCCESS;
+        }
+        return IWrenchable.super.onWrenched(state, context);
     }
 
     @Override

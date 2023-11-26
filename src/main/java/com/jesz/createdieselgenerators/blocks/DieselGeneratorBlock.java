@@ -2,7 +2,6 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.DieselGeneratorBlockEntity;
-import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
@@ -176,7 +175,7 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
 
     @Override
     public float getDefaultStressCapacity() {
-        return ConfigRegistry.STRONG_STRESS.get().floatValue();
+        return 2048;
     }
 
     @Override
@@ -186,6 +185,6 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
 
     @Override
     public float getDefaultSpeed() {
-        return ConfigRegistry.FAST_SPEED.get().floatValue()*ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue();
+        return 96;
     }
 }

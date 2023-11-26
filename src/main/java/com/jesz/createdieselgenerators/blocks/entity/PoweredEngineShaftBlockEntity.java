@@ -1,9 +1,7 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
 import com.jesz.createdieselgenerators.blocks.HugeDieselEngineBlock;
-import com.simibubi.create.content.kinetics.BlockStressValues;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.steamEngine.PoweredShaftBlockEntity;
 import com.simibubi.create.foundation.utility.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,7 +11,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +45,12 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         else
             engines.put(sourcePos, Couple.create(stress, speed));
         AtomicReference<Float> maxSpeed = new AtomicReference<>(0f);
-        try{
-            List<Couple<Float>> list = engines.values().stream().toList();
-            for (Couple<Float> s : list) {
-                if (s.getSecond() > maxSpeed.get())
-                    maxSpeed.set(s.getSecond());
-            }
-        }catch (ConcurrentModificationException ignored){}
+        Map<BlockPos, Couple<Float>> map = Map.copyOf(engines);
+
+        for (Couple<Float> s : map.values()) {
+            if (s.getSecond() > maxSpeed.get())
+                maxSpeed.set(s.getSecond());
+        }
         this.speed = maxSpeed.get();
         this.movementDirection = direction;
         updateGeneratedRotation();
@@ -79,15 +75,15 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         if (initialTicks > 0)
             compound.putInt("Warmup", initialTicks);
         ListTag engineList = new ListTag();
-        try{
-            engines.forEach((p, s) -> {
-                CompoundTag tag = new CompoundTag();
-                tag.putFloat("Capacity", s.getFirst());
-                tag.putFloat("Speed", s.getSecond());
-                tag.put("Pos", NbtUtils.writeBlockPos(p));
-                engineList.add(tag);
-            });
-        }catch (ConcurrentModificationException ignored){}
+        Map<BlockPos, Couple<Float>> map = Map.copyOf(engines);
+
+        map.forEach((p, s) -> {
+            CompoundTag tag = new CompoundTag();
+            tag.putFloat("Capacity", s.getFirst());
+            tag.putFloat("Speed", s.getSecond());
+            tag.put("Pos", NbtUtils.writeBlockPos(p));
+            engineList.add(tag);
+        });
         compound.putFloat("GeneratedSpeed", speed);
         compound.put("Engines", engineList);
 
@@ -118,7 +114,9 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         if(movementDirection == 0)
             return 0;
         AtomicReference<Float> stress = new AtomicReference<>(0f);
-        engines.forEach((b, s) -> stress.updateAndGet(f -> f + s.getFirst()/s.getSecond()));
+        Map<BlockPos, Couple<Float>> map = Map.copyOf(engines);
+
+        map.forEach((b, s) -> stress.updateAndGet(f -> f + s.getFirst()/s.getSecond()));
         this.lastCapacityProvided = capacity;
         return stress.get();
     }

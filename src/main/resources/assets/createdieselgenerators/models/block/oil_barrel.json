@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "createdieselgenerators:block/oil_barrel/top",
+    "side": "createdieselgenerators:block/oil_barrel/vertical/iron"
+  }
+}

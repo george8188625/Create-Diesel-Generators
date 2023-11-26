@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.entity;
 
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
@@ -118,26 +119,26 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
-        if (level() instanceof ClientLevel clientLevel) {
+        if (level().isClientSide) {
             stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
             fire = getEntityData().get(DATA).getBoolean("Fire");
             cooling = getEntityData().get(DATA).getBoolean("Cooling");
             if (t >= 1) {
 
                 if (fire) {
-                    clientLevel.addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
+                    level().addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
                 }
                 if (stack != null && !stack.isEmpty())
-                    clientLevel.addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
-
+                    level().addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
+                t = 0;
             }
+            else
+                t++;
         }
-        else
-            t++;
         setDeltaMovement(getDeltaMovement().add(0, -0.015, 0));
 
         if(fire) {
-            if (CreateDieselGenerators.getGeneratedSpeed(new FluidStack(level().getFluidState(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)).getType(), 1)) != 0)
+            if (FuelTypeManager.getGeneratedSpeed(level().getFluidState(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)).getType()) != 0)
                 level().explode(null, getX(), getY(), getZ(), 3, Level.ExplosionInteraction.BLOCK);
             else if (level().getFluidState(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)).is(Fluids.FLOWING_WATER) || level().getFluidState(new BlockPos((int) getPosition(1).x, (int) getPosition(1).y, (int) getPosition(1).z)).is(Fluids.WATER)) {
                 fire = false;

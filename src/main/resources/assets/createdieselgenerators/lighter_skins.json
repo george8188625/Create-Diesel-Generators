@@ -36,6 +36,18 @@
     "id": "glass"
   },
   {
+    "name": "diamond",
+    "id": "diamond"
+  },
+  {
+    "name": "dragon",
+    "id": "dragon"
+  },
+  {
+    "name": "obsidian",
+    "id": "obsidian"
+  },
+  {
     "name": "sussy lighter",
     "id": "sussy"
   },
@@ -70,5 +82,17 @@
   {
     "name": "glass lighter",
     "id": "glass"
+  },
+  {
+    "name": "diamond lighter",
+    "id": "diamond"
+  },
+  {
+    "name": "dragon lighter",
+    "id": "dragon"
+  },
+  {
+    "name": "obsidian lighter",
+    "id": "obsidian"
   }
 ]

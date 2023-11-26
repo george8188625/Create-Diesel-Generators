@@ -37,9 +37,13 @@ public class PartialModels {
     public static final PartialModel SMALL_GAUGE_DIAL          = new PartialModel(new ResourceLocation("createdieselgenerators:block/basin_lid/gauge_dial"));
     public static final PartialModel DISTILLATION_GAUGE        = new PartialModel(new ResourceLocation("createdieselgenerators:block/distillation_tower/gauge"));
     public static final PartialModel DISTILLATION_GAUGE_DIAL   = new PartialModel(new ResourceLocation("createdieselgenerators:block/distillation_tower/gauge_dial"));
+    public static final PartialModel JEI_DISTILLER_TOP         = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/top"));
+    public static final PartialModel JEI_DISTILLER_MIDDLE      = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/middle"));
+    public static final PartialModel JEI_DISTILLER_BOTTOM      = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/bottom"));
     public static Map<String, Pair<CDGPartialModel, Pair<CDGPartialModel, CDGPartialModel>>> lighterSkinModels = new HashMap<>();
     public static void init(){}
     public static void initSkins(){
+        lighterSkinModels.clear();
         lighterSkinModels.put("standard", Pair.of(new CDGPartialModel(new ResourceLocation("createdieselgenerators:item/lighter"))
                 , Pair.of(new CDGPartialModel(new ResourceLocation("createdieselgenerators:item/lighter_open"))
                         , new CDGPartialModel(new ResourceLocation("createdieselgenerators:item/lighter_ignited")))));

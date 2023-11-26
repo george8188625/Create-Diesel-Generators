@@ -1,14 +1,13 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.jesz.createdieselgenerators.sounds.SoundRegistry;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
@@ -114,18 +113,18 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public float calculateAddedStressCapacity() {
         if(getGeneratedSpeed() == 0)
             return 0;
-        return CreateDieselGenerators.getGeneratedStress(tank.getPrimaryHandler().getFluid()) / Math.abs(getGeneratedSpeed());
+        return FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid()) / Math.abs(getGeneratedSpeed());
     }
 
     @Override
     public float getGeneratedSpeed() {
-        return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()), getBlockState().getValue(DieselGeneratorBlock.FACING))*(state.getValue(TURBOCHARGED) ? ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue() : 1);
+        return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()), getBlockState().getValue(DieselGeneratorBlock.FACING))*(state.getValue(TURBOCHARGED) ? ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue() : 1);
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (!IRotate.StressImpact.isEnabled())
+        if (!StressImpact.isEnabled())
             return added;
 
         float stressBase = calculateAddedStressCapacity();
@@ -141,7 +140,7 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
 
         updateGeneratedRotation();
 
-        if(state.getValue(TURBOCHARGED) ? t > 0 : t > 1){
+        if(state.getValue(TURBOCHARGED) ? t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())/2 : t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())){
             if(validFuel){
                 t = 0;
                 if(!state.getValue(SILENCED)) {
@@ -151,15 +150,15 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         }else {
             t++;
         }
-        validFuel = CreateDieselGenerators.getGeneratedSpeed(tank.getPrimaryHandler().getFluid()) != 0;
+        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
 
         partialSecond++;
         if(partialSecond >= 20){
             partialSecond = 0;
             if(validFuel) {
-                if(tank.getPrimaryHandler().getFluid().getAmount() >= CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))
+                if(tank.getPrimaryHandler().getFluid().getAmount() >= FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))
                     tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
-                            (int) (tank.getPrimaryHandler().getFluid().getAmount() - CreateDieselGenerators.getBurnRate(tank.getPrimaryHandler().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))));
+                            (int) (tank.getPrimaryHandler().getFluid().getAmount() - FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))));
                 else
                     tank.getPrimaryHandler().setFluid(FluidStack.EMPTY);
             }
