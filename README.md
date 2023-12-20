@@ -16,3 +16,5 @@ Adding Diesel Generators ( and more stuff ) to the <a href="https://www.cursefor
 <img src="https://cdn.discordapp.com/emojis/1121801687502434525.png?size=48&quality=lossless">
 <img src="https://cdn.discordapp.com/emojis/1121802680143204452.png?size=48&quality=lossless">
 </p>
+
+[Datapack customiation](https://github.com/george8188625/Create-Diesel-Generators/wiki/Customization)
