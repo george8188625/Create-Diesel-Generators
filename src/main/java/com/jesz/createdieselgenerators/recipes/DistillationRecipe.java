@@ -36,6 +36,11 @@ public class DistillationRecipe extends ProcessingRecipe<SmartInventory> {
     }
 
     @Override
+    protected boolean canSpecifyDuration() {
+        return true;
+    }
+
+    @Override
     public boolean matches(SmartInventory p_44002_, Level p_44003_) {
         return false;
     }

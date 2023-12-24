@@ -2,12 +2,14 @@ package com.jesz.createdieselgenerators.blocks;
 
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.LargeDieselGeneratorBlockEntity;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import com.simibubi.create.foundation.placement.PoleHelper;
@@ -16,12 +18,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,6 +37,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,30 +63,69 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
         registerDefaultState(super.defaultBlockState().setValue(PIPE, true));
         registerDefaultState(super.defaultBlockState().setValue(SILENCED, false));
     }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+        withBlockEntityDo(level, pos, be -> {
+            if(be.getEngineBack() == null)
+                be.updateStacked();
+        });
+        return super.updateShape(state, direction, neighbourState, level, pos, neighbourPos);
+    }
+
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult ray) {
-        ItemStack heldItem = player.getItemInHand(hand);
+                                 BlockHitResult hit) {
+        ItemStack itemInHand = player.getItemInHand(hand);
 
         IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
         if (!player.isShiftKeyDown() && player.mayBuild()) {
-            if (placementHelper.matchesItem(heldItem)) {
-                placementHelper.getOffset(player, level, state, pos, ray)
-                        .placeInWorld(level, (BlockItem) heldItem.getItem(), player, hand, ray);
+            if (placementHelper.matchesItem(itemInHand)) {
+                placementHelper.getOffset(player, level, state, pos, hit)
+                        .placeInWorld(level, (BlockItem) itemInHand.getItem(), player, hand, hit);
                 return InteractionResult.SUCCESS;
             }
         }
 
-        if(!ENGINE_SILENCER.isIn(heldItem))
+        if(ENGINE_SILENCER.isIn(itemInHand)) {
+            if (state.getValue(SILENCED))
+                return InteractionResult.PASS;
+            if (!player.isCreative())
+                itemInHand.shrink(1);
+            level.setBlock(pos, state.setValue(SILENCED, true), 3);
+            playRotateSound(level, pos);
+            return InteractionResult.SUCCESS;
+        }
+        if(!ConfigRegistry.ENGINES_FILLED_WITH_ITEMS.get())
+            return super.use(state, level, pos, player, hand, hit);
+        if (itemInHand.isEmpty())
             return InteractionResult.PASS;
-        if(state.getValue(SILENCED))
-            return InteractionResult.PASS;
-
-        if(!player.isCreative())
-            heldItem.shrink(1);
-        level.setBlock(pos, state.setValue(SILENCED, true), 3);
-        playRotateSound(level, pos);
-        return InteractionResult.SUCCESS;
+        if(level.getBlockEntity(pos) instanceof SmartBlockEntity be){
+            IFluidHandler tank = be.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+            if(tank == null)
+                return InteractionResult.PASS;
+            if(itemInHand.getItem() instanceof BucketItem bi) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(bi.getFluid(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            if(itemInHand.getItem() instanceof MilkBucketItem) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(ForgeMod.MILK.get(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            IFluidHandlerItem itemTank = itemInHand.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+            if(itemTank == null)
+                return InteractionResult.PASS;
+            itemTank.drain(tank.fill(itemTank.getFluidInTank(0), IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+        }
+        return super.use(state, level, pos, player, hand, hit);
     }
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {

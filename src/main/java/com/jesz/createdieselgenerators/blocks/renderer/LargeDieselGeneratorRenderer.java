@@ -33,6 +33,7 @@ public class LargeDieselGeneratorRenderer extends ShaftRenderer<LargeDieselGener
                                         PartialModels.MODULAR_ENGINE_PISTONS_0
                             , be.getBlockState()).centre()
                     .rotateY(be.getBlockState().getValue(FACING).toYRot()).unCentre()
+                    .light(light)
                     .renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
 

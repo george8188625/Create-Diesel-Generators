@@ -99,9 +99,12 @@ public class CDGJEI implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         allCategories.forEach(c -> c.registerCatalysts(registration));
-        registration.addRecipeCatalyst(BlockRegistry.DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
-        registration.addRecipeCatalyst(BlockRegistry.MODULAR_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
-        registration.addRecipeCatalyst(BlockRegistry.HUGE_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
+        if(ConfigRegistry.NORMAL_ENGINES.get())
+            registration.addRecipeCatalyst(BlockRegistry.DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
+        if(ConfigRegistry.MODULAR_ENGINES.get())
+            registration.addRecipeCatalyst(BlockRegistry.MODULAR_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
+        if(ConfigRegistry.HUGE_ENGINES.get())
+            registration.addRecipeCatalyst(BlockRegistry.HUGE_DIESEL_ENGINE.asStack(), DieselEngineJeiRecipeType.DIESEL_COMBUSTION);
     }
 
     @Override

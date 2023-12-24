@@ -34,6 +34,7 @@ public class CreativeTab {
                         output.accept(BlockRegistry.PUMPJACK_CRANK.get());
                         output.accept(BlockRegistry.PUMPJACK_HEAD.get());
                         output.accept(ItemRegistry.WOOD_CHIPS.get());
+                        output.accept(BlockRegistry.CHIP_WOOD_BEAM.get());
                         output.accept(BlockRegistry.CHIP_WOOD_BLOCK.get());
                         output.accept(BlockRegistry.CHIP_WOOD_STAIRS.get());
                         output.accept(BlockRegistry.CHIP_WOOD_SLAB.get());

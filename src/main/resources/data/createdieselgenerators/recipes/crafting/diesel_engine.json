@@ -1,25 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "#Q#",
-    "BGB",
-    "OFO"
+    " Q ",
+    "PBP",
+    "SFS"
   ],
   "key": {
-    "#": {
+    "P": {
       "item": "createdieselgenerators:engine_piston"
     },
     "Q": {
       "item": "minecraft:flint_and_steel"
     },
-    "G": {
+    "B": {
       "tag": "forge:storage_blocks/brass"
     },
-    "B": {
-      "tag": "forge:plates/brass"
-    },
-    "O": {
-      "item": "create:sturdy_sheet"
+    "S": {
+      "item": "minecraft:polished_blackstone_slab"
     },
     "F": {
       "item": "create:fluid_tank"

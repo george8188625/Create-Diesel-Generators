@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
-import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -43,7 +42,7 @@ public class CanisterBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        tank = CapacityEnchantedFluidTankBehaviour.single(this, Math.abs((ConfigRegistry.CANISTER_CAPACITY.get())), AllConfigs.server().equipment.enchantedBacktankCapacity.get());
+        tank = CapacityEnchantedFluidTankBehaviour.single(this, Math.abs((ConfigRegistry.CANISTER_CAPACITY.get())), ConfigRegistry.CANISTER_CAPACITY_ENCHANTMENT.get());
         behaviours.add(tank);
     }
 

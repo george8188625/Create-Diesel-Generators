@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C",
+    "B",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "createdieselgenerators:wood_chip"
+    },
+    "B": {
+      "item": "createdieselgenerators:chip_wood_block"
+    }
+  },
+  "result": {
+    "item": "createdieselgenerators:chip_wood_beam"
+  }
+}

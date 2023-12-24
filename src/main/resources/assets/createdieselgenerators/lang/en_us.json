@@ -5,6 +5,7 @@
   "block.createdieselgenerators.chip_wood_stairs": "Chip Wood Stairs",
   "block.createdieselgenerators.chip_wood_slab": "Chip Wood Slab",
   "block.createdieselgenerators.oil_barrel": "Oil Barrel",
+  "block.createdieselgenerators.chip_wood_beam": "Chip Wood Beam",
   "item.createdieselgenerators.lighter": "Lighter",
   "item.createdieselgenerators.oil_scanner": "Oil Detector",
   "item.createdieselgenerators.kelp_handle": "Kelp Handle",
@@ -47,7 +48,7 @@
   "block.createdieselgenerators.plant_oil": "Plant oil",
   "block.createdieselgenerators.ethanol": "Ethanol",
 
-  "createdieselgenerators.recipe.basin_fermenting": "Basin Fermenting",
+  "createdieselgenerators.recipe.basin_fermenting": "Basin Processing",
   "createdieselgenerators.recipe.diesel_combustion": "Diesel Engine Combustion",
   "createdieselgenerators.recipe.distillation": "Distillation",
 
@@ -80,13 +81,15 @@
   "createdieselgenerators.oil_scanner.tooltip.condition1": "When R-Clicked.",
   "createdieselgenerators.oil_scanner.tooltip.behaviour1": "Starts _scanning_ for _Crude Oil Deposits_.",
   "createdieselgenerators.oil_barrel.tooltip.summary": "Stores _Fluids_ for you. Can be placed both _horizontally_ and _vertically_.",
+  "createdieselgenerators.oil_barrel.tooltip.condition1": "When R-Clicked with a dye.",
+  "createdieselgenerators.oil_barrel.tooltip.behaviour1": "_Dyes_ the block.",
 
   "createdieselgenerators.tooltip.holdForFuelStats": "Hold [%1$s] for Fuel Stats",
   "createdieselgenerators.tooltip.keyAlt": "Alt",
 
-  "createdieselgenerators.tooltip.fuelSpeed": "Speed: %1$s rpm",
+  "createdieselgenerators.tooltip.fuelSpeed": "Speed: %1$s RPM",
   "createdieselgenerators.tooltip.fuelStress": "Stress: %1$s su",
-  "createdieselgenerators.tooltip.fuelBurnRate": "Burn Rate: %1$s mb/s",
+  "createdieselgenerators.tooltip.fuelBurnRate": "Burn Rate: %1$s mB/s",
 
   "createdieselgenerators.ponder.distillation_tower.header": "Setting up a Distillation Tower",
   "createdieselgenerators.ponder.distillation_tower.text_1": "Apply a Distillation Controller to a Fluid tank to create a Distillation Tower.",
@@ -97,16 +100,16 @@
   "createdieselgenerators.ponder.pumpjack.header": "Setting up a Pumpjack",
   "createdieselgenerators.ponder.pumpjack.text_1": "Pumpjacks allow you to acquire Crude Oil ...",
   "createdieselgenerators.ponder.pumpjack.text_2": "... to start using pumpjacks, attach a Pumpjack Crank ...",
-  "createdieselgenerators.ponder.pumpjack.text_3": "... and add a pipe to bedrock.",
+  "createdieselgenerators.ponder.pumpjack.text_3": "... and add a pipe to bedrock. Make sure that is a straight line all the way and that you have an open output",
   "createdieselgenerators.ponder.pumpjack.text_4": "Pumpjacks can only pump out Oil from Oil Chunks, you can look for them using Oil Detectors",
   "createdieselgenerators.ponder.pumpjack.text_5": "When assembled, it will start producing Oil.",
   "createdieselgenerators.ponder.pumpjack.text_6": "Pumpjack Cranks can be large, or small.",
   "createdieselgenerators.ponder.diesel_engine.header": "Setting up a Diesel Engine",
   "createdieselgenerators.ponder.diesel_engine.text_1": "Diesel Generators are a compact way of generating kinetic energy.",
   "createdieselgenerators.ponder.diesel_engine.text_2": "Give it some fuel and it will produce kinetic energy.",
-  "createdieselgenerators.ponder.basin_fermenting_station.header": "Setting up a Basin Fermenting Station",
-  "createdieselgenerators.ponder.basin_fermenting_station.text_1": "Basin Lids allow you to create Ethanol.",
-  "createdieselgenerators.ponder.basin_fermenting_station.text_2": "Give them some Sugar and Bone Meals...",
+  "createdieselgenerators.ponder.basin_fermenting_station.header": "Setting up a Basin Processing Station",
+  "createdieselgenerators.ponder.basin_fermenting_station.text_1": "Basin Lids allow you to process items in basins.",
+  "createdieselgenerators.ponder.basin_fermenting_station.text_2": "Give them some Sugar and Bone Meal...",
   "createdieselgenerators.ponder.basin_fermenting_station.text_3": "... Ethanol will be created.",
   "createdieselgenerators.ponder.large_diesel_engine.header": "Setting up a Modular Diesel Engine",
   "createdieselgenerators.ponder.large_diesel_engine.text_1": "Modular Diesel Generators function like normal Diesel generators.",
@@ -141,9 +144,9 @@
   "createdieselgenerators.gui.assembly.exception.arm_too_long": "Back arm too long!",
   "createdieselgenerators.gui.assembly.exception.back_bearing_not_centered": "Back Bearing not centered!",
 
-  "createdieselgenerators.actionbar.oil_scanner.searching": "§lSearching for Oil ...",
-  "createdieselgenerators.actionbar.oil_scanner.oil_none": "§lFound no Oil ...",
-  "createdieselgenerators.actionbar.oil_scanner.oil_low": "§lFound some Oil!",
-  "createdieselgenerators.actionbar.oil_scanner.oil_high": "§lFound lots of Oil!",
-  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "§lYou Are too high up to Check for Oil Deposits!."
+  "createdieselgenerators.actionbar.oil_scanner.searching": "Searching for Oil ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_none": "Found no Oil ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_low": "Found some Oil!",
+  "createdieselgenerators.actionbar.oil_scanner.oil_high": "Found lots of Oil!",
+  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "You Are too high up to Check for Oil Deposits!."
 }

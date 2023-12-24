@@ -1,5 +1,6 @@
 package com.jesz.createdieselgenerators.items;
 
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.entity.ChemicalSprayerProjectileEntity;
 import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllEnchantments;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,7 +53,7 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
                 components.add(Component.translatable("createdieselgenerators.tooltip.empty").withStyle(ChatFormatting.GRAY));
                 return;
             }
-            components.add(Lang.fluidName(fStack).component().withStyle(ChatFormatting.GRAY).append(" ").append(Lang.number(fStack.getAmount()).style(ChatFormatting.GOLD).component()).append(Component.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GOLD)).append(Component.literal(" / ")).append(Lang.number(100 + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get())*50).style(ChatFormatting.GRAY).component()).append(Component.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GRAY)));
+            components.add(Lang.fluidName(fStack).component().withStyle(ChatFormatting.GRAY).append(" ").append(Lang.number(fStack.getAmount()).style(ChatFormatting.GOLD).component()).append(Component.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GOLD)).append(Component.literal(" / ")).append(Lang.number(ConfigRegistry.TOOL_CAPACITY.get() + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get())*ConfigRegistry.TOOL_CAPACITY_ENCHANTMENT.get()).style(ChatFormatting.GRAY).component()).append(Component.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GRAY)));
             return;
         }
         components.add(Component.translatable("createdieselgenerators.tooltip.empty").withStyle(ChatFormatting.GRAY));
@@ -88,16 +90,17 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
 
     @Override
     public boolean isEnchantable(ItemStack stack) { return true; }
-
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        if(enchantment == AllEnchantments.CAPACITY.get())
+            return true;
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
     @Override
     public void onUseTick(Level level, LivingEntity player, ItemStack stack, int count) {
         if(stack.getTag()!= null) {
             FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(stack.getTag().getCompound("Fluid"));
             if (!fluidStack.isEmpty()) {
-//                float f = -Mth.sin(player.getYRot() * ((float)Math.PI / 180F)) * Mth.cos((player.getXRot()+90) * ((float)Math.PI / 180F));
-//                float f1 = -Mth.sin((player.getXRot()+90) * ((float)Math.PI / 180F));
-//                float f2 = Mth.cos(player.getYRot() * ((float)Math.PI / 180F)) * Mth.cos((player.getXRot()+90) * ((float)Math.PI / 180F));
-//                player.setDeltaMovement(player.getDeltaMovement().add(f*-0.1, f1*-0.1, f2*-0.1));
                 if(!level.isClientSide) {
                     if (count % 2 == 0) {
                         ChemicalSprayerProjectileEntity projectile = ChemicalSprayerProjectileEntity.spray(level, fluidStack, (FuelTypeManager.getGeneratedSpeed(fluidStack.getFluid()) != 0 && lighter) || fluidStack.getFluid().isSame(Fluids.LAVA), fluidStack.getFluid().isSame(Fluids.WATER));
@@ -137,15 +140,15 @@ public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, Capa
         CompoundTag tankCompound = stack.getTag().getCompound("Fluid");
 
         return Math.round(13 * Mth.clamp(FluidStack.loadFluidStackFromNBT(tankCompound).getAmount()/(
-                (float)100 + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get())*50
+                (float)ConfigRegistry.TOOL_CAPACITY.get() + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get())*ConfigRegistry.TOOL_CAPACITY_ENCHANTMENT.get()
         ), 0, 1));
     }
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
         if(!ModList.get().isLoaded("dungeons_libraries"))
-            return new FluidHandlerItemStack(stack, 100 + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get()) * 50);
-        return new FluidHandlerItemStack(stack, 100);
+            return new FluidHandlerItemStack(stack, ConfigRegistry.TOOL_CAPACITY.get() + stack.getEnchantmentLevel(AllEnchantments.CAPACITY.get()) * ConfigRegistry.TOOL_CAPACITY_ENCHANTMENT.get());
+        return new FluidHandlerItemStack(stack, ConfigRegistry.TOOL_CAPACITY.get());
     }
     @Override
     @OnlyIn(Dist.CLIENT)

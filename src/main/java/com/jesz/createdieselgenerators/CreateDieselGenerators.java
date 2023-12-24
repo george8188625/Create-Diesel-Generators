@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.blocks.ct.SpriteShifts;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.jesz.createdieselgenerators.compat.EveryCompatCompat;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.entity.EntityRegistry;
@@ -32,6 +33,7 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -54,6 +56,7 @@ public class CreateDieselGenerators
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
+
         ItemRegistry.register();
         BlockRegistry.register();
         FluidRegistry.register();
@@ -62,7 +65,8 @@ public class CreateDieselGenerators
         SoundRegistry.register(modEventBus);
         RecipeRegistry.register(modEventBus);
         CreativeTab.register(modEventBus);
-
+        if(ModList.get().isLoaded("moonlight"))
+            EveryCompatCompat.init();
         Mods.COMPUTERCRAFT.executeIfInstalled(() -> CCProxy::register);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> onClient(modEventBus, forgeEventBus));
@@ -114,8 +118,10 @@ public class CreateDieselGenerators
             return 0;
         if(isHighInOil ? (random.nextFloat(0, 100) >= ConfigRegistry.HIGH_OIL_PERCENTAGE.get()) : (amount % 100 >= ConfigRegistry.OIL_PERCENTAGE.get()))
             return 0;
+        if(ConfigRegistry.OIL_DEPOSITS_INFINITE.get())
+            return Integer.MAX_VALUE;
         if(isHighInOil)
             return (int) (Mth.clamp(amount % 400000, 8000, 400000)*ConfigRegistry.HIGH_OIL_MULTIPLIER.get());
-        return (int) (Mth.clamp(amount % 200, 0, 1000)*ConfigRegistry.OIL_MULTIPLIER.get());
+        return (int) (Mth.clamp(amount % 15000, 0, 12000)*ConfigRegistry.OIL_MULTIPLIER.get());
     }
 }
