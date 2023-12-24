@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.blocks.ct.SpriteShifts;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
+import com.jesz.createdieselgenerators.compat.EveryCompatCompat;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.entity.EntityRegistry;
@@ -19,13 +20,10 @@ import com.simibubi.create.AllTags;
 import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
-import com.simibubi.create.foundation.utility.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
@@ -34,8 +32,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -47,10 +45,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-import static com.simibubi.create.AllTags.optionalTag;
-import static com.simibubi.create.foundation.utility.Lang.resolveBuilders;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 @Mod("createdieselgenerators")
 public class CreateDieselGenerators
@@ -69,7 +66,8 @@ public class CreateDieselGenerators
         EntityRegistry.register();
         SoundRegistry.register(modEventBus);
         RecipeRegistry.register(modEventBus);
-
+        if(ModList.get().isLoaded("selene"))
+            EveryCompatCompat.init();
         Mods.COMPUTERCRAFT.executeIfInstalled(() -> CCProxy::register);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> onClient(modEventBus, forgeEventBus));
@@ -77,9 +75,6 @@ public class CreateDieselGenerators
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigRegistry.SERVER_SPEC, "createdieselgenerators-server.toml");
         MinecraftForge.EVENT_BUS.register(this);
         REGISTRATE.registerEventListeners(modEventBus);
-    }
-    public static MutableComponent translate(String key, Object... args) {
-        return Components.translatable(key, resolveBuilders(args));
     }
     public static Map<String, String> lighterSkins = new HashMap<>();
 
@@ -129,8 +124,10 @@ public class CreateDieselGenerators
             return 0;
         if(isHighInOil ? (random.nextFloat(0, 100) >= ConfigRegistry.HIGH_OIL_PERCENTAGE.get()) : (amount % 100 >= ConfigRegistry.OIL_PERCENTAGE.get()))
             return 0;
+        if(ConfigRegistry.OIL_DEPOSITS_INFINITE.get())
+            return Integer.MAX_VALUE;
         if(isHighInOil)
             return (int) (Mth.clamp(amount % 400000, 8000, 400000)*ConfigRegistry.HIGH_OIL_MULTIPLIER.get());
-        return (int) (Mth.clamp(amount % 200, 0, 1000)*ConfigRegistry.OIL_MULTIPLIER.get());
+        return (int) (Mth.clamp(amount % 15000, 0, 12000)*ConfigRegistry.OIL_MULTIPLIER.get());
     }
 }

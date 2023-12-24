@@ -17,8 +17,8 @@ public class EngineStateDisplaySource extends DisplaySource {
             if(sourceBE.validFuel)
                 return List.of(
                         Components.translatable("createdieselgenerators.display_source.engine_status").append(" : "),
-                        Components.translatable("createdieselgenerators.display_source.speed").append(Math.abs(sourceBE.getGeneratedSpeed()) + "rpm"),
-                        Components.translatable("createdieselgenerators.display_source.stress").append(Math.abs(sourceBE.calculateAddedStressCapacity() * sourceBE.getGeneratedSpeed()) + "su")
+                        Components.translatable("createdieselgenerators.display_source.speed").append(Math.abs(sourceBE.getGeneratedSpeed()) + Components.translatable("create.generic.unit.rpm").toString()),
+                        Components.translatable("createdieselgenerators.display_source.stress").append(Math.abs(sourceBE.calculateAddedStressCapacity() * sourceBE.getGeneratedSpeed()) + Components.translatable("create.generic.unit.stress").toString())
                 );
 
             return List.of(
@@ -29,12 +29,13 @@ public class EngineStateDisplaySource extends DisplaySource {
 
 
         } else if(context.getSourceBlockEntity() instanceof LargeDieselGeneratorBlockEntity sourceBE) {
-            if(sourceBE.FrontEngine != null)
-                if(sourceBE.FrontEngine.validFuel)
+            LargeDieselGeneratorBlockEntity frontEngine = sourceBE.frontEngine.get();
+            if(frontEngine != null)
+                if(frontEngine.validFuel)
                     return List.of(
                             Components.translatable("createdieselgenerators.display_source.engine_status").append(" : "),
-                            Components.translatable("createdieselgenerators.display_source.speed").append(Math.abs(sourceBE.FrontEngine.getGeneratedSpeed()) + "rpm"),
-                            Components.translatable("createdieselgenerators.display_source.stress").append(Math.abs(sourceBE.FrontEngine.calculateAddedStressCapacity() * sourceBE.FrontEngine.getGeneratedSpeed()) + "su")
+                            Components.translatable("createdieselgenerators.display_source.speed").append(Math.abs(frontEngine.getGeneratedSpeed()) + Components.translatable("create.generic.unit.rpm").toString()),
+                            Components.translatable("createdieselgenerators.display_source.stress").append(Math.abs(frontEngine.calculateAddedStressCapacity() * frontEngine.getGeneratedSpeed()) + Components.translatable("create.generic.unit.stress").toString())
                 );
 
             return List.of(

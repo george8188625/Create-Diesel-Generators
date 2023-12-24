@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.other;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -75,64 +76,98 @@ public class FuelTypeManager {
             }
         }
     }
-    static boolean canPopulate = true;
     public static void tryPopulateTags(){
+        if(fuelTags.isEmpty())
+            return;
         if(ForgeRegistries.FLUIDS.tags().stream().toList().isEmpty())
             return;
-        for (Map.Entry<String, CDGFuelType> entry : fuelTags.entrySet()) {
+        for (Map.Entry<String, CDGFuelType> entry : Map.copyOf(fuelTags).entrySet()) {
             ForgeRegistries.FLUIDS.tags()
                     .getTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation(entry.getKey())))
                     .stream()
                     .distinct()
-                    .toList().forEach(fluid -> fuelTypes.put(fluid, entry.getValue()));
-            canPopulate = false;
+                    .toList().forEach(fluid ->
+                        {
+                            fuelTypes.put(fluid, entry.getValue());
+                            fuelTags.remove(entry.getKey(), entry.getValue());
+                        }
+                    );
         }
     }
+    public static CDGFuelType getType(Fluid fluid){
+        return fuelTypes.get(fluid);
+    }
     public static float getGeneratedSpeed(BlockEntity be, Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getGenerated(be).getFirst();
         return 0;
     }
     public static float getGeneratedStress(BlockEntity be, Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getGenerated(be).getSecond();
         return 0;
     }
+    public static float getGeneratedSpeed(DieselGeneratorBlock.EngineTypes engine, Fluid fluid){
+        tryPopulateTags();
+        if(fuelTypes.containsKey(fluid))
+            if(engine == DieselGeneratorBlock.EngineTypes.NORMAL)
+                return fuelTypes.get(fluid).getGeneratedNormal().getFirst();
+            else if(engine == DieselGeneratorBlock.EngineTypes.MODULAR)
+                return fuelTypes.get(fluid).getGeneratedModular().getFirst();
+            else if(engine == DieselGeneratorBlock.EngineTypes.HUGE)
+                return fuelTypes.get(fluid).getGeneratedHuge().getFirst();
+        return 0;
+    }
+    public static float getGeneratedStress(DieselGeneratorBlock.EngineTypes engine, Fluid fluid){
+        tryPopulateTags();
+        if(fuelTypes.containsKey(fluid))
+            if(engine == DieselGeneratorBlock.EngineTypes.NORMAL)
+                return fuelTypes.get(fluid).getGeneratedNormal().getSecond();
+            else if(engine == DieselGeneratorBlock.EngineTypes.MODULAR)
+                return fuelTypes.get(fluid).getGeneratedModular().getSecond();
+            else if(engine == DieselGeneratorBlock.EngineTypes.HUGE)
+                return fuelTypes.get(fluid).getGeneratedHuge().getSecond();
+        return 0;
+    }
+    public static int getBurnRate(DieselGeneratorBlock.EngineTypes engine, Fluid fluid){
+        tryPopulateTags();
+        if(fuelTypes.containsKey(fluid))
+            if(engine == DieselGeneratorBlock.EngineTypes.NORMAL)
+                return fuelTypes.get(fluid).getBurnNormal();
+            else if(engine == DieselGeneratorBlock.EngineTypes.MODULAR)
+                return fuelTypes.get(fluid).getBurnModular();
+            else if(engine == DieselGeneratorBlock.EngineTypes.HUGE)
+                return fuelTypes.get(fluid).getBurnHuge();
+        return 0;
+    }
     public static float getGeneratedSpeed(Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getGeneratedNormal().getFirst();
         return 0;
     }
     public static float getGeneratedStress(Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getGeneratedNormal().getSecond();
         return 0;
     }
     public static int getBurnRate(BlockEntity be, Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getBurn(be);
         return 0;
     }
     public static int getBurnRate(Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getBurnNormal();
         return 0;
     }
     public static int getSoundSpeed(Fluid fluid){
-        if(canPopulate)
-            tryPopulateTags();
+        tryPopulateTags();
         if(fuelTypes.containsKey(fluid))
             return fuelTypes.get(fluid).getSoundSpeed();
         return 1;

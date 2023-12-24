@@ -1,6 +1,5 @@
 package com.jesz.createdieselgenerators.other;
 
-import com.jozufozu.flywheel.core.PartialModel;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;

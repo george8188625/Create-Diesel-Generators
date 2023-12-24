@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -73,6 +74,18 @@ public class OilBarrelBlock extends Block implements IBE<OilBarrelBlockEntity>, 
             world.removeBlockEntity(pos);
             ConnectivityHandler.splitMulti(tankBE);
         }
+    }
+
+    @Override
+    public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if (context.getClickedFace().getAxis() != state.getValue(AXIS)) {
+            BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos());
+            if (be instanceof OilBarrelBlockEntity tankBE) {
+                context.getLevel().removeBlockEntity(context.getClickedPos());
+                ConnectivityHandler.splitMulti(tankBE);
+            }
+        }
+        return IWrenchable.super.onWrenched(state, context);
     }
 
     @Override

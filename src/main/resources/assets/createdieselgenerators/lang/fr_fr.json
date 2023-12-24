@@ -60,7 +60,7 @@
     "createdieselgenerators.tooltip.keyAlt": "Alt",
   
     "createdieselgenerators.tooltip.fuelSpeed": "Vitesse: %1$s RPM",
-    "createdieselgenerators.tooltip.fuelStress": "Stresse: %1$s US",
+    "createdieselgenerators.tooltip.fuelStress": "Stresse: %1$s us",
     "createdieselgenerators.tooltip.fuelBurnRate": "Taux de combustion: %1$s mS/s",
   
     "createdieselgenerators.ponder.distillation_tower.header": "Mise en place d'une tour de distillation",

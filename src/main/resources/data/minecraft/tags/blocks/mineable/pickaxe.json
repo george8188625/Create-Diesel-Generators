@@ -3,12 +3,17 @@
   "values": [
     "createdieselgenerators:diesel_engine",
     "createdieselgenerators:large_diesel_engine",
+    "createdieselgenerators:huge_diesel_engine",
     "createdieselgenerators:basin_lid",
     "createdieselgenerators:distillation_tank",
     "createdieselgenerators:pumpjack_hole",
     "createdieselgenerators:pumpjack_head",
     "createdieselgenerators:pumpjack_crank",
     "createdieselgenerators:pumpjack_bearing",
-    "createdieselgenerators:canister"
+    "createdieselgenerators:canister",
+    "createdieselgenerators:oil_barrel",
+    "createdieselgenerators:asphalt_block",
+    "createdieselgenerators:asphalt_stairs",
+    "createdieselgenerators:asphalt_slab"
   ]
 }

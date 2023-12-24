@@ -5,7 +5,6 @@ import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.content.equipment.armor.CapacityEnchantment;
 import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,6 +16,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -44,7 +44,7 @@ public class CanisterBlockItem extends BlockItem implements CapacityEnchantment.
                 this.getBlock().appendHoverText(stack, level, components, tooltipFlag);
                 return;
             }
-            components.add(Lang.fluidName(fStack).component().withStyle(ChatFormatting.GRAY).append(" ").append(Lang.number(fStack.getAmount()).style(ChatFormatting.GOLD).component()).append(Components.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GOLD)).append(Components.literal(" / ")).append(Lang.number(ConfigRegistry.CANISTER_CAPACITY.get() + AllConfigs.server().equipment.enchantedBacktankCapacity.get()*EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)).style(ChatFormatting.GRAY).component()).append(Components.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GRAY)));
+            components.add(Lang.fluidName(fStack).component().withStyle(ChatFormatting.GRAY).append(" ").append(Lang.number(fStack.getAmount()).style(ChatFormatting.GOLD).component()).append(Components.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GOLD)).append(Components.literal(" / ")).append(Lang.number(ConfigRegistry.CANISTER_CAPACITY.get() + ConfigRegistry.CANISTER_CAPACITY_ENCHANTMENT.get()*EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)).style(ChatFormatting.GRAY).component()).append(Components.translatable("create.generic.unit.millibuckets").withStyle(ChatFormatting.GRAY)));
             this.getBlock().appendHoverText(stack, level, components, tooltipFlag);
             return;
         }
@@ -60,6 +60,12 @@ public class CanisterBlockItem extends BlockItem implements CapacityEnchantment.
 
     @Override
     public boolean isEnchantable(ItemStack stack) { return true; }
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        if(enchantment == AllEnchantments.CAPACITY.get())
+            return true;
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
     @Override
     public int getBarColor(ItemStack stack) {
         return 0xEFEFEF;
@@ -81,13 +87,13 @@ public class CanisterBlockItem extends BlockItem implements CapacityEnchantment.
             return 0;
         CompoundTag primaryTankCompound = stack.getTag().getCompound("BlockEntityTag").getList("Tanks", Tag.TAG_COMPOUND).getCompound(0).getCompound("TankContent");
 
-        return Math.round(13 * Mth.clamp(FluidStack.loadFluidStackFromNBT(primaryTankCompound).getAmount()/(float)(ConfigRegistry.CANISTER_CAPACITY.get()+ AllConfigs.server().equipment.enchantedBacktankCapacity.get()*EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)), 0, 1));
+        return Math.round(13 * Mth.clamp(FluidStack.loadFluidStackFromNBT(primaryTankCompound).getAmount()/(float)(ConfigRegistry.CANISTER_CAPACITY.get()+ ConfigRegistry.CANISTER_CAPACITY_ENCHANTMENT.get()* EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack)), 0, 1));
     }
 
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
         if(!ModList.get().isLoaded("dungeons_libraries"))
-            return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get() + EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack) * AllConfigs.server().equipment.enchantedBacktankCapacity.get());
+            return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get() +  EnchantmentHelper.getItemEnchantmentLevel(AllEnchantments.CAPACITY.get(), stack) * ConfigRegistry.CANISTER_CAPACITY_ENCHANTMENT.get());
         return new CanisterFluidHandlerItemStack(stack, ConfigRegistry.CANISTER_CAPACITY.get());
     }
     static class CanisterFluidHandlerItemStack extends FluidHandlerItemStack{

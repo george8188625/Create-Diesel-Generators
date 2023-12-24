@@ -4,6 +4,8 @@ import com.jesz.createdieselgenerators.blocks.entity.LargeDieselGeneratorBlockEn
 import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.compat.computercraft.implementation.peripherals.SyncedPeripheral;
 import dan200.computercraft.api.lua.LuaFunction;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 
 public class ModularDieselEnginePeripheral extends SyncedPeripheral<LargeDieselGeneratorBlockEntity> {
@@ -29,34 +31,37 @@ public class ModularDieselEnginePeripheral extends SyncedPeripheral<LargeDieselG
 
     @LuaFunction
     public final float getStressCapacity(){
-        if(blockEntity.FrontEngine == null)
+        LargeDieselGeneratorBlockEntity frontEngine = blockEntity.frontEngine.get();
+
+        if(frontEngine == null)
             return blockEntity.calculateAddedStressCapacity();
-        return blockEntity.FrontEngine.calculateAddedStressCapacity();
+        return frontEngine.calculateAddedStressCapacity();
     }
     @LuaFunction
     public final int getEngineMultiBlockSize(){
-        if(blockEntity.FrontEngine == null)
+        LargeDieselGeneratorBlockEntity frontEngine = blockEntity.frontEngine.get();
+
+        if(frontEngine == null)
             return blockEntity.stacked;
-        return blockEntity.FrontEngine.stacked;
+        return frontEngine.stacked;
     }
     @LuaFunction
     public final float getSpeed(){
-        if(blockEntity.FrontEngine == null)
+        LargeDieselGeneratorBlockEntity frontEngine = blockEntity.frontEngine.get();
+        if(frontEngine == null)
             return Math.abs(blockEntity.getGeneratedSpeed());
-        return Math.abs(blockEntity.FrontEngine.getGeneratedSpeed());
+        return Math.abs(frontEngine.getGeneratedSpeed());
     }
 
     @LuaFunction
     public final float getFuelAmount(){
-        if(blockEntity.FrontEngine == null)
+        LargeDieselGeneratorBlockEntity frontEngine = blockEntity.frontEngine.get();
+        if(frontEngine == null)
             return blockEntity.tank.getPrimaryHandler().getFluid().getAmount();
-        return blockEntity.FrontEngine.tank.getPrimaryHandler().getFluid().getAmount();
+        return frontEngine.tank.getPrimaryHandler().getFluid().getAmount();
     }
     @LuaFunction
     public final float getFuelBurnRate(){
-        if(blockEntity.FrontEngine == null)
-            return FuelTypeManager.getBurnRate(blockEntity, blockEntity.tank.getPrimaryHandler().getFluid().getFluid());
-        return FuelTypeManager.getBurnRate(blockEntity, blockEntity.FrontEngine.tank.getPrimaryHandler().getFluid().getFluid());
-
+        return FuelTypeManager.getBurnRate(blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(new FluidTank(1)).getFluidInTank(0).getFluid());
     }
 }

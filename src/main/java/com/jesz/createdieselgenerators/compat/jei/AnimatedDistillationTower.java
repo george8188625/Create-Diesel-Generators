@@ -1,8 +1,6 @@
 package com.jesz.createdieselgenerators.compat.jei;
 
 import com.jesz.createdieselgenerators.PartialModels;
-import com.jesz.createdieselgenerators.blocks.BlockRegistry;
-import com.jesz.createdieselgenerators.blocks.DistillationTankBlock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import com.simibubi.create.compat.jei.category.animations.AnimatedKinetics;

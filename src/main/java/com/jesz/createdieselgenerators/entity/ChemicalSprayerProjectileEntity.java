@@ -1,13 +1,12 @@
 package com.jesz.createdieselgenerators.entity;
 
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -119,24 +118,25 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
 
     @Override
     public void tick() {
-        if (getLevel() instanceof ClientLevel clientLevel) {
+        if (getLevel().isClientSide) {
             stack = FluidStack.loadFluidStackFromNBT(getEntityData().get(DATA).getCompound("FluidStack"));
             fire = getEntityData().get(DATA).getBoolean("Fire");
             cooling = getEntityData().get(DATA).getBoolean("Cooling");
             if (t >= 1) {
                 if (fire) {
-                    clientLevel.addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
+                    level.addParticle(ParticleTypes.LAVA, position().x, position().y, position().z, 0, -0.1, 0d);
                 }
                 if (stack != null && !stack.isEmpty())
-                    clientLevel.addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
-
-            } else
+                    level.addParticle(FluidFX.getFluidParticle(stack), position().x, position().y, position().z, 0, -0.1, 0d);
+                t = 0;
+            }
+            else
                 t++;
         }
         setDeltaMovement(getDeltaMovement().add(0, -0.015, 0));
 
         if(fire) {
-            if (FuelTypeManager.getGeneratedSpeed(getLevel().getFluidState(new BlockPos(getPosition(1))).getType()) != 0)
+            if (FuelTypeManager.getGeneratedSpeed(new FluidStack(getLevel().getFluidState(new BlockPos(getPosition(1))).getType(), 1).getFluid()) != 0 && ConfigRegistry.COMBUSTIBLES_BLOW_UP.get())
                 level.explode(null, getX(), getY(), getZ(), 3, Explosion.BlockInteraction.BREAK);
             else if (getLevel().getFluidState(new BlockPos(getPosition(1))).is(Fluids.FLOWING_WATER) || getLevel().getFluidState(new BlockPos(getPosition(1))).is(Fluids.WATER)) {
                 fire = false;

@@ -1,21 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "Q# ",
-    "#G ",
-    "  S"
+    "A  ",
+    " S ",
+    "  Z"
   ],
   "key": {
-    "#": {
-      "tag": "forge:plates/iron"
-    },
-    "Q": {
+    "A": {
       "item": "create:andesite_alloy"
     },
-    "G": {
+    "S": {
       "item": "create:shaft"
     },
-    "S": {
+    "Z": {
       "tag": "forge:nuggets/zinc"
     }
   },

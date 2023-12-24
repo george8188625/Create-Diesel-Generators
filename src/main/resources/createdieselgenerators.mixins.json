@@ -5,7 +5,8 @@
   "package": "com.jesz.createdieselgenerators.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ItemEntityMixin"
+    "EntityMixin",
+    "MountedFluidStorageMixin"
   ],
   "injectors": {
     "defaultRequire": 1

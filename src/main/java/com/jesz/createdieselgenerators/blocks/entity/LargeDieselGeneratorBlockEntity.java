@@ -7,7 +7,6 @@ import com.jesz.createdieselgenerators.sounds.SoundRegistry;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
@@ -59,9 +58,10 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         if (computerBehaviour.isPeripheralCap(cap))
             return computerBehaviour.getPeripheralCapability();
         if (state.getValue(PIPE)) {
+            LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
             if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == Direction.UP)
-                if(FrontEngine != null)
-                    return FrontEngine.tank.getCapability().cast();
+                if(frontEngine != null)
+                    return frontEngine.tank.getCapability().cast();
                 else
                     return tank.getCapability().cast();
         }
@@ -69,8 +69,12 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     }
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap) {
-        if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return tank.getCapability().cast();
+        LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+            if(frontEngine != null)
+                return frontEngine.tank.getCapability().cast();
+            else
+                return tank.getCapability().cast();
         return super.getCapability(cap);
     }
     int partialSecond;
@@ -103,13 +107,17 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         behaviours.add(tank);
         super.addBehaviours(behaviours);
     }
-    public void onDirectionChanged(boolean first) {
+    public void onDirectionChanged(boolean first)
+    {
+        LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
+        if(frontEngine == null)
+            return;
         if(first && getEngineFor() != null){
-            FrontEngine.movementDirection.setValue(movementDirection.getValue());
-            FrontEngine.onDirectionChanged(false);
+            frontEngine.movementDirection.setValue(movementDirection.getValue());
+            frontEngine.onDirectionChanged(false);
             return;
         }
-        movementDirection.setValue(FrontEngine.movementDirection.getValue());
+        movementDirection.setValue(frontEngine.movementDirection.getValue());
         if(getEngineBack() != null)
             getEngineBack().onDirectionChanged(false);
     }
@@ -117,6 +125,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     @Override
     public void initialize() {
         super.initialize();
+        updateStacked();
         if (!hasSource() || getGeneratedSpeed() > getTheoreticalSpeed())
             updateGeneratedRotation();
     }
@@ -135,8 +144,8 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
             return 0;
         return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()), getBlockState().getValue(LargeDieselGeneratorBlock.FACING));
     }
-    public LargeDieselGeneratorBlockEntity FrontEngine;
-    public void UpdateStacked(){
+    public WeakReference<LargeDieselGeneratorBlockEntity> frontEngine = new WeakReference<>(null);
+    public void updateStacked(){
         LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
         LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
 
@@ -149,40 +158,41 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         }
         if(engineForward == null) {
             totalSize = stacked;
-            SetEveryEnginesFront();
+            setEveryEnginesFront();
         } else
-            engineForward.UpdateStacked();
+            engineForward.updateStacked();
     }
-    public void SetEveryEnginesFront(){
+    public void setEveryEnginesFront(){
         LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
         LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
 
         if(engineForward == null){
-            FrontEngine = this;
+            frontEngine = new WeakReference<>(this);
         }else{
-            FrontEngine = engineForward.FrontEngine;
+            frontEngine = engineForward.frontEngine;
             totalSize = engineForward.totalSize;
         }
         if(engineBack != null)
-            engineBack.SetEveryEnginesFront();
+            engineBack.setEveryEnginesFront();
     }
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         boolean added = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-        if (!StressImpact.isEnabled() || FrontEngine == null)
+        LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
+        if (!StressImpact.isEnabled() || frontEngine == null)
             return added;
-        float stressBase = FrontEngine.calculateAddedStressCapacity();
+        float stressBase = frontEngine.calculateAddedStressCapacity();
         if (Mth.equal(stressBase, 0))
             return added;
-        if(FrontEngine != this){
+        if(frontEngine != this){
             Lang.translate("gui.goggles.generator_stats")
                     .forGoggles(tooltip);
             Lang.translate("tooltip.capacityProvided")
                     .style(ChatFormatting.GRAY)
                     .forGoggles(tooltip);
 
-            float stressTotal = Math.abs(FrontEngine.getGeneratedSpeed()* stressBase);
+            float stressTotal = Math.abs(frontEngine.getGeneratedSpeed()* stressBase);
 
             Lang.number(stressTotal)
                     .translate("generic.unit.stress")
@@ -193,48 +203,35 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
                     .forGoggles(tooltip, 1);
 
         }
-        if(FrontEngine != null)
-            return containedFluidTooltip(tooltip, isPlayerSneaking, FrontEngine.tank.getCapability().cast());
-        else
-            return containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability().cast());
+        return containedFluidTooltip(tooltip, isPlayerSneaking, frontEngine.tank.getCapability().cast());
     }
     int t = 0;
     int totalSize = 0;
+
     @Override
     public void tick() {
         super.tick();
 
-
         LargeDieselGeneratorBlockEntity engineForward = getEngineFor();
-        LargeDieselGeneratorBlockEntity engineBack = getEngineBack();
         state = getBlockState();
 
         end = engineForward == null;
-
 
         updateGeneratedRotation();
 
         if (reActivateSource) {
             reActivateSource = false;
         }
+        LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
 
-        // stacked
-        if(engineBack == null)
-            UpdateStacked();
-
-        if(!tank.isEmpty() && engineForward != null && FrontEngine != null){
-            FrontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
+        if(!tank.isEmpty() && engineForward != null && frontEngine != null){
+            frontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
             tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
         validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
 
-
-
-
-
-        if(FrontEngine != null && t > FuelTypeManager.getSoundSpeed(FrontEngine.tank.getPrimaryHandler().getFluid().getFluid()) && FrontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
+        if(frontEngine != null && t > FuelTypeManager.getSoundSpeed(frontEngine.tank.getPrimaryHandler().getFluid().getFluid()) && frontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
             level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 3f,1.08f, false);
-
             t = 0;
         }else
             t++;
@@ -251,11 +248,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         }
     }
 
-    private void changeBlockState(BlockState state){
-        KineticBlockEntity.switchToBlockState(getLevel(), getBlockPos(), state);
-    }
-
-    private LargeDieselGeneratorBlockEntity getEngineFor() {
+    public LargeDieselGeneratorBlockEntity getEngineFor() {
         LargeDieselGeneratorBlockEntity engine = forw.get();
         if (engine == null || engine.isRemoved() || engine.state.getValue(FACING) == state.getValue(FACING)) {
             if (engine != null)
@@ -274,7 +267,7 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
         return engine;
     }
 
-    private LargeDieselGeneratorBlockEntity getEngineBack() {
+    public LargeDieselGeneratorBlockEntity getEngineBack() {
         LargeDieselGeneratorBlockEntity engine = back.get();
         if (engine == null || engine.isRemoved()) {
             if (engine != null)

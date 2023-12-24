@@ -26,8 +26,6 @@ public class ChemicalSprayerItemRenderer extends CustomRenderedItemModelRenderer
         float angle = worldTime * ((player.isUsingItem() && player.getItemInHand(player.getUsedItemHand()) == stack) ? -200 : -25);
         angle %= 360;
 
-
-
         ms.pushPose();
         ms.mulPose(Vector3f.ZP.rotationDegrees(angle));
         ms.translate(0.5, 0.5, 0.53125);

@@ -1,0 +1,18 @@
+{
+  "type": "createdieselgenerators:basin_fermenting",
+  "ingredients": [
+    {
+      "item": "minecraft:slime_ball"
+    },
+    {
+      "fluid": "minecraft:lava",
+      "amount": 100
+    }
+  ],
+  "processingTime": 200,
+  "results": [
+    {
+      "item": "minecraft:magma_cream"
+    }
+  ]
+}

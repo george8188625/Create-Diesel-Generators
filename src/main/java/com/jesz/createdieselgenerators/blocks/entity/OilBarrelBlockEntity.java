@@ -1,5 +1,6 @@
 package com.jesz.createdieselgenerators.blocks.entity;
 
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
@@ -124,6 +125,7 @@ public class OilBarrelBlockEntity extends SmartBlockEntity implements IMultiBloc
     protected void onFluidStackChanged(FluidStack newFluidStack) {
         if (!hasLevel())
             return;
+        int maxY = (int) ((getFillState() * height) + 1);
 
         for (int yOffset = 0; yOffset < height; yOffset++) {
             for (int xOffset = 0; xOffset < width; xOffset++) {
@@ -344,12 +346,12 @@ public class OilBarrelBlockEntity extends SmartBlockEntity implements IMultiBloc
 
     @Override
     public int getMaxLength(Direction.Axis longAxis, int width) {
-        return 3;
+        return width * 4;
     }
 
     @Override
     public int getMaxWidth() {
-        return 2;
+        return ConfigRegistry.MAX_OIL_BARREL_WIDTH.get();
     }
 
     @Override

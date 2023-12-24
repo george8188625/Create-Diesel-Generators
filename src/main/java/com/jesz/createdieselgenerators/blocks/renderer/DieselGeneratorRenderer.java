@@ -38,7 +38,7 @@ public class DieselGeneratorRenderer extends ShaftRenderer<DieselGeneratorBlockE
                                                 PartialModels.ENGINE_PISTONS_0
                         , be.getBlockState()).centre()
                         .rotateY(be.getBlockState().getValue(FACING).toYRot()).unCentre()
-                        .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+                        .light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
             }else {
                  CachedBufferer.partial(angle == 10? PartialModels.ENGINE_PISTONS_VERTICAL_0 :
                                          angle == 9 ? PartialModels.ENGINE_PISTONS_VERTICAL_1 :
@@ -51,7 +51,7 @@ public class DieselGeneratorRenderer extends ShaftRenderer<DieselGeneratorBlockE
                                          angle == 2 ? PartialModels.ENGINE_PISTONS_VERTICAL_1 :
                                                  PartialModels.ENGINE_PISTONS_VERTICAL_0
                                 , be.getBlockState()).centre().rotateY(be.getBlockState().getValue(FACING) == Direction.DOWN ? 180 : 270).rotateZ(be.getBlockState().getValue(FACING) == Direction.DOWN ? 180 : 0).unCentre()
-                        .renderInto(ms, buffer.getBuffer(RenderType.solid()));
+                         .light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
             }
 
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);

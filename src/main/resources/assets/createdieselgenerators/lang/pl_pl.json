@@ -5,6 +5,7 @@
   "block.createdieselgenerators.chip_wood_stairs": "Schody Wiórowe",
   "block.createdieselgenerators.chip_wood_slab": "Płyta Wiórowa",
   "block.createdieselgenerators.oil_barrel": "Beczka do Ropy Naftowej",
+  "block.createdieselgenerators.chip_wood_beam": "Belka Wiórowa",
   "item.createdieselgenerators.lighter": "Zapalniczka",
   "item.createdieselgenerators.oil_scanner": "Detektor Ropy Naftowej",
   "item.createdieselgenerators.kelp_handle": "Uchwyt Wodorostowy",
@@ -40,6 +41,13 @@
   "block.createdieselgenerators.asphalt_slab": "Asfaltowa Płytka",
   "block.createdieselgenerators.pumpjack_crank": "Korba Żurawia Pompowego",
 
+  "block.createdieselgenerators.biodiesel": "Biodiesel",
+  "block.createdieselgenerators.diesel": "Diesel",
+  "block.createdieselgenerators.crude_oil": "Ropa Naftowa",
+  "block.createdieselgenerators.gasoline": "Benzyna",
+  "block.createdieselgenerators.plant_oil": "Olej Roślinny",
+  "block.createdieselgenerators.ethanol": "Etanol",
+
   "createdieselgenerators.recipe.basin_fermenting": "Fermentacja w Tygielu",
   "createdieselgenerators.recipe.diesel_combustion": "Spalanie w Silniku Spalinowym",
   "createdieselgenerators.recipe.distillation": "Destylacja",
@@ -73,6 +81,8 @@
   "createdieselgenerators.oil_scanner.tooltip.condition1": "Kiedy Kliknięto PPM.",
   "createdieselgenerators.oil_scanner.tooltip.behaviour1": "Zaczyna szukać _Złóż Ropy Naftowej_.",
   "createdieselgenerators.oil_barrel.tooltip.summary": "Przechowuje _Płyny_ dla ciebie. Może być stawiana pionowo i poziomo",
+  "createdieselgenerators.oil_barrel.tooltip.condition1": "Kiedy Kliknięto PPM z barwnikiem.",
+  "createdieselgenerators.oil_barrel.tooltip.behaviour1": "_Barwi_ ten blok.",
 
   "createdieselgenerators.tooltip.holdForFuelStats": "Przytrzymaj [%1$s], aby zobaczyć Statystyki Paliwa",
   "createdieselgenerators.tooltip.keyAlt": "Alt",
@@ -134,9 +144,9 @@
   "createdieselgenerators.gui.assembly.exception.arm_too_long": "Tył Żurawia Pompowego za Któtki!",
   "createdieselgenerators.gui.assembly.exception.back_bearing_not_centered": "Tył Żurawia Pompowego nie jest na Środku!",
 
-  "createdieselgenerators.actionbar.oil_scanner.searching": "§lSzukanie Ropy Naftowej ...",
-  "createdieselgenerators.actionbar.oil_scanner.oil_none": "§lNie znaleziono Ropy Naftowej ...",
-  "createdieselgenerators.actionbar.oil_scanner.oil_low": "§lZnaleziono trochę Ropy Naftowej!",
-  "createdieselgenerators.actionbar.oil_scanner.oil_high": "§lZnaleziono dużo Ropy Naftowej!",
-  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "§lJesteś za wysoko aby szukać Złóż Ropy Naftowej!."
+  "createdieselgenerators.actionbar.oil_scanner.searching": "Szukanie Ropy Naftowej ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_none": "Nie znaleziono Ropy Naftowej ...",
+  "createdieselgenerators.actionbar.oil_scanner.oil_low": "Znaleziono trochę Ropy Naftowej!",
+  "createdieselgenerators.actionbar.oil_scanner.oil_high": "Znaleziono dużo Ropy Naftowej!",
+  "createdieselgenerators.actionbar.oil_scanner.too_high_up": "Jesteś za wysoko aby szukać Złóż Ropy Naftowej!."
 }

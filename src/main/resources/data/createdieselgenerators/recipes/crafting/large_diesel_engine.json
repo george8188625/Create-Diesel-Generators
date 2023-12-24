@@ -1,28 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "#Q#",
-    "SGS",
-    "OBO"
+    " A ",
+    "SDS",
+    " B "
   ],
   "key": {
-    "#": {
+    "A": {
       "item": "create:andesite_alloy"
     },
-    "Q": {
-      "item": "minecraft:flint_and_steel"
-    },
-    "G": {
+    "D": {
       "item": "createdieselgenerators:diesel_engine"
     },
-    "O": {
-      "item": "create:sturdy_sheet"
+    "B": {
+      "item": "minecraft:polished_blackstone_slab"
     },
     "S": {
       "tag": "forge:plates/brass"
-    },
-    "B": {
-      "item": "create:fluid_pipe"
     }
   },
   "result": {

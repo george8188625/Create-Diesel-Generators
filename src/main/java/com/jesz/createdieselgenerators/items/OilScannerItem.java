@@ -4,7 +4,6 @@ import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.world.OilChunksSavedData;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.utility.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class OilScannerItem extends Item {
     public OilScannerItem(Properties properties) {
@@ -65,12 +63,12 @@ public class OilScannerItem extends Item {
                                     level.getBiome(new BlockPos(chunkPos.x*16, 64, chunkPos.z*16)),
                                     chunkPos.x, chunkPos.z, ((ServerLevel) level).getSeed());
                             OilChunksSavedData sd = OilChunksSavedData.load((ServerLevel) level);
-                            if (sd.getChunkOilAmount(new ChunkPos(entity.getBlockX() / 16, entity.getBlockZ() / 16)) >= 0)
-                                amount = sd.getChunkOilAmount(new ChunkPos(entity.getBlockX() / 16, entity.getBlockZ() / 16));
+                            if (sd.getChunkOilAmount(new ChunkPos(chunkPos.x, chunkPos.z)) >= 0)
+                                amount = sd.getChunkOilAmount(new ChunkPos(chunkPos.x, chunkPos.z));
 
                             if (amount <= 0)
                                 stack.getTag().putInt("Type", 1);
-                            else if (entity.getLevel().getBiome(new BlockPos((entity.getBlockX() / 16) * 16, 64, (entity.getBlockZ() / 16) * 16)).is(AllTags.optionalTag(ForgeRegistries.BIOMES, new ResourceLocation("createdieselgenerators:oil_biomes"))))
+                            else if (amount > 50000)
                                 stack.getTag().putInt("Type", 3);
                             else
                                 stack.getTag().putInt("Type", 2);

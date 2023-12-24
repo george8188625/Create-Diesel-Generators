@@ -90,5 +90,4 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
         Minecraft.getInstance().font.draw(matrixStack, Lang.translateDirect(requiredHeat.getTranslationKey()), 9,
                 176, requiredHeat.getColor());
     }
-
 }
