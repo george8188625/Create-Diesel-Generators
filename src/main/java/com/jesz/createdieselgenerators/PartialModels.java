@@ -41,6 +41,7 @@ public class PartialModels {
     public static final PartialModel JEI_DISTILLER_TOP         = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/top"));
     public static final PartialModel JEI_DISTILLER_MIDDLE      = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/middle"));
     public static final PartialModel JEI_DISTILLER_BOTTOM      = new PartialModel(new ResourceLocation("createdieselgenerators:block/jei_distiller/bottom"));
+    public static final PartialModel JEI_ENGINE_PISTON         = new PartialModel(new ResourceLocation("createdieselgenerators:block/huge_diesel_engine/jei_piston"));
     public static Map<String, Pair<CDGPartialModel, Pair<CDGPartialModel, CDGPartialModel>>> lighterSkinModels = new HashMap<>();
     public static void init(){}
     public static void initSkins(){

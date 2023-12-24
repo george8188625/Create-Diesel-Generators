@@ -36,12 +36,11 @@ public class NoShaftBearingRenderer<T extends KineticBlockEntity & IBearingBlock
 
         float interpolatedAngle = be.getInterpolatedAngle(partialTicks - 1);
         kineticRotationTransform(superBuffer, be, facing.getAxis(), (float) (interpolatedAngle / 180 * Math.PI), light);
-
         if (facing.getAxis()
                 .isHorizontal())
             superBuffer.rotateCentered(Direction.UP,
                     AngleHelper.rad(AngleHelper.horizontalAngle(facing.getOpposite())));
         superBuffer.rotateCentered(Direction.EAST, AngleHelper.rad(-90 - AngleHelper.verticalAngle(facing)));
-        superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        superBuffer.light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
     }
 }

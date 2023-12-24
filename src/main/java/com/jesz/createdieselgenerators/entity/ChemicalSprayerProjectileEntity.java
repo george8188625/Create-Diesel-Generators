@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.entity;
 
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.FluidFX;
@@ -141,7 +142,7 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
         setDeltaMovement(getDeltaMovement().add(0, -0.015, 0));
 
         if(fire) {
-            if (FuelTypeManager.getGeneratedSpeed(new FluidStack(getLevel().getFluidState(new BlockPos(getPosition(1))).getType(), 1).getFluid()) != 0)
+            if (FuelTypeManager.getGeneratedSpeed(new FluidStack(getLevel().getFluidState(new BlockPos(getPosition(1))).getType(), 1).getFluid()) != 0 && ConfigRegistry.COMBUSTIBLES_BLOW_UP.get())
                 level.explode(null, getX(), getY(), getZ(), 3, Explosion.BlockInteraction.BREAK);
             else if (getLevel().getFluidState(new BlockPos(getPosition(1))).is(Fluids.FLOWING_WATER) || getLevel().getFluidState(new BlockPos(getPosition(1))).is(Fluids.WATER)) {
                 fire = false;

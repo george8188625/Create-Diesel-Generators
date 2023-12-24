@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -42,11 +43,6 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         this.state = state;
     }
     public SmartFluidTankBehaviour tank;
-
-
-
-
-
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         if (computerBehaviour.isPeripheralCap(cap))
@@ -139,35 +135,27 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public void tick() {
         super.tick();
         state = getBlockState();
-
         updateGeneratedRotation();
-
-        if(state.getValue(TURBOCHARGED) ? t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())/2 : t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())){
-            if(validFuel){
-                t = 0;
-                if(!state.getValue(SILENCED)) {
+        if (level.isClientSide)
+            if (state.getValue(TURBOCHARGED) ? t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid()) / 2 : t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())) {
+                if (validFuel) {
+                    t = 0;
                     level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, state.getValue(TURBOCHARGED) ? 5f : 3f, state.getValue(TURBOCHARGED) ? 1.4f : 1.08f, false);
                 }
+            } else {
+                t++;
             }
-        }else {
-            t++;
-        }
         validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
-
         partialSecond++;
-        if(partialSecond >= 20){
+        if (partialSecond >= 20) {
             partialSecond = 0;
-            if(validFuel) {
-                if(tank.getPrimaryHandler().getFluid().getAmount() >= FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))
+            if (validFuel) {
+                if (tank.getPrimaryHandler().getFluid().getAmount() >= FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid()) * (!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))
                     tank.getPrimaryHandler().setFluid(FluidHelper.copyStackWithAmount(tank.getPrimaryHandler().getFluid(),
-                            (int) (tank.getPrimaryHandler().getFluid().getAmount() - FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid())*(!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))));
+                            (int) (tank.getPrimaryHandler().getFluid().getAmount() - FuelTypeManager.getBurnRate(this, tank.getPrimaryHandler().getFluid().getFluid()) * (!state.getValue(TURBOCHARGED) ? 1 : ConfigRegistry.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue()))));
                 else
                     tank.getPrimaryHandler().setFluid(FluidStack.EMPTY);
             }
         }
-
-    }
-    private void changeBlockState(BlockState state){
-        KineticBlockEntity.switchToBlockState(getLevel(), getBlockPos(), state);
     }
 }

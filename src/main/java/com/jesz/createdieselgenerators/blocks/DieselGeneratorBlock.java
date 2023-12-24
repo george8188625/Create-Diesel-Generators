@@ -9,12 +9,16 @@ import com.simibubi.create.content.schematics.requirement.ISpecialBlockItemRequi
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -35,9 +39,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINE_SILENCER;
 import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINE_TURBO;
@@ -49,7 +59,17 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
     public static final BooleanProperty TURBOCHARGED = BooleanProperty.create("turbocharged");
+    public enum EngineTypes{
+        NORMAL(ConfigRegistry.NORMAL_ENGINES), MODULAR(ConfigRegistry.MODULAR_ENGINES), HUGE(ConfigRegistry.HUGE_ENGINES);
 
+        final Supplier<Boolean> isEnabled;
+        EngineTypes(Supplier<Boolean> isEnabled){
+            this.isEnabled = isEnabled;
+        }
+        public boolean enabled(){
+            return isEnabled.get();
+        }
+    }
     public DieselGeneratorBlock(Properties properties) {
         super(properties);
         registerDefaultState(
@@ -59,7 +79,6 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
                         .setValue(TURBOCHARGED, false));
 
     }
-
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return super.getStateForPlacement(context).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
@@ -132,8 +151,36 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
             playRotateSound(level, pos);
             return InteractionResult.SUCCESS;
         }
+        if(!ConfigRegistry.ENGINES_FILLED_WITH_ITEMS.get())
+            return super.use(state, level, pos, player, hand, hit);
+        if (itemInHand.isEmpty())
+            return InteractionResult.PASS;
+        if(level.getBlockEntity(pos) instanceof SmartBlockEntity be){
+            IFluidHandler tank = be.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+            if(tank == null)
+                return InteractionResult.PASS;
+            if(itemInHand.getItem() instanceof BucketItem bi) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(bi.getFluid(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            if(itemInHand.getItem() instanceof MilkBucketItem) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(ForgeMod.MILK.get(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            IFluidHandlerItem itemTank = itemInHand.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+            if(itemTank == null)
+                return InteractionResult.PASS;
+            itemTank.drain(tank.fill(itemTank.getFluidInTank(0), IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+        }
         return super.use(state, level, pos, player, hand, hit);
-
     }
 
 

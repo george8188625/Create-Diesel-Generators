@@ -2,6 +2,7 @@ package com.jesz.createdieselgenerators.ponder;
 
 import com.jesz.createdieselgenerators.fluids.FluidRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
+import com.jesz.createdieselgenerators.other.FuelTypeManager;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import com.simibubi.create.foundation.ponder.*;
@@ -17,11 +18,15 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
+import java.util.Random;
+import java.util.function.Supplier;
+
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.PIPE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.UP;
 
 public class DieselEngineScenes {
+    static FluidStack currentFuel;
     public static void small(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("diesel_engine", "Setting up a Diesel Engine");
         scene.configureBasePlate(0, 0, 3);
@@ -54,31 +59,32 @@ public class DieselEngineScenes {
         scene.world.showSection(pipe, Direction.WEST);
         scene.world.showSection(tank, Direction.NORTH);
         scene.idle(30);
+        FuelTypeManager.tryPopulateTags();
+        Supplier<FluidStack> content = () -> {
+            currentFuel = new FluidStack(FuelTypeManager.fuelTypes.isEmpty() ? FluidRegistry.DIESEL.get() : FuelTypeManager.fuelTypes.keySet().stream().toList().get(new Random().nextInt(0, FuelTypeManager.fuelTypes.size() - 1)), 16000);
+            return currentFuel;
+        };
+        scene.world.modifyBlockEntity(util.grid.at(4, 0, 1), FluidTankBlockEntity.class, be -> be.getTankInventory()
+                .fill(content.get(), IFluidHandler.FluidAction.EXECUTE));
         scene.world.showSection(cogs, Direction.NORTH);
         scene.idle(30);
-        scene.overlay.showText(70)
+        scene.overlay.showText(55)
                 .attachKeyFrame()
                 .text("Give it some fuel and it will produce kinetic energy.")
                 .pointAt(util.vector.blockSurface(util.grid.at(1, 2, 1), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(30);
+
+        scene.idle(30);
         scene.world.modifyKineticSpeed(cogs, f -> 16f);
         scene.world.modifyKineticSpeed(pump, f -> -32f);
         scene.effects.rotationSpeedIndicator(util.grid.at(3, 0, 2));
-
-        FluidStack content = new FluidStack(FluidRegistry.BIODIESEL.get()
-                .getSource(), 300);
-        scene.world.modifyBlockEntity(util.grid.at(4, 0, 1), FluidTankBlockEntity.class, be -> be.getTankInventory()
-                .drain(content, IFluidHandler.FluidAction.EXECUTE));
         scene.world.modifyKineticSpeed(engine, f -> 96f);
         scene.effects.rotationSpeedIndicator(enginePos);
         scene.idle(20);
-        scene.world.modifyKineticSpeed(cogs, f -> 0f);
-        scene.world.modifyKineticSpeed(pump, f -> 0f);
-        scene.idle(20);
         scene.world.showSection(util.select.position(util.grid.at(1, 2, 0)), Direction.DOWN);
         scene.world.showSection(util.select.position(util.grid.at(1, 2, 2)), Direction.DOWN);
-        scene.world.modifyKineticSpeed(util.select.fromTo(1, 2, 0, 1, 2, 2),f -> 96f);
+        scene.world.modifyKineticSpeed(util.select.fromTo(1, 2, 0, 1, 2, 2),f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedNormal().getFirst());
         scene.idle(60);
     }
     public static void huge(SceneBuilder scene, SceneBuildingUtil util) {
@@ -115,10 +121,15 @@ public class DieselEngineScenes {
         scene.world.showSection(pipes, Direction.DOWN);
         scene.idle(15);
 
-        FluidStack content = new FluidStack(FluidRegistry.GASOLINE.get()
-                .getSource(), 300);
+        FuelTypeManager.tryPopulateTags();
+        Supplier<FluidStack> content = () -> {
+            currentFuel = new FluidStack(FuelTypeManager.fuelTypes.isEmpty() ? FluidRegistry.DIESEL.get() : FuelTypeManager.fuelTypes.keySet().stream().toList().get(new Random().nextInt(0, FuelTypeManager.fuelTypes.size() - 1)), 16000);
+            return currentFuel;
+        };
+        scene.world.modifyBlockEntity(util.grid.at(4, 0, 1), FluidTankBlockEntity.class, be -> be.getTankInventory()
+                .drain(16000, IFluidHandler.FluidAction.EXECUTE));
         scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory()
-                .fill(content, IFluidHandler.FluidAction.EXECUTE));
+                .fill(content.get(), IFluidHandler.FluidAction.EXECUTE));
         scene.idle(15);
         scene.overlay.showText(40)
                 .attachKeyFrame()
@@ -130,12 +141,10 @@ public class DieselEngineScenes {
         scene.world.modifyKineticSpeed(shafts, f -> 16f);
         scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -32f);
         scene.idle(30);
-        scene.world.modifyKineticSpeed(shafts2, f -> 96f);
-        scene.world.modifyKineticSpeed(shafts, f -> 96f);
-        scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -192f);
+        scene.world.modifyKineticSpeed(shafts2, f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst());
+        scene.world.modifyKineticSpeed(shafts, f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst());
+        scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst()*-2);
         scene.idle(10);
-        scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory()
-                .drain(content, IFluidHandler.FluidAction.EXECUTE));
     }
     public static void silencer(SceneBuilder scene, SceneBuildingUtil util){
         scene.title("engine_silencer", "Applying an Engine Silencer");
@@ -222,12 +231,15 @@ public class DieselEngineScenes {
         scene.world.modifyKineticSpeed(pump, s -> 32f);
         scene.idle(10);
 
-        FluidStack content = new FluidStack(FluidRegistry.BIODIESEL.get()
-                .getSource(), 300);
+        FuelTypeManager.tryPopulateTags();
+        Supplier<FluidStack> content = () -> {
+            currentFuel = new FluidStack(FuelTypeManager.fuelTypes.isEmpty() ? FluidRegistry.DIESEL.get() : FuelTypeManager.fuelTypes.keySet().stream().toList().get(new Random().nextInt(0, FuelTypeManager.fuelTypes.size() - 1)), 1600);
+            return currentFuel;
+        };
         scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory()
-                .drain(content, IFluidHandler.FluidAction.EXECUTE));
+                .fill(content.get(), IFluidHandler.FluidAction.EXECUTE));
 
-        scene.world.modifyKineticSpeed(mainEngine, s -> 96f);
+        scene.world.modifyKineticSpeed(mainEngine, s -> FuelTypeManager.getType(content.get().getFluid()).getGeneratedModular().getFirst());
 
         scene.effects.rotationSpeedIndicator(util.grid.at(1, 1, 1));
 
@@ -245,7 +257,7 @@ public class DieselEngineScenes {
 
         scene.world.modifyBlocks(engines, s -> s.setValue(PIPE, true), false);
 
-        scene.world.modifyKineticSpeed(engines, s -> 96f);
+        scene.world.modifyKineticSpeed(engines, s -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedModular().getFirst());
         scene.idle(20);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 2), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
         scene.world.modifyBlock(util.grid.at(1,1,2), s -> s.setValue(PIPE, false), false);

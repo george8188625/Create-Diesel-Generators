@@ -58,12 +58,8 @@ public class PumpjackCrankRenderer extends ShaftRenderer<PumpjackCrankBlockEntit
 
             if(isXAxis) {
                 rod.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZ(Math.atan2(dstY, dstX)*180/Math.PI-90);
-                if(be.crankSize.getValue() == 1)
-                    rod.translate(0, 0.375, 0);
             }else {
                 rod.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateY(90).rotateZ(Math.atan2(dstZ, dstY)*180/Math.PI);
-                if(be.crankSize.getValue() == 1)
-                    rod.translate(0, 0.375, 0);
             }
             rod.renderInto(ms, buffer.getBuffer(RenderType.solid()));
             crank.renderInto(ms, buffer.getBuffer(RenderType.solid()));
@@ -96,13 +92,11 @@ public class PumpjackCrankRenderer extends ShaftRenderer<PumpjackCrankBlockEntit
 
         if(isXAxis) {
             rod.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZ(Math.atan2(dstY, dstX)*180/Math.PI-90);
-            if(be.crankSize.getValue() == 1)
-                rod.translate(Math.cos(Math.atan2(dstZ, dstY))*0.4375, Math.sin(Math.atan2(dstZ, dstY))*0.375, 0);
         }else {
             rod.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateY(90).rotateZ(Math.atan2(dstZ, dstY)*180/Math.PI);
-            if(be.crankSize.getValue() == 1)
-                rod.translate(0, Math.cos(Math.atan2(dstY, dstX))*-0.375, Math.sin(Math.atan2(dstY, dstX))*0.375);
         }
+        rod.light(light);
+        crank.light(light);
         rod.renderInto(ms, buffer.getBuffer(RenderType.solid()));
         crank.renderInto(ms, buffer.getBuffer(RenderType.solid()));
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);

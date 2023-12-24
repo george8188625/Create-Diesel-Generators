@@ -1,5 +1,6 @@
 package com.jesz.createdieselgenerators.world;
 
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -64,7 +65,7 @@ public class OilChunksSavedData extends SavedData {
     }
     public int getChunkOilAmount(ChunkPos chunk){
         if(chunks.containsKey(chunk))
-            return chunks.get(chunk);
+            return ConfigRegistry.OIL_DEPOSITS_INFINITE.get() ? Integer.MAX_VALUE : chunks.get(chunk);
         return -1;
     }
 

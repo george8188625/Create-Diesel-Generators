@@ -1,17 +1,19 @@
 package com.jesz.createdieselgenerators;
 
+import com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock;
 import com.jesz.createdieselgenerators.blocks.ICDGKinetics;
 import com.jesz.createdieselgenerators.commands.CDGCommands;
 import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.jesz.createdieselgenerators.items.ItemRegistry;
+import com.jesz.createdieselgenerators.other.CDGFuelType;
+import com.jesz.createdieselgenerators.other.EntityTickEvent;
 import com.jesz.createdieselgenerators.other.FuelTypeManager;
-import com.simibubi.create.AllFluids;
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.simibubi.create.content.equipment.goggles.GogglesItem;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.LangBuilder;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CKinetics;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -20,6 +22,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.*;
@@ -30,6 +35,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeMod;
@@ -39,15 +45,14 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.command.ConfigCommand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = "createdieselgenerators")
@@ -61,6 +66,21 @@ public class Events {
     @SubscribeEvent
     public static void addReloadListeners(AddReloadListenerEvent event){
         event.addListener(FuelTypeManager.ReloadListener.INSTANCE);
+    }
+    @SubscribeEvent
+    public static void onEntityTick(EntityTickEvent event){
+        if(event.entity instanceof ItemEntity itemEntity)
+            if(itemEntity.getItem().is(ItemRegistry.LIGHTER.get()) && ConfigRegistry.COMBUSTIBLES_BLOW_UP.get() && itemEntity.getItem().getTag() != null)
+                if(itemEntity.getItem().getTag().getInt("Type") == 2) {
+                    FluidState fState = itemEntity.getLevel().getFluidState(new BlockPos(itemEntity.getPosition(1)));
+                    if(fState.is(Fluids.WATER) || fState.is(Fluids.FLOWING_WATER)) {
+                        itemEntity.getItem().getTag().putInt("Type", 1);
+                        itemEntity.getLevel().playLocalSound(itemEntity.getPosition(1).x, itemEntity.getPosition(1).y, itemEntity.getPosition(1).z, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1f, 1f, false);
+                        return;
+                    }
+                    if(FuelTypeManager.getGeneratedSpeed(fState.getType()) != 0)
+                        itemEntity.getLevel().explode(null, null, null, itemEntity.getPosition(1).x, itemEntity.getPosition(1).y, itemEntity.getPosition(1).z, 3, true, Explosion.BlockInteraction.BREAK);
+                }
     }
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent event){
@@ -125,13 +145,24 @@ public class Events {
 
             if(FuelTypeManager.getGeneratedSpeed(fluid) != 0){
                 if(Screen.hasAltDown()) {
-                    tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Component.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
+                    tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Components.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
                     tooltip.add(2, Components.immutableEmpty());
-                    tooltip.add(3, Components.translatable("createdieselgenerators.tooltip.fuelSpeed", Lang.number(FuelTypeManager.getGeneratedSpeed(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
-                    tooltip.add(4, Components.translatable("createdieselgenerators.tooltip.fuelStress", Lang.number(FuelTypeManager.getGeneratedStress(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
-                    tooltip.add(5, Components.translatable("createdieselgenerators.tooltip.fuelBurnRate", Lang.number(FuelTypeManager.getBurnRate(fluid)).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.GRAY));
+                    byte enginesEnabled = (byte) ((DieselGeneratorBlock.EngineTypes.NORMAL.enabled() ? 1 : 0) + (DieselGeneratorBlock.EngineTypes.MODULAR.enabled() ? 1 : 0) + (DieselGeneratorBlock.EngineTypes.HUGE.enabled() ? 1 : 0));
+                    int currentEngineIndex = (AnimationTickHolder.getTicks() % (120)) / 20;
+                    List<DieselGeneratorBlock.EngineTypes> enabledEngines = Arrays.stream(DieselGeneratorBlock.EngineTypes.values()).filter(DieselGeneratorBlock.EngineTypes::enabled).toList();
+                    DieselGeneratorBlock.EngineTypes currentEngine = enabledEngines.get(currentEngineIndex % enginesEnabled);
+                    float currentSpeed = FuelTypeManager.getGeneratedSpeed(currentEngine, fluid);
+                    float currentCapacity = FuelTypeManager.getGeneratedStress(currentEngine, fluid);
+                    float currentBurn = FuelTypeManager.getBurnRate(currentEngine, fluid);
+                    if(enginesEnabled != 1)
+                        tooltip.add(3, Components.translatable("block.createdieselgenerators."+
+                                (currentEngine == DieselGeneratorBlock.EngineTypes.MODULAR ? "large_" : currentEngine == DieselGeneratorBlock.EngineTypes.HUGE ? "huge_" : "")+"diesel_engine").withStyle(ChatFormatting.GRAY));
+                    tooltip.add(enginesEnabled != 1 ? 4 : 3, Components.translatable("createdieselgenerators.tooltip.fuelSpeed", Lang.number(currentSpeed).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.DARK_GRAY));
+                    tooltip.add(enginesEnabled != 1 ? 5 : 4, Components.translatable("createdieselgenerators.tooltip.fuelStress", Lang.number(currentCapacity).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.DARK_GRAY));
+                    tooltip.add(enginesEnabled != 1 ? 6 : 5, Components.translatable("createdieselgenerators.tooltip.fuelBurnRate", Lang.number(currentBurn).component().withStyle(TooltipHelper.Palette.STANDARD_CREATE.primary())).withStyle(ChatFormatting.DARK_GRAY));
+                    tooltip.add(enginesEnabled != 1 ? 7 : 6, Components.immutableEmpty());
                 }else {
-                    tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Component.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
+                    tooltip.add(1, Components.translatable("createdieselgenerators.tooltip.holdForFuelStats", Components.translatable("createdieselgenerators.tooltip.keyAlt").withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
                 }
             }
         }

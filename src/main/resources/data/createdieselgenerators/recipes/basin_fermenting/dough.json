@@ -1,0 +1,22 @@
+{
+  "type": "createdieselgenerators:basin_fermenting",
+  "ingredients": [
+    {
+      "item": "create:wheat_flour"
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 100
+    }
+  ],
+  "processingTime": 200,
+  "results": [
+    {
+      "item": "create:dough"
+    },
+    {
+      "item": "create:wheat_flour",
+      "chance": 0.1
+    }
+  ]
+}

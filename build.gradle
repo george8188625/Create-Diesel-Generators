@@ -6,7 +6,7 @@ plugins {
 
 }
 
-version = '1.19.2-1.2e'
+version = '1.19.2-1.2f'
 group = 'com.jesz.createdieselgenerators' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'createdieselgenerators'
 
@@ -173,6 +173,8 @@ dependencies {
     implementation fg.deobf("curse.maven:jei-238222:4494410")
     compileOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:1.101.2:api")
     runtimeOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:1.101.2")
+    runtimeOnly fg.deobf("curse.maven:every-compat-628539:4844153")
+    implementation fg.deobf("curse.maven:selene-499980:4843863")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

@@ -1,0 +1,25 @@
+{
+  "type": "createdieselgenerators:basin_fermenting",
+  "ingredients": [
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 100
+    }
+  ],
+  "processingTime": 200,
+  "results": [
+    {
+      "item": "minecraft:fermented_spider_eye"
+    },
+    {
+      "fluid": "createdieselgenerators:ethanol",
+      "amount": 100
+    }
+  ]
+}

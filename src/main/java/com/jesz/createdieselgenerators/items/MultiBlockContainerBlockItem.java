@@ -1,9 +1,8 @@
 package com.jesz.createdieselgenerators.items;
 
-import com.jesz.createdieselgenerators.blocks.OilBarrelBlock;
-import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
-import com.jesz.createdieselgenerators.blocks.entity.OilBarrelBlockEntity;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
+import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,18 +15,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
 
-import static com.jesz.createdieselgenerators.blocks.OilBarrelBlock.AXIS;
-
-public class OilBarrelBlockItem extends BlockItem {
-    public OilBarrelBlockItem(Block p_40565_, Properties p_40566_) {
-        super(p_40565_, p_40566_);
+public class MultiBlockContainerBlockItem extends BlockItem {
+    BlockEntityType<?> type;
+    public MultiBlockContainerBlockItem(Block block, Properties properties) {
+        super(block, properties);
     }
 
     @Override
     public InteractionResult place(BlockPlaceContext ctx) {
+        if(type == null)
+            type = ((IBE<?>) getBlock()).getBlockEntityType();
         InteractionResult initialResult = super.place(ctx);
         if (!initialResult.consumesAction())
             return initialResult;
@@ -47,18 +48,11 @@ public class OilBarrelBlockItem extends BlockItem {
             nbt.remove("Height");
             nbt.remove("Controller");
             nbt.remove("LastKnownPos");
-            if (nbt.contains("TankContent")) {
-                FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt.getCompound("TankContent"));
-                if (!fluid.isEmpty()) {
-                    fluid.setAmount(Math.min(OilBarrelBlockEntity.getCapacityMultiplier(), fluid.getAmount()));
-                    nbt.put("TankContent", fluid.writeToNBT(new CompoundTag()));
-                }
-            }
         }
         return super.updateCustomBlockEntityTag(p_195943_1_, p_195943_2_, p_195943_3_, p_195943_4_, p_195943_5_);
     }
 
-    private void tryMultiPlace(BlockPlaceContext ctx) {
+    private <T extends BlockEntity & IMultiBlockEntityContainer> void tryMultiPlace(BlockPlaceContext ctx) {
         Player player = ctx.getPlayer();
         if (player == null)
             return;
@@ -71,12 +65,12 @@ public class OilBarrelBlockItem extends BlockItem {
         BlockPos placedOnPos = pos.relative(face.getOpposite());
         BlockState placedOnState = world.getBlockState(placedOnPos);
 
-        if (!(placedOnState.getBlock() instanceof OilBarrelBlock))
+        if (placedOnState.getBlock() != getBlock())
             return;
-        OilBarrelBlockEntity tankAt = ConnectivityHandler.partAt(BlockEntityRegistry.OIL_BARREL.get(), world, placedOnPos);
+        T tankAt = ConnectivityHandler.partAt(type, world, placedOnPos);
         if (tankAt == null)
             return;
-        OilBarrelBlockEntity controllerBE = tankAt.getControllerBE();
+        T controllerBE = tankAt.getControllerBE();
         if (controllerBE == null)
             return;
 
@@ -85,26 +79,26 @@ public class OilBarrelBlockItem extends BlockItem {
             return;
 
         int tanksToPlace = 0;
-        Direction.Axis barrelBlockAxis = placedOnState.getValue(AXIS);
-        if (face.getAxis() != barrelBlockAxis)
+        Direction.Axis blockAxis = tankAt.getMainConnectionAxis();
+        if (face.getAxis() != blockAxis)
             return;
 
-        Direction barrelFacing = Direction.fromAxisAndDirection(barrelBlockAxis, Direction.AxisDirection.POSITIVE);
-        BlockPos startPos = face == barrelFacing.getOpposite() ? controllerBE.getBlockPos()
-                .relative(barrelFacing.getOpposite())
+        Direction facing = Direction.fromAxisAndDirection(blockAxis, Direction.AxisDirection.POSITIVE);
+        BlockPos startPos = face == facing.getOpposite() ? controllerBE.getBlockPos()
+                .relative(facing.getOpposite())
                 : controllerBE.getBlockPos()
-                .relative(barrelFacing, controllerBE.getHeight());
+                .relative(facing, controllerBE.getHeight());
 
-        if (VecHelper.getCoordinate(startPos, barrelBlockAxis) != VecHelper.getCoordinate(pos, barrelBlockAxis))
+        if (VecHelper.getCoordinate(startPos, blockAxis) != VecHelper.getCoordinate(pos, blockAxis))
             return;
 
         for (int xOffset = 0; xOffset < width; xOffset++) {
             for (int zOffset = 0; zOffset < width; zOffset++) {
-                BlockPos offsetPos = barrelBlockAxis == Direction.Axis.X ? startPos.offset(0, xOffset, zOffset)
-                        : barrelBlockAxis == Direction.Axis.Y ? startPos.offset(xOffset, 0, zOffset)
+                BlockPos offsetPos = blockAxis == Direction.Axis.X ? startPos.offset(0, xOffset, zOffset)
+                        : blockAxis == Direction.Axis.Y ? startPos.offset(xOffset, 0, zOffset)
                         : startPos.offset(xOffset, zOffset, 0);
                 BlockState blockState = world.getBlockState(offsetPos);
-                if (blockState.getBlock() instanceof OilBarrelBlock)
+                if (blockState.getBlock() == getBlock())
                     continue;
                 if (!blockState.getMaterial()
                         .isReplaceable())
@@ -118,11 +112,11 @@ public class OilBarrelBlockItem extends BlockItem {
 
         for (int xOffset = 0; xOffset < width; xOffset++) {
             for (int zOffset = 0; zOffset < width; zOffset++) {
-                BlockPos offsetPos = barrelBlockAxis == Direction.Axis.X ? startPos.offset(0, xOffset, zOffset)
-                        : barrelBlockAxis == Direction.Axis.Y ? startPos.offset(xOffset, 0, zOffset)
+                BlockPos offsetPos = blockAxis == Direction.Axis.X ? startPos.offset(0, xOffset, zOffset)
+                        : blockAxis == Direction.Axis.Y ? startPos.offset(xOffset, 0, zOffset)
                         : startPos.offset(xOffset, zOffset, 0);
                 BlockState blockState = world.getBlockState(offsetPos);
-                if (blockState.getBlock() instanceof OilBarrelBlock)
+                if (blockState.getBlock() == getBlock())
                     continue;
                 BlockPlaceContext context = BlockPlaceContext.at(ctx, offsetPos, face);
                 player.getPersistentData()
