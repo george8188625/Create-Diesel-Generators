@@ -93,6 +93,7 @@ public static final BlockEntry<DieselGeneratorBlock> DIESEL_ENGINE = REGISTRATE.
             .onRegister(assignDataBehaviour(new OilAmountDisplaySource()))
             .properties(p -> p.noOcclusion())
             .properties(p -> p.strength(3f))
+            .simpleItem()
             .register();
     public static final BlockEntry<PumpjackCrankBlock> PUMPJACK_CRANK = REGISTRATE.block("pumpjack_crank", PumpjackCrankBlock::new)
             .properties(p -> p.mapColor(MapColor.COLOR_CYAN))

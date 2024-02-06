@@ -84,7 +84,7 @@ public class DieselEngineScenes {
         scene.idle(20);
         scene.world.showSection(util.select.position(util.grid.at(1, 2, 0)), Direction.DOWN);
         scene.world.showSection(util.select.position(util.grid.at(1, 2, 2)), Direction.DOWN);
-        scene.world.modifyKineticSpeed(util.select.fromTo(1, 2, 0, 1, 2, 2),f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedNormal().getFirst());
+        scene.world.modifyKineticSpeed(util.select.fromTo(1, 2, 0, 1, 2, 2),f -> 96f);
         scene.idle(60);
     }
     public static void huge(SceneBuilder scene, SceneBuildingUtil util) {
@@ -126,8 +126,6 @@ public class DieselEngineScenes {
             currentFuel = new FluidStack(FuelTypeManager.fuelTypes.isEmpty() ? FluidRegistry.DIESEL.get() : FuelTypeManager.fuelTypes.keySet().stream().toList().get(new Random().nextInt(0, FuelTypeManager.fuelTypes.size() - 1)), 16000);
             return currentFuel;
         };
-        scene.world.modifyBlockEntity(util.grid.at(4, 0, 1), FluidTankBlockEntity.class, be -> be.getTankInventory()
-                .drain(16000, IFluidHandler.FluidAction.EXECUTE));
         scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory()
                 .fill(content.get(), IFluidHandler.FluidAction.EXECUTE));
         scene.idle(15);
@@ -141,9 +139,9 @@ public class DieselEngineScenes {
         scene.world.modifyKineticSpeed(shafts, f -> 16f);
         scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -32f);
         scene.idle(30);
-        scene.world.modifyKineticSpeed(shafts2, f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst());
-        scene.world.modifyKineticSpeed(shafts, f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst());
-        scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedHuge().getFirst()*-2);
+        scene.world.modifyKineticSpeed(shafts2, f -> 128f);
+        scene.world.modifyKineticSpeed(shafts, f -> 128f);
+        scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -64f);
         scene.idle(10);
     }
     public static void silencer(SceneBuilder scene, SceneBuildingUtil util){
@@ -239,7 +237,7 @@ public class DieselEngineScenes {
         scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory()
                 .fill(content.get(), IFluidHandler.FluidAction.EXECUTE));
 
-        scene.world.modifyKineticSpeed(mainEngine, s -> FuelTypeManager.getType(content.get().getFluid()).getGeneratedModular().getFirst());
+        scene.world.modifyKineticSpeed(mainEngine, s -> 96f);
 
         scene.effects.rotationSpeedIndicator(util.grid.at(1, 1, 1));
 
@@ -257,7 +255,7 @@ public class DieselEngineScenes {
 
         scene.world.modifyBlocks(engines, s -> s.setValue(PIPE, true), false);
 
-        scene.world.modifyKineticSpeed(engines, s -> FuelTypeManager.getType(currentFuel.getFluid()).getGeneratedModular().getFirst());
+        scene.world.modifyKineticSpeed(engines, s -> 96f);
         scene.idle(20);
         scene.overlay.showControls(new InputWindowElement(util.vector.topOf(1, 1, 2), Pointing.DOWN).withItem(new ItemStack(AllItems.WRENCH.get())), 15);
         scene.world.modifyBlock(util.grid.at(1,1,2), s -> s.setValue(PIPE, false), false);

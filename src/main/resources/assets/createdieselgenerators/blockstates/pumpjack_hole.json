@@ -37,14 +37,7 @@
     },
     {
       "apply": {
-        "model": "create:block/encased_fluid_pipe/block_open",
-        "x": -90
-      }
-    },
-    {
-      "apply": {
-        "model": "create:block/encased_fluid_pipe/block_open",
-        "x": 90
+        "model": "createdieselgenerators:block/pumpjack_hole"
       }
     },
     {

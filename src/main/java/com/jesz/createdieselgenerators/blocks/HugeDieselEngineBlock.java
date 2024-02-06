@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.blocks;
 import com.jesz.createdieselgenerators.blocks.entity.BlockEntityRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.HugeDieselEngineBlockEntity;
 import com.jesz.createdieselgenerators.blocks.entity.PoweredEngineShaftBlockEntity;
+import com.jesz.createdieselgenerators.config.ConfigRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -10,6 +11,7 @@ import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 import com.simibubi.create.content.kinetics.steamEngine.PoweredShaftBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
 import com.simibubi.create.foundation.placement.PlacementHelpers;
 import com.simibubi.create.foundation.placement.PlacementOffset;
@@ -22,8 +24,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -41,9 +42,16 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
 import static com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock.AXIS;
 
 public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngineBlockEntity>, IWrenchable, ICDGKinetics, ProperWaterloggedBlock {
@@ -61,17 +69,50 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
                 .setValue(BlockStateProperties.SOUTH, false)
                 .setValue(BlockStateProperties.WEST, false)
                 .setValue(BlockStateProperties.UP, false)
-                .setValue(BlockStateProperties.DOWN, false));
+                .setValue(BlockStateProperties.DOWN, false)
+                .setValue(POWERED, false));
     }
-
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-         ItemStack heldItem = player.getItemInHand(hand);
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
+    }
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+         ItemStack itemInHand = player.getItemInHand(hand);
 
         IPlacementHelper placementHelper = PlacementHelpers.get(placementHelperId);
-        if (placementHelper.matchesItem(heldItem))
-            return placementHelper.getOffset(player, world, state, pos, ray)
-                    .placeInWorld(world, (BlockItem) heldItem.getItem(), player, hand, ray);
+        if (placementHelper.matchesItem(itemInHand))
+            return placementHelper.getOffset(player, level, state, pos, hit)
+                    .placeInWorld(level, (BlockItem) itemInHand.getItem(), player, hand, hit);
+        if(!ConfigRegistry.ENGINES_FILLED_WITH_ITEMS.get())
+            return super.use(state, level, pos, player, hand, hit);
+        if (itemInHand.isEmpty())
+            return InteractionResult.PASS;
+        if(level.getBlockEntity(pos) instanceof SmartBlockEntity be){
+            IFluidHandler tank = be.getCapability(ForgeCapabilities.FLUID_HANDLER).orElse(null);
+            if(tank == null)
+                return InteractionResult.PASS;
+            if(itemInHand.getItem() instanceof BucketItem bi) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(bi.getFluid(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            if(itemInHand.getItem() instanceof MilkBucketItem) {
+                if (!tank.getFluidInTank(0).isEmpty())
+                    return InteractionResult.FAIL;
+                tank.fill(new FluidStack(ForgeMod.MILK.get(), 1000), IFluidHandler.FluidAction.EXECUTE);
+                if(!player.isCreative())
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                return InteractionResult.SUCCESS;
+            }
+            IFluidHandlerItem itemTank = itemInHand.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+            if(itemTank == null)
+                return InteractionResult.PASS;
+            itemTank.drain(tank.fill(itemTank.getFluidInTank(0), IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+        }
         return InteractionResult.PASS;
     }
     @Override
@@ -85,9 +126,10 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
         updateWater(pLevel, pState, pCurrentPos);
         return pState;
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, BlockStateProperties.NORTH, BlockStateProperties.EAST, BlockStateProperties.WEST, BlockStateProperties.SOUTH, BlockStateProperties.UP, BlockStateProperties.DOWN, WATERLOGGED);
+        builder.add(POWERED, FACING, BlockStateProperties.NORTH, BlockStateProperties.EAST, BlockStateProperties.WEST, BlockStateProperties.SOUTH, BlockStateProperties.UP, BlockStateProperties.DOWN, WATERLOGGED);
         super.createBlockStateDefinition(builder);
     }
 
@@ -112,12 +154,13 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean p_60514_) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
         if(state.getValue(BooleanProperty.create(state.getValue(FACING).toString())) || state.getValue(BooleanProperty.create(state.getValue(FACING).getOpposite().toString())))
             level.setBlock(pos, state.setValue(BooleanProperty.create(state.getValue(FACING).toString()), false).setValue(BooleanProperty.create(state.getValue(FACING).getOpposite().toString()), false), 3);
 
+        level.setBlock(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)), 2);
 
-        super.neighborChanged(state, level, pos, block, otherPos, p_60514_);
+        super.neighborChanged(state, level, pos, block, otherPos, moving);
     }
 
     public Direction getPreferredFacing(BlockPlaceContext context) {

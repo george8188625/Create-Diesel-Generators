@@ -5,8 +5,8 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.event.IModBusEvent;
 
 public class EntityTickEvent extends Event implements IModBusEvent {
-    public EntityTickEvent(Entity entity){
-        this.entity = entity;
+    public EntityTickEvent(Object entity){
+        this.entity = (Entity) entity;
     }
     public Entity entity;
 }

@@ -2,7 +2,11 @@
   "diesel_engine_sound": {
     "subtitle": "sounds.createdieselgenerators.diesel_engine_sound",
     "sounds": [
-      "createdieselgenerators:diesel_engine_sound"
+      {
+        "name": "createdieselgenerators:diesel_engine_sound",
+        "type": "file",
+        "attenuation_distance": 16
+      }
     ]
   }
 }
