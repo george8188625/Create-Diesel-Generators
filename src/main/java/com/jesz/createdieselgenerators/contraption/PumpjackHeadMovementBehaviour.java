@@ -97,21 +97,10 @@ public class PumpjackHeadMovementBehaviour implements MovementBehaviour {
                 context.contraption.anchor.getZ() + context.localPos.getZ());
         holePos = headPos;
         for (int i = 0; i < 32; i++) {
-            if (context.world.getBlockEntity(holePos) instanceof PumpjackHoleBlockEntity phbe) {
-                phbe.timeOutTime = 0;
+            if (context.world.getBlockEntity(holePos) instanceof PumpjackHoleBlockEntity phbe)
                 break;
-            } else {
-                if(context.world.getBlockState(holePos).getBlock() instanceof EncasedPipeBlock pb) {
-
-                    BlockState bs = context.world.getBlockState(holePos);
-
-                    context.world.setBlock(holePos, BlockRegistry.PUMPJACK_HOLE.getDefaultState().setValue(NORTH, bs.getValue(NORTH)).setValue(EAST, bs.getValue(EAST)).setValue(WEST, bs.getValue(WEST)).setValue(SOUTH, bs.getValue(SOUTH)), 3);
-                    context.world.updateNeighborsAt(holePos, BlockRegistry.PUMPJACK_HOLE.get());
-                    break;
-                }
+            else
                 holePos = holePos.below();
-            }
-
         }
 
         if(context.world.getBlockEntity(holePos) instanceof PumpjackHoleBlockEntity holeBE && bearing.crankSpeed >= 8) {

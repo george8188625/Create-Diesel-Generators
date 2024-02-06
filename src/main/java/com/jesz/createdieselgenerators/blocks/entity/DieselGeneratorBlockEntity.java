@@ -109,13 +109,15 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     }
     @Override
     public float calculateAddedStressCapacity() {
-        if(getGeneratedSpeed() == 0)
+        if(getGeneratedSpeed() == 0 || state.getValue(POWERED))
             return 0;
         return FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid()) / Math.abs(getGeneratedSpeed());
     }
 
     @Override
     public float getGeneratedSpeed() {
+        if(state.getValue(POWERED))
+            return 0;
         return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()), getBlockState().getValue(DieselGeneratorBlock.FACING))*(state.getValue(TURBOCHARGED) ? ConfigRegistry.TURBOCHARGED_ENGINE_MULTIPLIER.get().floatValue() : 1);
     }
 
@@ -135,17 +137,20 @@ public class DieselGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public void tick() {
         super.tick();
         state = getBlockState();
-        updateGeneratedRotation();
-        if (level.isClientSide)
+        reActivateSource = true;
+        if (level.isClientSide && !state.getValue(SILENCED))
             if (state.getValue(TURBOCHARGED) ? t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid()) / 2 : t > FuelTypeManager.getSoundSpeed(tank.getPrimaryHandler().getFluid().getFluid())) {
                 if (validFuel) {
                     t = 0;
-                    level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, state.getValue(TURBOCHARGED) ? 5f : 3f, state.getValue(TURBOCHARGED) ? 1.4f : 1.08f, false);
+                    level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, state.getValue(TURBOCHARGED) ? 0.5f : 0.3f, state.getValue(TURBOCHARGED) ? 1.1f : 1f, false);
                 }
             } else {
                 t++;
             }
-        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
+        if(state.getValue(POWERED))
+            validFuel = false;
+        else
+            validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
         partialSecond++;
         if (partialSecond >= 20) {
             partialSecond = 0;

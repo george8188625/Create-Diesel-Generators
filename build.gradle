@@ -6,7 +6,7 @@ plugins {
 
 }
 
-version = '1.19.2-1.2f'
+version = '1.19.2-1.2g'
 group = 'com.jesz.createdieselgenerators' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'createdieselgenerators'
 
@@ -203,6 +203,10 @@ jar {
 jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
+
+mixin {
+    add sourceSets.main, 'createdieselgenerators.refmap.json'
+}
 
 publishing {
     publications {

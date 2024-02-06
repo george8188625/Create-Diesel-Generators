@@ -44,6 +44,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ import static net.minecraft.core.Direction.SOUTH;
 
 public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISpecialBlockItemRequirement, IBE<DieselGeneratorBlockEntity>, ProperWaterloggedBlock, ICDGKinetics {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
     public static final BooleanProperty TURBOCHARGED = BooleanProperty.create("turbocharged");
@@ -76,12 +78,18 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
                 super.defaultBlockState()
                         .setValue(WATERLOGGED, false)
                         .setValue(SILENCED, false)
-                        .setValue(TURBOCHARGED, false));
+                        .setValue(TURBOCHARGED, false)
+                        .setValue(POWERED, false));
 
     }
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return super.getStateForPlacement(context).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
     }
 
     @Override
@@ -108,7 +116,7 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
     }
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(WATERLOGGED, SILENCED, TURBOCHARGED);
+        builder.add(WATERLOGGED, SILENCED, TURBOCHARGED, POWERED);
         super.createBlockStateDefinition(builder);
     }
 
@@ -122,6 +130,29 @@ public class DieselGeneratorBlock extends DirectionalKineticBlock implements ISp
                                   LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
         updateWater(pLevel, pState, pCurrentPos);
         return pState;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
+        level.setBlock(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)), 2);
+        super.neighborChanged(state, level, pos, block, otherPos, moving);
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
+        if(state.hasBlockEntity())
+            withBlockEntityDo(worldIn, pos, be -> {
+                if(worldIn.getBlockEntity(pos.relative(state.getValue(FACING))) instanceof DieselGeneratorBlockEntity nbe && nbe.getBlockState().getValue(FACING) == state.getValue(FACING))
+                    be.movementDirection.setValue(nbe.movementDirection.getValue());
+                if(worldIn.getBlockEntity(pos.relative(state.getValue(FACING).getOpposite())) instanceof DieselGeneratorBlockEntity nbe && nbe.getBlockState().getValue(FACING) == state.getValue(FACING))
+                    be.movementDirection.setValue(nbe.movementDirection.getValue());
+                if(worldIn.getBlockEntity(pos.relative(state.getValue(FACING))) instanceof DieselGeneratorBlockEntity nbe && nbe.getBlockState().getValue(FACING) == state.getValue(FACING).getOpposite())
+                    be.movementDirection.setValue(nbe.movementDirection.getValue() == 1 ? 0 : 1);
+                if(worldIn.getBlockEntity(pos.relative(state.getValue(FACING).getOpposite())) instanceof DieselGeneratorBlockEntity nbe && nbe.getBlockState().getValue(FACING) == state.getValue(FACING).getOpposite())
+                    be.movementDirection.setValue(nbe.movementDirection.getValue() == 1 ? 0 : 1);
+            });
+
+        super.onPlace(state, worldIn, pos, oldState, isMoving);
     }
 
     @Override

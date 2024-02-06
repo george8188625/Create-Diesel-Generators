@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -55,7 +56,6 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         super(type, pos, state);
         this.state = state;
     }
-    int storedOil;
     @Override
     protected void write(CompoundTag compound, boolean clientPacket) {
         super.write(compound, clientPacket);
@@ -105,22 +105,19 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         oilAmount = compound.getInt("OilAmount");
         started = compound.getBoolean("Started");
     }
-    boolean first = true;
-    public byte timeOutTime = 0;
     byte tt = 0;
+    public int pipeLength = 0;
     boolean valid = false;
     @Override
     public void tick() {
         super.tick();
-        timeOutTime++;
-        if (timeOutTime >= 5) {
-            level.setBlock(getBlockPos(), AllBlocks.ENCASED_FLUID_PIPE.getDefaultState().setValue(NORTH, state.getValue(NORTH)).setValue(EAST, state.getValue(EAST)).setValue(WEST, state.getValue(WEST)).setValue(SOUTH, state.getValue(SOUTH)).setValue(UP, true).setValue(DOWN, true), 3);
-        }
         tt++;
         if (tt >= 20) {
+            int pipeLength = 0;
             tt = 0;
             boolean v = false;
             for (int i = 0; i < getBlockPos().getY() - level.getMinBuildHeight(); i++) {
+                pipeLength++;
                 BlockState bs = level.getBlockState(getBlockPos().below(i + 1));
                 if (bs.getBlock() instanceof PipeBlock || bs.getBlock() instanceof EncasedPipeBlock) {
                     if (!(bs.getValue(BlockStateProperties.UP) && bs.getValue(BlockStateProperties.DOWN)))
@@ -136,9 +133,18 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
                 } else
                     break;
             }
+            if(v)
+                this.pipeLength = pipeLength;
+            else
+                this.pipeLength = 0;
             valid = v;
         }
 
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return super.getRenderBoundingBox().inflate(pipeLength);
     }
 
     @Override

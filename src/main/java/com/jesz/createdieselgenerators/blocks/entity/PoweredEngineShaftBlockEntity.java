@@ -56,7 +56,7 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         }
         this.speed = maxSpeed.get();
         this.movementDirection = direction;
-        updateGeneratedRotation();
+        reActivateSource = true;
     }
     public boolean canBePoweredBy(BlockPos globalPos) {
         return initialTicks == 0;
@@ -68,7 +68,7 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
             speed = 0;
             stressCapacity = 0;
         }
-        updateGeneratedRotation();
+        reActivateSource = true;
     }
 
     @Override

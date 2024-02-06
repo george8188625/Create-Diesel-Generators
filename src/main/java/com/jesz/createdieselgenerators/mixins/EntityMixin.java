@@ -13,10 +13,9 @@ import java.util.stream.Stream;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-    @Shadow public abstract Stream<Entity> getSelfAndPassengers();
 
     @Inject(at = @At("HEAD"),method = "tick()V")
     public void tick(CallbackInfo ci){
-        MinecraftForge.EVENT_BUS.post(new EntityTickEvent(getSelfAndPassengers().toList().get(0)));
+        MinecraftForge.EVENT_BUS.post(new EntityTickEvent(this));
     }
 }

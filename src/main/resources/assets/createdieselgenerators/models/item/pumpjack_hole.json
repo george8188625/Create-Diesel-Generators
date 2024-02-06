@@ -1,3 +1,11 @@
 {
-  "parent": "createdieselgenerators:block/pumpjack_hole"
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "east": "create:block/encased_pipe",
+    "west": "create:block/encased_pipe",
+    "south": "create:block/copper_casing",
+    "north": "create:block/copper_casing",
+    "up": "createdieselgenerators:block/pumpjack_hole_base",
+    "down": "create:block/encased_pipe"
+  }
 }

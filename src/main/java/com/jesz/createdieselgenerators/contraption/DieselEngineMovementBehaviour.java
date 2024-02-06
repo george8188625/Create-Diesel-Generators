@@ -32,75 +32,12 @@ import static com.simibubi.create.content.kinetics.base.HorizontalKineticBlock.H
 public class DieselEngineMovementBehaviour implements MovementBehaviour {
     @Override
     public boolean isActive(MovementContext context) {
-        return context.contraption instanceof CarriageContraption;
+        return context.contraption instanceof CarriageContraption && MovementBehaviour.super.isActive(context);
     }
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld, ContraptionMatrices matrices, MultiBufferSource buffer) {
-        double trainSpeed = context.motion.length();
-        int angle = (int) (((trainSpeed * AnimationTickHolder.getTicks())*100) % 360)/36;
-        VertexConsumer builder = buffer.getBuffer(RenderType.solid());
-        if(context.state.getBlock() instanceof DieselGeneratorBlock)
-            if(!context.state.getValue(TURBOCHARGED))
-                if(context.state.getValue(FACING).getAxis().isHorizontal()){
-                    CachedBufferer.partial( angle == 10? PartialModels.ENGINE_PISTONS_0 :
-                                            angle == 9 ? PartialModels.ENGINE_PISTONS_1 :
-                                            angle == 8 ? PartialModels.ENGINE_PISTONS_2 :
-                                            angle == 7 ? PartialModels.ENGINE_PISTONS_3 :
-                                            angle == 6 ? PartialModels.ENGINE_PISTONS_4 :
-                                            angle == 5 ? PartialModels.ENGINE_PISTONS_4 :
-                                            angle == 4 ? PartialModels.ENGINE_PISTONS_3 :
-                                            angle == 3 ? PartialModels.ENGINE_PISTONS_2 :
-                                            angle == 2 ? PartialModels.ENGINE_PISTONS_1 :
-                                                    PartialModels.ENGINE_PISTONS_0
-                            , context.state)
-                            .transform(matrices.getModel())
-                            .centre()
-                            .rotateY(context.state.getValue(FACING).toYRot()).unCentre()
-                            .renderInto(matrices.getViewProjection(), builder);
-                }else {
-                     CachedBufferer.partial(angle == 10? PartialModels.ENGINE_PISTONS_VERTICAL_0 :
-                                             angle == 9 ? PartialModels.ENGINE_PISTONS_VERTICAL_1 :
-                                             angle == 8 ? PartialModels.ENGINE_PISTONS_VERTICAL_2 :
-                                             angle == 7 ? PartialModels.ENGINE_PISTONS_VERTICAL_3 :
-                                             angle == 6 ? PartialModels.ENGINE_PISTONS_VERTICAL_4 :
-                                             angle == 5 ? PartialModels.ENGINE_PISTONS_VERTICAL_4 :
-                                             angle == 4 ? PartialModels.ENGINE_PISTONS_VERTICAL_3 :
-                                             angle == 3 ? PartialModels.ENGINE_PISTONS_VERTICAL_2 :
-                                             angle == 2 ? PartialModels.ENGINE_PISTONS_VERTICAL_1 :
-                                                     PartialModels.ENGINE_PISTONS_VERTICAL_0
-                                    , context.state)
-                             .transform(matrices.getModel())
-                             .centre()
-                             .rotateY(context.state.getValue(FACING) == Direction.DOWN ? 180 : 270).rotateZ(context.state.getValue(FACING) == Direction.DOWN ? 180 : 0).unCentre()
-                             .renderInto(matrices.getViewProjection(), builder);
-                }
-        if(context.state.getBlock() instanceof LargeDieselGeneratorBlock){
-            CachedBufferer.partial( angle == 10? PartialModels.MODULAR_ENGINE_PISTONS_0 :
-                                    angle == 9 ? PartialModels.MODULAR_ENGINE_PISTONS_1 :
-                                    angle == 8 ? PartialModels.MODULAR_ENGINE_PISTONS_2 :
-                                    angle == 7 ? PartialModels.MODULAR_ENGINE_PISTONS_3 :
-                                    angle == 6 ? PartialModels.MODULAR_ENGINE_PISTONS_4 :
-                                    angle == 5 ? PartialModels.MODULAR_ENGINE_PISTONS_4 :
-                                    angle == 4 ? PartialModels.MODULAR_ENGINE_PISTONS_3 :
-                                    angle == 3 ? PartialModels.MODULAR_ENGINE_PISTONS_2 :
-                                    angle == 2 ? PartialModels.MODULAR_ENGINE_PISTONS_1 :
-                                            PartialModels.MODULAR_ENGINE_PISTONS_0
-                            , context.state)
-                            .transform(matrices.getModel())
-                            .centre()
-                            .rotateY(context.state.getValue(HORIZONTAL_FACING).toYRot()).unCentre()
-                            .renderInto(matrices.getViewProjection(), builder);
-            CachedBufferer.block(AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, context.state.getValue(HORIZONTAL_FACING).getAxis()))
-                    .transform(matrices.getModel())
-                    .rotateCentered(Direction.get(Direction.AxisDirection.POSITIVE, context.state.getValue(HORIZONTAL_FACING).getAxis()), (float) (trainSpeed >= 0.01 ? (0.6 * AnimationTickHolder.getTicks()) : 0))
-                    .renderInto(matrices.getViewProjection(), builder);
-        }else
-            CachedBufferer.block(AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, context.state.getValue(FACING).getAxis()))
-                    .transform(matrices.getModel())
-                    .rotateCentered(Direction.get(Direction.AxisDirection.POSITIVE, context.state.getValue(FACING).getAxis()), (float) (trainSpeed >= 0.01 ? (0.6 * AnimationTickHolder.getTicks()) : 0))
-                    .renderInto(matrices.getViewProjection(), builder);
 
+    @Override
+    public boolean renderAsNormalBlockEntity() {
+        return true;
     }
 
     @Override
@@ -113,7 +50,7 @@ public class DieselEngineMovementBehaviour implements MovementBehaviour {
         double trainSpeed = context.motion.length()*2;
         if(ConfigRegistry.ENGINES_EMIT_SOUND_ON_TRAINS.get() && !entity.getCarriage().train.derailed && trainSpeed >= 0.1){
             if(context.data.getInt("tick") >= 10/ Mth.clamp(trainSpeed*10, 4, 5)){
-                context.world.playLocalSound(context.position.x, context.position.y, context.position.z, SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, (float) (context.state.hasProperty(TURBOCHARGED) && context.state.getValue(TURBOCHARGED) ? 50f*trainSpeed : 30f*trainSpeed), (float) Mth.clamp(context.state.hasProperty(TURBOCHARGED) && context.state.getValue(TURBOCHARGED) ? 10f*trainSpeed : 8f*trainSpeed, 1, 2.4), false);
+                context.world.playLocalSound(context.position.x, context.position.y, context.position.z, SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 0.5f, (float) Mth.clamp(context.state.hasProperty(TURBOCHARGED) && context.state.getValue(TURBOCHARGED) ? 3f*trainSpeed : 2f*trainSpeed, 1, 2.4), false);
 
                 context.data.putInt("tick", 0);
             }

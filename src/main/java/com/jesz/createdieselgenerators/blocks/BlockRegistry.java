@@ -98,6 +98,7 @@ public class BlockRegistry {
             .onRegister(assignDataBehaviour(new OilAmountDisplaySource()))
             .properties(p -> p.noOcclusion())
             .properties(p -> p.strength(3f))
+            .simpleItem()
             .register();
     public static final BlockEntry<PumpjackCrankBlock> PUMPJACK_CRANK = REGISTRATE.block("pumpjack_crank", Material.METAL, PumpjackCrankBlock::new)
             .properties(p -> p.color(MaterialColor.COLOR_CYAN))
