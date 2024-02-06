@@ -100,7 +100,7 @@
   "createdieselgenerators.ponder.pumpjack.header": "Setting up a Pumpjack",
   "createdieselgenerators.ponder.pumpjack.text_1": "Pumpjacks allow you to acquire Crude Oil ...",
   "createdieselgenerators.ponder.pumpjack.text_2": "... to start using pumpjacks, attach a Pumpjack Crank ...",
-  "createdieselgenerators.ponder.pumpjack.text_3": "... and add a pipe to bedrock. Make sure that is a straight line all the way and that you have an open output",
+  "createdieselgenerators.ponder.pumpjack.text_3": "... and add a straight pipe going to bedrock",
   "createdieselgenerators.ponder.pumpjack.text_4": "Pumpjacks can only pump out Oil from Oil Chunks, you can look for them using Oil Detectors",
   "createdieselgenerators.ponder.pumpjack.text_5": "When assembled, it will start producing Oil.",
   "createdieselgenerators.ponder.pumpjack.text_6": "Pumpjack Cranks can be large, or small.",

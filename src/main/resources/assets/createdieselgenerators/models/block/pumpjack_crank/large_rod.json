@@ -1,6 +1,6 @@
 {
 	"loader": "forge:obj",
-	"flip-v": true,
+	"flip_v": true,
 	"model": "createdieselgenerators:models/block/pumpjack_crank/large_rod.obj",
 	"ambientocclusion": true,
 	"textures": {

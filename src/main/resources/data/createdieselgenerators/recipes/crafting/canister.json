@@ -3,7 +3,7 @@
   "pattern": [
     "A A",
     "ZBZ",
-    "AbA"
+    " Z "
   ],
   "key": {
     "A": {
@@ -11,9 +11,6 @@
     },
     "B": {
       "tag": "forge:barrels/wooden"
-    },
-    "b": {
-      "item": "create:basin"
     },
     "Z": {
       "tag": "forge:plates/iron"

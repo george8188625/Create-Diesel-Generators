@@ -2,7 +2,6 @@ package com.jesz.createdieselgenerators.ponder;
 
 import com.jesz.createdieselgenerators.blocks.BlockRegistry;
 import com.jesz.createdieselgenerators.blocks.entity.PumpjackCrankBlockEntity;
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.ponder.*;
 import com.simibubi.create.foundation.ponder.element.InputWindowElement;
@@ -10,9 +9,7 @@ import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
 import com.simibubi.create.foundation.utility.Pointing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -70,7 +67,7 @@ public class OilScenes {
 
         scene.idle(60);
 
-        scene.overlay.showText(140)
+        scene.overlay.showText(80)
                 .attachKeyFrame()
                 .text("... and add a pipe to bedrock.")
                 .pointAt(util.vector.topOf(4, 1, 0))
@@ -80,16 +77,11 @@ public class OilScenes {
 
         ElementLink<WorldSectionElement> pipesLink = scene.world.showIndependentSection(pipes, Direction.DOWN);
         scene.world.moveSection(pipesLink, new Vec3(0, -1, 0), 0);
-        scene.idle(100);
-        scene.rotateCameraY(135);
         scene.idle(20);
-        scene.overlay.showControls(new InputWindowElement(util.vector.topOf(4, 2, 0), Pointing.DOWN).withItem(new ItemStack(AllBlocks.COPPER_CASING.get())), 15);
-        scene.idle(10);
-        scene.world.setBlock(new BlockPos(4, 3, 0), AllBlocks.ENCASED_FLUID_PIPE.getDefaultState()
-                .setValue(BlockStateProperties.SOUTH, true), false);
+        scene.world.setBlock(new BlockPos(4, 3, 0), Blocks.AIR.defaultBlockState(), false);
 
-        scene.idle(35);
-        scene.rotateCameraY(-135);
+        scene.idle(15);
+        scene.world.setBlock(new BlockPos(4, 3, 0), BlockRegistry.PUMPJACK_HOLE.getDefaultState(), false);
 
         scene.idle(15);
         scene.overlay.showText(50)

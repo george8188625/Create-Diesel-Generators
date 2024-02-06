@@ -52,6 +52,7 @@ public class BlockEntityRegistry {
             .register();
     public static final BlockEntityEntry<PumpjackHoleBlockEntity> PUMPJACK_HOLE = REGISTRATE.blockEntity("pumpjack_hole_block_entity", PumpjackHoleBlockEntity::new)
             .validBlocks(BlockRegistry.PUMPJACK_HOLE)
+            .renderer(() -> PumpjackHoleRenderer::new)
             .register();
     public static final BlockEntityEntry<PumpjackCrankBlockEntity> PUMPJACK_CRANK = REGISTRATE.blockEntity("pumpjack_crank_block_entity", PumpjackCrankBlockEntity::new)
             .instance(() -> PumpjackCrankInstance::new)

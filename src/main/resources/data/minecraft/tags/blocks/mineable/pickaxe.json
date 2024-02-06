@@ -14,6 +14,8 @@
     "createdieselgenerators:oil_barrel",
     "createdieselgenerators:asphalt_block",
     "createdieselgenerators:asphalt_stairs",
-    "createdieselgenerators:asphalt_slab"
+    "createdieselgenerators:asphalt_slab",
+    "createdieselgenerators:pumpjack_hole",
+    "createdieselgenerators:powered_engine_shaft"
   ]
 }

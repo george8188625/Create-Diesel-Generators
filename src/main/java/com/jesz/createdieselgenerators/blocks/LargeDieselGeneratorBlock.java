@@ -42,11 +42,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
 import static com.jesz.createdieselgenerators.items.ItemRegistry.ENGINE_SILENCER;
 import static net.minecraft.core.Direction.NORTH;
 import static net.minecraft.core.Direction.SOUTH;
@@ -54,16 +56,22 @@ import static net.minecraft.core.Direction.SOUTH;
 public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements IBE<LargeDieselGeneratorBlockEntity>, ISpecialBlockItemRequirement, ICDGKinetics {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    public static final BooleanProperty POWERED_BEFORE = BooleanProperty.create("last_powered");
     public static final BooleanProperty PIPE = BooleanProperty.create("pipe");
     public static final BooleanProperty SILENCED = BooleanProperty.create("silenced");
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public LargeDieselGeneratorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(super.defaultBlockState().setValue(PIPE, true));
-        registerDefaultState(super.defaultBlockState().setValue(SILENCED, false));
+        registerDefaultState(super.defaultBlockState()
+                    .setValue(PIPE, true)
+                    .setValue(SILENCED, false)
+                    .setValue(POWERED, false));
     }
-
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
+    }
     @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         withBlockEntityDo(level, pos, be -> {
@@ -129,6 +137,11 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
     }
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
+        if(context.getClickedFace() == Direction.UP){
+            KineticBlockEntity.switchToBlockState(context.getLevel(), context.getClickedPos(), updateAfterWrenched(state.setValue(PIPE, !state.getValue(PIPE)), context));
+            playRotateSound(context.getLevel(), context.getClickedPos());
+            return InteractionResult.SUCCESS;
+        }
         if(state.getValue(SILENCED))
             if(context.getPlayer() != null && !context.getLevel().isClientSide) {
                 if (!context.getPlayer().isCreative())
@@ -137,11 +150,6 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
                 playRotateSound(context.getLevel(), context.getClickedPos());
                 return InteractionResult.SUCCESS;
             }
-        if(context.getClickedFace() == Direction.UP){
-            KineticBlockEntity.switchToBlockState(context.getLevel(), context.getClickedPos(), updateAfterWrenched(state.setValue(PIPE, !state.getValue(PIPE)), context));
-            playRotateSound(context.getLevel(), context.getClickedPos());
-            return InteractionResult.SUCCESS;
-        }
         return super.onWrenched(state,context);
     }
     @Override
@@ -150,7 +158,7 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
     }
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(PIPE, SILENCED);
+        builder.add(PIPE, SILENCED, POWERED);
         super.createBlockStateDefinition(builder);
     }
     @Override
@@ -159,6 +167,33 @@ public class LargeDieselGeneratorBlock extends HorizontalKineticBlock implements
             return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection());
         else
             return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+    }
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
+        withBlockEntityDo(level, pos, be -> {
+            LargeDieselGeneratorBlockEntity front = be.frontEngine.get();
+            if(front == null)
+                front = be;
+            if(front != be){
+                level.setBlock(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)), 2);
+            }
+            if(!front.getBlockState().getValue(POWERED) && level.hasNeighborSignal(pos))
+                level.setBlock(front.getBlockPos(), front.getBlockState().setValue(POWERED, true), 2);
+            if(front.getBlockState().getValue(POWERED) && !level.hasNeighborSignal(pos)) {
+                boolean atLeastOneEnginePowered = false;
+                for (int i = 0; i < front.stacked; i++) {
+                    BlockState bs = level.getBlockState(pos.relative(state.getValue(FACING).getAxis(), -i));
+                    if (bs.getBlock() instanceof LargeDieselGeneratorBlock && bs.getValue(FACING).getAxis() == state.getValue(FACING).getAxis() && bs.getValue(POWERED)) {
+                        atLeastOneEnginePowered = true;
+                        break;
+                    }
+                }
+                if(!atLeastOneEnginePowered){
+                    level.setBlock(front.getBlockPos(), front.getBlockState().setValue(POWERED, false), 2);
+                }
+            }
+        });
+        super.neighborChanged(state, level, pos, block, otherPos, moving);
     }
     @Override
     public Class<LargeDieselGeneratorBlockEntity> getBlockEntityClass() {

@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,6 +39,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
 import static com.jesz.createdieselgenerators.blocks.HugeDieselEngineBlock.FACING;
 import static com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock.AXIS;
 
@@ -81,7 +81,10 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         PoweredEngineShaftBlockEntity shaft = getShaft();
         if (shaft == null)
             return;
-        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
+        if(getBlockState().getValue(POWERED))
+            validFuel = false;
+        else
+            validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
         partialSecond++;
         if(partialSecond >= 20){
             partialSecond = 0;
@@ -109,8 +112,9 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
             angle = angle < 0 ? 360-angle : angle;
             Direction facing = getBlockState().getValue(FACING);
             float shaftR = facing == Direction.NORTH ? 180 : facing == Direction.SOUTH ? 0 : facing == Direction.EAST ? 0 : facing == Direction.WEST ? 180 : facing == Direction.DOWN ? 90 : -90;
+
             if((oldAngle+shaftR) % 360 > (angle+shaftR) % 360) {
-                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 3f,0.74f, false);
+                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 1f,1f, false);
             }
             oldAngle = angle;
 
@@ -163,8 +167,9 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && getBlockState().getValue(BooleanProperty.create(side.toString())))
+        if(side == null)
+            return tank.getCapability().cast();
+        else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && getBlockState().getValue(BooleanProperty.create(side.toString())))
             if(side.getAxis() != getBlockState().getValue(FACING).getAxis())
                 return tank.getCapability().cast();
 

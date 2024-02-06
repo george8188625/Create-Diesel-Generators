@@ -31,6 +31,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.POWERED;
 import static com.jesz.createdieselgenerators.blocks.DieselGeneratorBlock.SILENCED;
 import static com.jesz.createdieselgenerators.blocks.LargeDieselGeneratorBlock.*;
 
@@ -38,7 +39,6 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     BlockState state;
     public boolean validFuel;
     public int stacked;
-    public boolean powered = false;
     boolean end = true;
     public WeakReference<LargeDieselGeneratorBlockEntity> forw;
     public WeakReference<LargeDieselGeneratorBlockEntity> back;
@@ -134,13 +134,16 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
     public float calculateAddedStressCapacity() {
         if (getGeneratedSpeed() == 0 || !end)
             return 0;
-
+        if(state.getValue(POWERED))
+            return 0;
         return FuelTypeManager.getGeneratedStress(this, tank.getPrimaryHandler().getFluid().getFluid()) / Math.abs(getGeneratedSpeed()) * stacked;
     }
 
     @Override
     public float getGeneratedSpeed() {
         if(!end)
+            return 0;
+        if(state.getValue(POWERED))
             return 0;
         return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1)* FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()), getBlockState().getValue(LargeDieselGeneratorBlock.FACING));
     }
@@ -217,21 +220,21 @@ public class LargeDieselGeneratorBlockEntity extends GeneratingKineticBlockEntit
 
         end = engineForward == null;
 
-        updateGeneratedRotation();
+        reActivateSource = true;
 
-        if (reActivateSource) {
-            reActivateSource = false;
-        }
         LargeDieselGeneratorBlockEntity frontEngine = this.frontEngine.get();
 
         if(!tank.isEmpty() && engineForward != null && frontEngine != null){
             frontEngine.tank.getPrimaryHandler().fill(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
             tank.getPrimaryHandler().drain(tank.getPrimaryHandler().getFluid(), IFluidHandler.FluidAction.EXECUTE);
         }
-        validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
+        if(state.getValue(POWERED))
+            validFuel = false;
+        else
+            validFuel = FuelTypeManager.getGeneratedSpeed(this, tank.getPrimaryHandler().getFluid().getFluid()) != 0;
 
         if(frontEngine != null && t > FuelTypeManager.getSoundSpeed(frontEngine.tank.getPrimaryHandler().getFluid().getFluid()) && frontEngine.validFuel && !state.getValue(SILENCED) && (((stacked % 6) == 0) || end)){
-            level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 3f,1.08f, false);
+            level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundRegistry.DIESEL_ENGINE_SOUND.get(), SoundSource.BLOCKS, 0.5f,1f, false);
             t = 0;
         }else
             t++;
