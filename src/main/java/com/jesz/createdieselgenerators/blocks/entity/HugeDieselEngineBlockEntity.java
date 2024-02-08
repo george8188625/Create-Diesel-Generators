@@ -167,7 +167,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if(side == null)
+        if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && side == null)
             return tank.getCapability().cast();
         else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && getBlockState().getValue(BooleanProperty.create(side.toString())))
             if(side.getAxis() != getBlockState().getValue(FACING).getAxis())
