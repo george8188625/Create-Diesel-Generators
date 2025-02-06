@@ -34,46 +34,46 @@ public class FuelTypeManager {
         protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
             fuelTypes.clear();
 
-           for(Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()){
+           for(Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
                JsonElement element = entry.getValue();
-                if(!element.isJsonObject())
-                    return;
-                JsonObject normalEngineObject = element.getAsJsonObject().get("normal").getAsJsonObject();
-                JsonObject modularEngineObject = element.getAsJsonObject().has("modular") ? element.getAsJsonObject().get("modular").getAsJsonObject() : normalEngineObject;
-                JsonObject hugeEngineObject = element.getAsJsonObject().has("huge") ? element.getAsJsonObject().get("huge").getAsJsonObject() : normalEngineObject;
-                String fluidId = element.getAsJsonObject().get("fluid").getAsString();
-                if(fluidId.startsWith("#")){
-                    fuelTags.put(fluidId.substring(1), new CDGFuelType(
-                                    normalEngineObject.get("speed").getAsFloat(),
-                                    normalEngineObject.get("strength").getAsFloat(),
-                                    normalEngineObject.get("burn_rate").getAsInt(),
-                                    modularEngineObject.get("speed").getAsFloat(),
-                                    modularEngineObject.get("strength").getAsFloat(),
-                                    modularEngineObject.get("burn_rate").getAsInt(),
-                                    hugeEngineObject.get("speed").getAsFloat(),
-                                    hugeEngineObject.get("strength").getAsFloat(),
-                                    hugeEngineObject.get("burn_rate").getAsInt(),
-                                    element.getAsJsonObject().get("sound_speed").getAsInt()
-                            ));
-                    tryPopulateTags();
-                }else{
-                    Optional<Holder.Reference<Fluid>> fluid = ForgeRegistries.FLUIDS.getDelegate(new ResourceLocation(fluidId));
-                    if(fluid.isEmpty())
-                        return;
-                    fuelTypes.put(fluid.get().get(), new CDGFuelType(
-                            normalEngineObject.get("speed").getAsFloat(),
-                            normalEngineObject.get("strength").getAsFloat(),
-                            normalEngineObject.get("burn_rate").getAsInt(),
-                            modularEngineObject.get("speed").getAsFloat(),
-                            modularEngineObject.get("strength").getAsFloat(),
-                            modularEngineObject.get("burn_rate").getAsInt(),
-                            hugeEngineObject.get("speed").getAsFloat(),
-                            hugeEngineObject.get("strength").getAsFloat(),
-                            hugeEngineObject.get("burn_rate").getAsInt(),
-                            element.getAsJsonObject().get("sound_speed").getAsInt()
-                    ));
-                }
-            }
+               if (element.isJsonObject()) {
+                   JsonObject normalEngineObject = element.getAsJsonObject().get("normal").getAsJsonObject();
+                   JsonObject modularEngineObject = element.getAsJsonObject().has("modular") ? element.getAsJsonObject().get("modular").getAsJsonObject() : normalEngineObject;
+                   JsonObject hugeEngineObject = element.getAsJsonObject().has("huge") ? element.getAsJsonObject().get("huge").getAsJsonObject() : normalEngineObject;
+                   String fluidId = element.getAsJsonObject().get("fluid").getAsString();
+                   if (fluidId.startsWith("#")) {
+                       fuelTags.put(fluidId.substring(1), new CDGFuelType(
+                               normalEngineObject.get("speed").getAsFloat(),
+                               normalEngineObject.get("strength").getAsFloat(),
+                               normalEngineObject.get("burn_rate").getAsInt(),
+                               modularEngineObject.get("speed").getAsFloat(),
+                               modularEngineObject.get("strength").getAsFloat(),
+                               modularEngineObject.get("burn_rate").getAsInt(),
+                               hugeEngineObject.get("speed").getAsFloat(),
+                               hugeEngineObject.get("strength").getAsFloat(),
+                               hugeEngineObject.get("burn_rate").getAsInt(),
+                               element.getAsJsonObject().get("sound_speed").getAsInt()
+                       ));
+                       tryPopulateTags();
+                   } else {
+                       Optional<Holder.Reference<Fluid>> fluid = ForgeRegistries.FLUIDS.getDelegate(new ResourceLocation(fluidId));
+                       if (!fluid.isEmpty()) {
+                           fuelTypes.put(fluid.get().get(), new CDGFuelType(
+                                   normalEngineObject.get("speed").getAsFloat(),
+                                   normalEngineObject.get("strength").getAsFloat(),
+                                   normalEngineObject.get("burn_rate").getAsInt(),
+                                   modularEngineObject.get("speed").getAsFloat(),
+                                   modularEngineObject.get("strength").getAsFloat(),
+                                   modularEngineObject.get("burn_rate").getAsInt(),
+                                   hugeEngineObject.get("speed").getAsFloat(),
+                                   hugeEngineObject.get("strength").getAsFloat(),
+                                   hugeEngineObject.get("burn_rate").getAsInt(),
+                                   element.getAsJsonObject().get("sound_speed").getAsInt()
+                           ));
+                       }
+                   }
+               }
+           }
         }
     }
     public static void tryPopulateTags(){
