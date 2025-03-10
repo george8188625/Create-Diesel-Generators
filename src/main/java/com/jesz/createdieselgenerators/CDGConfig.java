@@ -100,10 +100,8 @@ public class CDGConfig {
         MAX_OIL_BARREL_WIDTH = SERVER_BUILDER.comment("Maximum width of Oil Barrels")
                 .define("Max Oil Barrel Width", 3);
         
-        CANISTER_CAPACITY = SERVER_BUILDER.comment("Canister Capacity in mB")
-                .define("Capacity of Canisters",4000);
-        CANISTER_CAPACITY_ENCHANTMENT = SERVER_BUILDER.comment("Canister Capacity Enchantment Capacity Addition in mB")
-                .define("Capacity Addition of Capacity Enchantment in Canisters",1000);
+
+
         CANISTER_SPOUT_FILLING = SERVER_BUILDER.comment("Canister can be filled by spouts")
                 .define("Canister can be filled by spouts",true);
 
@@ -118,6 +116,11 @@ public class CDGConfig {
                     .define("Capacity of Tools requiring Fluids",200);
             TOOL_CAPACITY_ENCHANTMENT = COMMON_BUILDER.comment("Tool Capacity Enchantment Capacity Addition in mB")
                     .define("Capacity Addition of Tools with Capacity Enchantment",100);
+        CANISTER_CAPACITY = COMMON_BUILDER.comment("Canister Capacity in mB")
+                .define("Capacity of Canisters",4000);
+        CANISTER_CAPACITY_ENCHANTMENT = COMMON_BUILDER.comment("Canister Capacity Enchantment Capacity Addition in mB")
+                .define("Capacity Addition of Capacity Enchantment in Canisters",1000);
+
         COMMON_BUILDER.pop();
         COMMON_SPEC = COMMON_BUILDER.build();
 
