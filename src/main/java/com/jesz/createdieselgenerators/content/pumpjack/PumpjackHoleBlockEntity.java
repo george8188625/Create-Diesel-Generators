@@ -151,7 +151,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        tank = SmartFluidTankBehaviour.single(this, 1000);
+        tank = SmartFluidTankBehaviour.single(this, 2000);
         behaviours.add(tank);
     }
     public void pumpjackRotation(boolean isCrankLarge) {
@@ -172,15 +172,18 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
             oilAmount = amount;
             started = true;
 
-            if (storedOilAmount == 0 && amount != 0){
-                sd.setChunkAmount(chunkPos, amount-1);
-                oilAmount = amount -1;
-                storedOilAmount = 1000;
+            int subtractedAmountRaw = (int) (100 * Math.abs((float) headPos / (float) bearingPos)) * (isCrankLarge ? 2 : 1);
+            while (storedOilAmount < subtractedAmountRaw && amount > 0){
+                amount--;
+                sd.setChunkAmount(chunkPos, amount);
+                oilAmount = amount;
+                storedOilAmount += 1000;
             }
-            int subtractedAmount = Mth.clamp((int) (100 * Math.abs((float) headPos / (float) bearingPos)) * (isCrankLarge ? 2 : 1), 0, storedOilAmount);
+            int subtractedAmount = Mth.clamp(subtractedAmountRaw, 0, storedOilAmount);
 
-            if (tank.getPrimaryHandler().getFluidAmount() + subtractedAmount >= tank.getPrimaryHandler().getCapacity())
-                return;
+            if (tank.getPrimaryHandler().getFluidAmount() + subtractedAmount > tank.getPrimaryHandler().getCapacity())
+                subtractedAmount = tank.getPrimaryHandler().getCapacity() - tank.getPrimaryHandler().getFluidAmount();
+
             storedOilAmount = storedOilAmount - subtractedAmount;
 
             FluidStack oilStack = new FluidStack(stackList.get(0), subtractedAmount);
