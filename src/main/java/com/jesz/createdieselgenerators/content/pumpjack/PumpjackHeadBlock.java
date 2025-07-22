@@ -19,18 +19,18 @@ public class PumpjackHeadBlock extends AttachedActorBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        if(state.getValue(FACING) == Direction.NORTH)
+        if (state.getValue(FACING) == Direction.SOUTH)
             return Block.box(0, 2, 0, 16, 14, 2);
-        if(state.getValue(FACING) == Direction.SOUTH)
+        if (state.getValue(FACING) == Direction.NORTH)
             return Block.box(0, 2, 14, 16, 14, 16);
-        if(state.getValue(FACING) == Direction.WEST)
+        if (state.getValue(FACING) == Direction.EAST)
             return Block.box(0, 2, 0, 2, 14, 16);
         return Block.box(14, 2, 0, 16, 14, 16);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(FACING, context.getPlayer() != null && context.getPlayer().isShiftKeyDown() ? context.getHorizontalDirection().getOpposite() : context.getHorizontalDirection()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
+        return super.getStateForPlacement(context).setValue(FACING, context.getPlayer() != null && context.getPlayer().isShiftKeyDown() ? context.getHorizontalDirection() : context.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
     }
 
     @Override

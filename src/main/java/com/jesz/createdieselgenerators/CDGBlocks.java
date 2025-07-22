@@ -171,7 +171,7 @@ public class CDGBlocks {
             .initialProperties(SharedProperties::softMetal)
             .properties(p -> p.mapColor(MapColor.GLOW_LICHEN))
             .transform(pickaxeOnly())
-            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.standardModel(c, p), 180))
+            .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.standardModel(c, p), 0))
             .onRegister(movementBehaviour(new PumpjackHeadMovementBehaviour()))
             .simpleItem()
             .register();

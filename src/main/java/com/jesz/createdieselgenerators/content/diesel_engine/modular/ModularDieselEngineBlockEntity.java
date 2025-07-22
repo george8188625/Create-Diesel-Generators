@@ -30,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -73,8 +74,12 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap != ForgeCapabilities.FLUID_HANDLER)
+            return super.getCapability(cap, side);
+
         if (!fluidCapability.isPresent())
             refreshCapability();
+
         if (side == null || (side == Direction.UP && getBlockState().getValue(PIPE)))
             return fluidCapability.cast();
         return super.getCapability(cap, side);

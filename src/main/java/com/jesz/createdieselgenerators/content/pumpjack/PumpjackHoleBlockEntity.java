@@ -157,7 +157,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        tank = SmartFluidTankBehaviour.single(this, 1000);
+        tank = SmartFluidTankBehaviour.single(this, 8000);
         behaviours.add(tank);
     }
 
@@ -175,7 +175,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
             oilAmount = OilChunksSavedData.getChunkOilAmount((ServerLevel) level, chunkPos);
             started = true;
 
-            int subtractedAmount = Mth.clamp((int) (100 * Math.abs((float) headPos / (float) bearingPos)) * (isCrankLarge ? 2 : 1), 0, oilAmount);
+            int subtractedAmount = Mth.clamp((int) (1000 * Math.abs((float) headPos / (float) bearingPos)) * (isCrankLarge ? 2 : 1), 0, oilAmount);
 
             FluidStack oilStack = new FluidStack(stackList.get(0), subtractedAmount);
 

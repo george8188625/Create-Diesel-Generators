@@ -45,18 +45,16 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if(getBlockState().getValue(FACING) == Direction.DOWN) {
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.WEST)
+        if (cap != ForgeCapabilities.FLUID_HANDLER)
+            return super.getCapability(cap, side);
+        if (getBlockState().getValue(FACING) == Direction.DOWN) {
+            if (side.getAxis() == Direction.Axis.X)
                 return tank.getCapability().cast();
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.EAST)
+        } else if(getBlockState().getValue(FACING) == Direction.UP) {
+            if (side.getAxis() == Direction.Axis.Z)
                 return tank.getCapability().cast();
-        }else if(getBlockState().getValue(FACING) == Direction.UP){
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.NORTH)
-                return tank.getCapability().cast();
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.SOUTH)
-                return tank.getCapability().cast();
-        }else{
-            if (cap == ForgeCapabilities.FLUID_HANDLER && side == Direction.DOWN)
+        } else {
+            if (side == Direction.DOWN)
                 return tank.getCapability().cast();
         }
         return super.getCapability(cap, side);
