@@ -127,7 +127,7 @@ repositories {
 
     maven {
         // saps.dev Maven (KubeJS and Rhino)
-        url = "https://maven.saps.dev/minecraft"
+        url = "https://maven.latvian.dev/releases"
         content {
             includeGroup "dev.latvian.mods"
         }
@@ -153,7 +153,7 @@ dependencies {
     implementation fg.deobf("curse.maven:selene-499980:4980621")
     implementation fg.deobf("curse.maven:createaddition-439890:6256349")
 
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.17")
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.20")
 
     implementation fg.deobf("dev.latvian.mods:rhino-forge:1902.2.3-build.284")
     implementation fg.deobf("dev.architectury:architectury-forge:6.6.92")
