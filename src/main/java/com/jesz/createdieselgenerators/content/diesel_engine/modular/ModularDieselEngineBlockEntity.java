@@ -208,8 +208,6 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
     }
 
     public void updateConnectivity() {
-        if (soundInstance != null)
-            soundInstance = null;
         updateConnectivity = false;
         if (level.isClientSide)
             return;

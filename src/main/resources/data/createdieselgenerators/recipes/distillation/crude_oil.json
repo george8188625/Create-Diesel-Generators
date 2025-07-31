@@ -7,7 +7,7 @@
     }
   ],
   "heatRequirement": "heated",
-  "processingTime": 100,
+  "processingTime": 60,
   "results": [
     {
       "fluid": "createdieselgenerators:diesel",

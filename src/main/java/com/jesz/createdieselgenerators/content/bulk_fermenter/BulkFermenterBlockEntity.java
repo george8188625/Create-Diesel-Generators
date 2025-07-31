@@ -353,7 +353,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
             public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
                 for (int i = 0; i < getSlots(); i++) {
                     if (ItemHandlerHelper.canItemStacksStack(getStackInSlot(i), stack)) {
-                        int space = getSlotLimit(i) - getStackInSlot(i).getCount();
+                        int space = Math.min(stack.getMaxStackSize(), getSlotLimit(i)) - getStackInSlot(i).getCount();
                         if (space == 0)
                             return stack;
                         return super.insertItem(i, stack, simulate)

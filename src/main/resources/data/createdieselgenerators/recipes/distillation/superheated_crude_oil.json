@@ -7,7 +7,7 @@
     }
   ],
   "heatRequirement": "superheated",
-  "processingTime": 100,
+  "processingTime": 40,
   "results": [
     {
       "fluid": "createdieselgenerators:diesel",
