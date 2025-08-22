@@ -7,7 +7,6 @@ import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
-import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryWrapper;
@@ -71,7 +70,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
     public int processingTime = -1;
     BulkFermentingRecipe currentRecipe;
 
-    BlazeBurnerBlock.HeatLevel lowestHeatLevel = BlazeBurnerBlock.HeatLevel.NONE;
+    BlazeBurnerBlock.HeatLevel highestHeatLevel = BlazeBurnerBlock.HeatLevel.NONE;
     public BulkFermenterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         tankInventory = createInventory();
@@ -401,7 +400,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
         if (isController()) {
             width = compound.getInt("Size");
             height = compound.getInt("Height");
-            lowestHeatLevel = BlazeBurnerBlock.HeatLevel.values()[compound.getInt("Heat")];
+            highestHeatLevel = BlazeBurnerBlock.HeatLevel.values()[compound.getInt("Heat")];
             tankInventory.setCapacity(getTotalTankSize() * getCapacityMultiplier());
             tankInventory.readFromNBT(compound.getCompound("TankContent"));
 
@@ -439,7 +438,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
             compound.putInt("Size", width);
             compound.putInt("Height", height);
             compound.putInt("ProcessingTime", processingTime);
-            compound.putInt("Heat", lowestHeatLevel.ordinal());
+            compound.putInt("Heat", highestHeatLevel.ordinal());
         }
         compound.put("Inventory", inventory.serializeNBT());
 
@@ -468,7 +467,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
     }
 
     public static int getCapacityMultiplier() {
-        return AllConfigs.server().fluids.fluidTankCapacity.get() * 1000;
+        return 1000;
     }
 
     @Override
@@ -612,27 +611,33 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
     public void updateHeat(){
         BulkFermenterBlockEntity controller = getControllerBE();
         int width;
-        if(controller == null)
+        if (controller == null)
             width = 1;
-        else
+        else {
+            if (controller != this) {
+                controller.updateHeat();
+                return;
+            }
             width = controller.width;
+        }
 
-        BlazeBurnerBlock.HeatLevel lowestHeat = BlazeBurnerBlock.HeatLevel.SEETHING;
+        BlazeBurnerBlock.HeatLevel highestHeat = BlazeBurnerBlock.HeatLevel.NONE;
 
         for (int xOffset = 0; xOffset < width; xOffset++) {
             for (int zOffset = 0; zOffset < width; zOffset++) {
                 BlockPos pos = getController().offset(xOffset, -1, zOffset);
                 BlockState blockState = level.getBlockState(pos);
                 BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(blockState);
-                if(!heat.isAtLeast(lowestHeat))
-                    lowestHeat = heat;
+                if(!highestHeat.isAtLeast(heat))
+                    highestHeat = heat;
             }
         }
-        lowestHeatLevel = lowestHeat;
+        highestHeatLevel = highestHeat;
 
         List<Recipe<?>> r = getMatchingRecipes();
         if (!r.contains(currentRecipe)) {
             processingTime = -1;
+
         }
         if (processingTime == -1 && !r.isEmpty()) {
             currentRecipe = (BulkFermentingRecipe) r.get(0);

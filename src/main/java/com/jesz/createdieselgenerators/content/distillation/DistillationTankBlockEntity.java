@@ -59,7 +59,8 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
 
     // For rendering purposes only
     private LerpedFloat fluidLevel;
-    BlazeBurnerBlock.HeatLevel currentHeating = BlazeBurnerBlock.HeatLevel.NONE;
+
+    BlazeBurnerBlock.HeatLevel highestHeatLevel = BlazeBurnerBlock.HeatLevel.NONE;
 
     public DistillationTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -76,18 +77,18 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     protected SmartFluidTank createInventory() {return new SmartFluidTank(getCapacityMultiplier(), this::onFluidStackChanged);}
     public BlazeBurnerBlock.HeatLevel getHeat() {
         int width = getControllerBE().width;
-        BlazeBurnerBlock.HeatLevel lowestHeat = BlazeBurnerBlock.HeatLevel.SEETHING;
+        BlazeBurnerBlock.HeatLevel highestHeat = BlazeBurnerBlock.HeatLevel.NONE;
 
         for (int xOffset = 0; xOffset < width; xOffset++) {
             for (int zOffset = 0; zOffset < width; zOffset++) {
                 BlockPos pos = getController().offset(xOffset, -1, zOffset);
                 BlockState blockState = level.getBlockState(pos);
                 BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(blockState);
-                if(!heat.isAtLeast(lowestHeat))
-                    lowestHeat = heat;
+                if(!highestHeat.isAtLeast(heat))
+                    highestHeat = heat;
             }
         }
-        return lowestHeat;
+        return highestHeat;
     }
     public void updateConnectivity() {
         updateConnectivity = false;
@@ -132,13 +133,13 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                 if (canFill)
                     processingTime--;
 
-                if (!(tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount() && currentRecipe.getRequiredHeat().testBlazeBurner(currentHeating))) {
+                if (!(tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount() && currentRecipe.getRequiredHeat().testBlazeBurner(highestHeatLevel))) {
                     currentRecipe = null;
                     processingTime = -1;
                 }
             }
             if (processingTime == 0 && currentRecipe != null) {
-                if (tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount()  && currentRecipe.getRequiredHeat().testBlazeBurner(currentHeating)) {
+                if (tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).getRequiredAmount()  && currentRecipe.getRequiredHeat().testBlazeBurner(highestHeatLevel)) {
                     tankInventory.drain(currentRecipe.getFluidIngredients().get(0).getRequiredAmount(), IFluidHandler.FluidAction.EXECUTE);
                     if (currentRecipe != null)
                         for (int i = 0; i < currentRecipe.getFluidResults().size(); i++) {
@@ -216,7 +217,7 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                 })
                 .filter(r ->{
                             if(r instanceof DistillationRecipe recipe){
-                                if(!recipe.getRequiredHeat().testBlazeBurner(currentHeating))
+                                if(!recipe.getRequiredHeat().testBlazeBurner(highestHeatLevel))
                                     return false;
                                 return recipe.getFluidIngredients().get(0).test(tankInventory.getFluid());
                             }
@@ -693,10 +694,10 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     }
 
     public void updateTemperature() {
-        if(!isBottom())
+        if (!isBottom())
             return;
-        if(isController()){
-            currentHeating = getHeat();
+        if (isController()) {
+            highestHeatLevel = getHeat();
             sendData();
             checkForRecipes();
             return;
