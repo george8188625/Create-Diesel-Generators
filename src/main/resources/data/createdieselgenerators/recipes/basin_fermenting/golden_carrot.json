@@ -22,9 +22,9 @@
     {
       "fluid": "create:potion",
       "nbt": {
-        "Potion": "minecraft:mundane"
+        "Potion": "minecraft:awkward"
       },
-      "amount": 100
+      "amount": 250
     }
   ],
   "processingTime": 400,
@@ -35,9 +35,9 @@
     {
       "fluid": "create:potion",
       "nbt": {
-        "Potion": "minecraft:thick"
+        "Potion": "minecraft:awkward"
       },
-      "amount": 100
+      "amount": 250
     }
   ]
 }

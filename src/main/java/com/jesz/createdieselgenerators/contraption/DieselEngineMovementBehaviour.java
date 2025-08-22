@@ -80,7 +80,7 @@ public class DieselEngineMovementBehaviour implements MovementBehaviour {
             instance.setVolume(1f);
             Minecraft.getInstance().getSoundManager().play(instance);
             soundInstances.put(Pair.of(entity.getUUID(), context.localPos), instance);
-        } else if (instance.isStopped())
+        } else if (instance.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(instance))
             soundInstances.remove(Pair.of(entity.getUUID(), context.localPos));
 
         instance.setPosition(context.position);
