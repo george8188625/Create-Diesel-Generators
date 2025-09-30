@@ -36,7 +36,7 @@ public class HammerItem extends Item {
     Multimap<Attribute, AttributeModifier> toolAttributes;
 
     public HammerItem(Properties properties) {
-        super(properties.stacksTo(1).defaultDurability(128));
+        super(properties.defaultDurability(128));
 
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
         builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 9, AttributeModifier.Operation.ADDITION));

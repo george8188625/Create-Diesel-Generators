@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class WireCuttersItem extends Item {
     public WireCuttersItem(Properties properties) {
-        super(properties.stacksTo(1).defaultDurability(32));
+        super(properties.defaultDurability(32));
     }
 
     @Override
