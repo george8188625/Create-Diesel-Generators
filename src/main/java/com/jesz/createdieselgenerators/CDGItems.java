@@ -33,13 +33,17 @@ public class CDGItems {
 
     public static final ItemEntry<DistillationControllerItem> DISTILLATION_CONTROLLER = REGISTRATE.item("distillation_controller", DistillationControllerItem::new).register();
 
-    public static final ItemEntry<LighterItem> LIGHTER = REGISTRATE.item("lighter", LighterItem::new).register();
+    public static final ItemEntry<LighterItem> LIGHTER = REGISTRATE.item("lighter", LighterItem::new)
+            .properties(p -> p.stacksTo(1))
+            .register();
 
     public static final ItemEntry<ChemicalSprayerItem> CHEMICAL_SPRAYER = REGISTRATE.item("chemical_sprayer", p -> new ChemicalSprayerItem(p, false))
+            .properties(p -> p.stacksTo(1))
             .model(AssetLookup.itemModelWithPartials())
             .register();
 
     public static final ItemEntry<ChemicalSprayerItem> CHEMICAL_SPRAYER_LIGHTER = REGISTRATE.item("chemical_sprayer_lighter", p -> new ChemicalSprayerItem(p, true))
+            .properties(p -> p.stacksTo(1))
             .lang("Chemical Sprayer With Lighter")
             .model((c, p) -> p.withExistingParent("chemical_sprayer_lighter", p.modLoc("item/chemical_sprayer/lighter")))
             .register();
@@ -55,9 +59,11 @@ public class CDGItems {
 
     public static final ItemEntry<MoldItem> MOLD = REGISTRATE.item("mold", MoldItem::new).register();
 
-    public static final ItemEntry<HammerItem> HAMMER = REGISTRATE.item("hammer", HammerItem::new).register();
+    public static final ItemEntry<HammerItem> HAMMER = REGISTRATE.item("hammer", HammerItem::new)
+            .properties(p -> p.durability(128)).register();
 
-    public static final ItemEntry<WireCuttersItem> WIRE_CUTTERS = REGISTRATE.item("wire_cutters", WireCuttersItem::new).register();
+    public static final ItemEntry<WireCuttersItem> WIRE_CUTTERS = REGISTRATE.item("wire_cutters", WireCuttersItem::new)
+            .properties(p -> p.durability(128)).register();
 
     public static final ItemEntry<EntityFilterItem> ENTITY_FILTER = REGISTRATE.item("entity_filter", EntityFilterItem::new).register();
 

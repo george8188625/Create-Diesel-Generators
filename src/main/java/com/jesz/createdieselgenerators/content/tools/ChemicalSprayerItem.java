@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 public class ChemicalSprayerItem extends Item implements CustomArmPoseItem, CapacityEnchantment.ICapacityEnchantable, FueledToolItem {
     boolean lighter;
     public ChemicalSprayerItem(Properties properties, boolean lighter) {
-        super(properties.stacksTo(1));
+        super(properties);
         this.lighter = lighter;
     }
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {

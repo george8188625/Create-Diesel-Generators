@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 
 public class LighterItem extends Item implements CapacityEnchantment.ICapacityEnchantable, FueledToolItem {
     public LighterItem(Properties properties) {
-        super(properties.stacksTo(1));
+        super(properties);
     }
 
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {
