@@ -56,7 +56,8 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
     protected BlockPos lastKnownPos;
     protected boolean updateConnectivity = false;
     protected boolean updateCapability = false;
-
+    private float lastCapacity;
+    private float lastSpeed;
 
     public ModularDieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -152,7 +153,13 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
         }
 
-        reActivateSource = true;
+        float fuelCapacity = upgrade.getCapacity(getFuelCapacity() * getHeight() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
+            reActivateSource = true;
+            lastSpeed = getGeneratedSpeed();
+            lastCapacity = fuelCapacity;
+        }
+
         if (enabled()) {
             if (remainingTicks < length + 1) {
                 remainingTicks += length / getFuelBurnRate();

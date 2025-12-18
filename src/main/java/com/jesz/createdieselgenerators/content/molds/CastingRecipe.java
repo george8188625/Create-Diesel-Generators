@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.content.molds;
 import com.google.gson.JsonObject;
 import com.jesz.createdieselgenerators.CDGRecipes;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
+import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import net.minecraft.network.FriendlyByteBuf;
@@ -74,7 +75,7 @@ public class CastingRecipe extends ProcessingRecipe<Container> {
 
 
         if (getFluidIngredients().get(0).test(fluidStack))
-            return true;
+            return BasinRecipe.match(basin, this);
 
         return false;
     }

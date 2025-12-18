@@ -53,8 +53,12 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
             }
 
         List<Pair<BlockPos, Couple<Float>>> newEngines = new ArrayList<>(engines);
-        if (found != null)
+        if (found != null) {
+            Couple<Float> status = found.getSecond();
+            if (status.getFirst() == stress && status.getSecond() == speed)
+                return;
             newEngines.remove(found);
+        }
         newEngines.add(Pair.of(sourcePos, Couple.create(stress, speed)));
         engines = newEngines;
 
@@ -77,7 +81,7 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
 
     public void removeGenerator(BlockPos sourcePos) {
         List<Pair<BlockPos, Couple<Float>>> newEngines = new ArrayList<>(engines);
-        newEngines.removeIf(p -> p.getFirst().equals(sourcePos));
+        boolean removed = newEngines.removeIf(p -> p.getFirst().equals(sourcePos));
         engines = newEngines;
 
         if (engines.isEmpty()) {
@@ -85,7 +89,8 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
             speed = 0;
             stressCapacity = 0;
         }
-        reActivateSource = true;
+        if (removed)
+            reActivateSource = true;
     }
 
     @Override

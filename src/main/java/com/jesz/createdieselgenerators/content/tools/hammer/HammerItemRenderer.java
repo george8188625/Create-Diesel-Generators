@@ -48,17 +48,22 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
                     ms.popPose();
                 } else {
                     ms.pushPose();
-                    TransformStack.of(ms).translate(0, -0.4, -0.3).rotateXDegrees(-36).rotateZDegrees(44);
+                    TransformStack.of(ms)
+//                            .rotateYDegrees(90)
+                            .translate(-0.2, 0.4, 0)
+                            .scale(0.75f)
+                            .rotateYDegrees(77);
                     itemRenderer.renderStatic(processingItem, ItemDisplayContext.NONE, light, overlay, ms, buffer, Minecraft.getInstance().level, 0);
                     ms.popPose();
                     ms.pushPose();
 
                     TransformStack.of(ms)
-                            .translate(0, -0.2, -0.5)
+                            .rotateYDegrees(90)
+                            .translate(0, 0, -0.7)
                             .scale(0.75f, 0.75f, 1.1f)
                             .rotateYDegrees(77)
                             .uncenter()
-                            .rotateZDegrees(Math.abs(time * time * time) * -180 + 50)
+                            .rotateZDegrees(Math.abs(time * time * time) * -180 + 80)
                             .center();
                     renderer.render(model.getOriginalModel(), light);
                     ms.popPose();
@@ -67,21 +72,22 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
                 boolean flip = transformType == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
                 ms.pushPose();
                 TransformStack.of(ms)
-                        .translate(0, 0, 1)
-                        .rotateYDegrees(flip ? 180 : 0)
+                        .translate(0, 0, flip ? -1 : 1)
                         .translate(0, 0, -0.6)
                         .rotateYDegrees(45)
                         .uncenter()
                         .rotateZDegrees(Math.abs(time * time * time) * 400)
-                        .center();
+                        .center()
+                ;
                 renderer.render(model.getOriginalModel(), light);
                 ms.popPose();
                 ms.pushPose();
                 TransformStack.of(ms)
-                        .translate(0, 0, 1).rotateYDegrees(flip ? 180 : 0)
+                        .translate(0, 0, flip ? -1 : 1)
                         .translate(-0.5, 0.4, 0)
                         .translate(Math.cos((time) * -Math.PI) / -10, 0, 0)
-                        .rotateYDegrees(-45);
+                        .rotateYDegrees(-45)
+                ;
                 itemRenderer.renderStatic(processingItem, ItemDisplayContext.NONE, light, overlay, ms, buffer, Minecraft.getInstance().level, 0);
                 ms.popPose();
 

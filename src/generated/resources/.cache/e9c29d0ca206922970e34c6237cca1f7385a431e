@@ -1,4 +1,4 @@
-// 1.20.1	2025-07-22T14:03:52.5997359	Registrate Provider for createdieselgenerators [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.20.1	2025-12-18T19:54:42.3912325	Registrate Provider for createdieselgenerators [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
 515c47692d269b683b2f71229a92f9dda098148f assets/createdieselgenerators/blockstates/andesite_girder.json
 c04c217c8303f8e9da156ff8fd1e03579667db9f assets/createdieselgenerators/blockstates/andesite_girder_encased_shaft.json
 c30a00b0f2722bc05d96cdcd9b1418a8eeda6fdd assets/createdieselgenerators/blockstates/asphalt_block.json
@@ -134,7 +134,7 @@ c17c92c11d6cb12df6c4a03ecb9e0df088dd78eb assets/createdieselgenerators/models/it
 d17a88970cb8c75fdde9fb0e9ca26c254e77e905 assets/createdieselgenerators/models/item/gasoline_bucket.json
 8c1b6819839e14974051b01c49c581b88848bb3e assets/createdieselgenerators/models/item/gray_cement_bucket.json
 bbdb2b6459e1a5e306fd7b330d71d5a4872af5da assets/createdieselgenerators/models/item/green_cement_bucket.json
-ab0c5c852e136d0330f383dbf1a93917008e1a44 assets/createdieselgenerators/models/item/hammer.json
+f62fa58a86181bd33633c201b08ee286c7c6f9e3 assets/createdieselgenerators/models/item/hammer.json
 5df378afd5ed9c97f12439757aac22db4358dbc5 assets/createdieselgenerators/models/item/huge_diesel_engine.json
 00e5af1ea69d7c5e771e18df20b12aa7251a925e assets/createdieselgenerators/models/item/kelp_handle.json
 da3a95c7861c20f9872d04af1f0ebf102d6efb53 assets/createdieselgenerators/models/item/large_diesel_engine.json
@@ -196,7 +196,7 @@ cf60f15e3a11b947432e9aed4e769f2a117b8882 data/createdieselgenerators/loot_tables
 7d78adeb5e44ffb45ff00b628b30487b809d89ff data/createdieselgenerators/loot_tables/blocks/oil_barrel.json
 e323ebbf609246a396e282ea8f07c70c72a6d03f data/createdieselgenerators/loot_tables/blocks/orange_concrete_encased_fluid_pipe.json
 735e76b7618620bb6928b84fee68bcdedb026aed data/createdieselgenerators/loot_tables/blocks/pink_concrete_encased_fluid_pipe.json
-94c5741f2e329012cc6bad8323e97bdbfa1acb96 data/createdieselgenerators/loot_tables/blocks/powered_engine_shaft.json
+ac37a56ce647bbf88c7e0b6684b373309f00e1b8 data/createdieselgenerators/loot_tables/blocks/powered_engine_shaft.json
 2d48b6145ce31570ecd1f003848301d6652b513b data/createdieselgenerators/loot_tables/blocks/pumpjack_bearing.json
 3a6c0b689c46c05f9a60d99595caa0da400c5e53 data/createdieselgenerators/loot_tables/blocks/pumpjack_bearing_b.json
 c677371878529d9df4f9db6315fe3b0174ae16ce data/createdieselgenerators/loot_tables/blocks/pumpjack_crank.json

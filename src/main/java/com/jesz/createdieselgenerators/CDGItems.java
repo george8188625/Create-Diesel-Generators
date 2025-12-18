@@ -13,7 +13,13 @@ import com.jesz.createdieselgenerators.content.track_layers_bag.TrackLayersBagIt
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.tterrag.registrate.util.entry.ItemEntry;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.ForgeTier;
 
 import static com.jesz.createdieselgenerators.CreateDieselGenerators.REGISTRATE;
 
@@ -59,8 +65,10 @@ public class CDGItems {
 
     public static final ItemEntry<MoldItem> MOLD = REGISTRATE.item("mold", MoldItem::new).register();
 
-    public static final ItemEntry<HammerItem> HAMMER = REGISTRATE.item("hammer", HammerItem::new)
-            .properties(p -> p.durability(128)).register();
+    public static final ItemEntry<HammerItem> HAMMER = REGISTRATE.item("hammer", properties -> new HammerItem(properties, new ForgeTier(2, 128, -3.1F, 6.0F, 14, BlockTags.NEEDS_IRON_TOOL, () -> Ingredient.of(Items.IRON_INGOT))))
+            .properties(p -> p.durability(128))
+            .model((c, p) -> p.handheld(c::getEntry))
+            .register();
 
     public static final ItemEntry<WireCuttersItem> WIRE_CUTTERS = REGISTRATE.item("wire_cutters", WireCuttersItem::new)
             .properties(p -> p.durability(128)).register();

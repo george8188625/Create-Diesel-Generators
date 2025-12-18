@@ -5,7 +5,7 @@
       "tag": "forge:cobblestone"
     }
   ],
-  "heatRequirement": "superheated",
+  "heatRequirement": "heated",
   "processingTime": 900,
   "results": [
     {
