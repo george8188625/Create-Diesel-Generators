@@ -1,6 +1,5 @@
 package com.jesz.createdieselgenerators.mixins;
 
-import com.jesz.createdieselgenerators.events.EntityTickEvent;
 import com.jesz.createdieselgenerators.mixin_interfaces.IEntity;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -8,7 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,10 +19,6 @@ public abstract class EntityMixin implements IEntity {
 
     @Unique
     public BlockPos create_diesel_generators$turretPos;
-    @Inject(method = "tick", at = @At("HEAD"), remap = false)
-    public void tick(CallbackInfo ci){
-        NeoForge.EVENT_BUS.post(new EntityTickEvent(this));
-    }
 
     @Inject(method="load", at = @At("HEAD"), remap = false)
     public void load(CompoundTag tag, CallbackInfo ci){
