@@ -27,10 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.*;
@@ -39,10 +36,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeMod;
@@ -127,24 +122,6 @@ public class ForgeEvents {
                 toExplode.get(level).remove(pos);
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void onEntityTick(EntityTickEvent event){
-        if (event.entity instanceof ItemEntity itemEntity)
-            if (itemEntity.getItem().is(CDGItems.LIGHTER.get()) && CDGConfig.COMBUSTIBLES_BLOW_UP.get() && itemEntity.getItem().getTag() != null)
-                if (itemEntity.getItem().getTag().getInt("Type") == 2) {
-                    Vec3 entityPos = itemEntity.getPosition(1);
-                    FluidState fState = itemEntity.level().getFluidState(new BlockPos(BlockPos.containing(entityPos)));
-                    if(fState.is(Fluids.WATER) || fState.is(Fluids.FLOWING_WATER)) {
-                        itemEntity.getItem().getTag().putInt("Type", 1);
-                        itemEntity.level().playLocalSound(itemEntity.getPosition(1).x, itemEntity.getPosition(1).y, itemEntity.getPosition(1).z, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1f, 1f, false);
-                        return;
-                    }
-                    boolean flammable = FuelType.getTypeFor(itemEntity.level().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fState.getType()).normal().speed() != 0;
-                    if (flammable)
-                        itemEntity.level().explode(null, null, null, itemEntity.getPosition(1).x, itemEntity.getPosition(1).y, itemEntity.getPosition(1).z, 1, true, Level.ExplosionInteraction.BLOCK);
-                }
     }
 
     static Map<Level, Set<BlockPos>> toExplode = new HashMap<>();

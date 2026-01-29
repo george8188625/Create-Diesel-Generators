@@ -1,13 +1,11 @@
 package com.jesz.createdieselgenerators.mixins;
 
-import com.jesz.createdieselgenerators.events.EntityTickEvent;
 import com.jesz.createdieselgenerators.mixin_interfaces.IEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,18 +18,14 @@ public abstract class EntityMixin implements IEntity {
 
     @Unique
     public BlockPos create_diesel_generators$turretPos;
-    @Inject(method = "tick", at = @At("HEAD"))
-    public void tick(CallbackInfo ci){
-        MinecraftForge.EVENT_BUS.post(new EntityTickEvent(this));
-    }
 
     @Inject(method="load", at = @At("HEAD"))
-    public void load(CompoundTag tag, CallbackInfo ci){
+    public void load(CompoundTag tag, CallbackInfo ci) {
         if(tag.contains("TurretPos", Tag.TAG_COMPOUND))
             create_diesel_generators$turretPos = NbtUtils.readBlockPos(tag.getCompound("TurretPos"));
     }
     @Inject(method="save", at = @At("HEAD"))
-    public void save(CompoundTag tag, CallbackInfoReturnable<Boolean> ci){
+    public void save(CompoundTag tag, CallbackInfoReturnable<Boolean> ci) {
         if(create_diesel_generators$turretPos != null)
             tag.put("TurretPos", NbtUtils.writeBlockPos(create_diesel_generators$turretPos));
     }

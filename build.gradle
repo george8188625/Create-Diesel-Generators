@@ -6,7 +6,7 @@ plugins {
 
 }
 
-version = '1.20.1-1.3.8'
+version = '1.20.1-1.3.9'
 group = 'com.jesz.createdieselgenerators'
 archivesBaseName = 'createdieselgenerators'
 
@@ -157,10 +157,9 @@ dependencies {
 
     implementation fg.deobf("dev.latvian.mods:rhino-forge:1902.2.3-build.284")
     implementation fg.deobf("dev.architectury:architectury-forge:6.6.92")
-
-    implementation fg.deobf("curse.maven:observable-509575:5643037")
     implementation fg.deobf("curse.maven:kotlin-for-forge-351264:5402061")
-    implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
+
+    implementation fg.deobf("curse.maven:spark-361579:4738952")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

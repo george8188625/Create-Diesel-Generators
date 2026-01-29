@@ -75,17 +75,22 @@ public class CreateDieselGenerators
     }
 
     public static void onClient(IEventBus modEventBus, IEventBus forgeEventBus) {
-        CDGPartialModels.init();
-        CDGSpriteShifts.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CDGConfig.CLIENT_SPEC, ID + "-client.toml");
-        modEventBus.addListener(CreateDieselGenerators::clientInit);
+        modEventBus.addListener(CreateDieselGenerators::clientSetup);
         modEventBus.addListener(LighterModel::onModelBake);
 
     }
-    public static void clientInit(final FMLClientSetupEvent event) {
+
+    public static void clientSetup(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.getSource(), RenderType.translucent());
+        event.enqueueWork(CreateDieselGenerators::clientInit);
+    }
+
+    public static void clientInit() {
         PonderIndex.addPlugin(new CDGPonderPlugin());
+        CDGPartialModels.init();
+        CDGSpriteShifts.init();
     }
 
     public static ResourceLocation rl(String path){

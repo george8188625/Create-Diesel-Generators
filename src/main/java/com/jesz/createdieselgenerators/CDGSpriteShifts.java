@@ -49,7 +49,9 @@ public class CDGSpriteShifts {
             OIL_BARREL_GREEN = rectangle("oil_barrel/vertical/iron", "oil_barrel/vertical/green_connected"),
             OIL_BARREL_RED = rectangle("oil_barrel/vertical/iron", "oil_barrel/vertical/red_connected"),
             OIL_BARREL_BLACK = rectangle("oil_barrel/vertical/iron", "oil_barrel/vertical/black_connected");
+
     public static void init(){}
+
     private static CTSpriteShiftEntry horizontal(String name) {
         return CTSpriteShifter.getCT(AllCTTypes.CROSS, new ResourceLocation("createdieselgenerators:block/"+name),
                 new ResourceLocation("createdieselgenerators:block/"+name+"_connected"));

@@ -1,5 +1,7 @@
 package com.jesz.createdieselgenerators.content.tools.lighter;
 
+import com.jesz.createdieselgenerators.CDGConfig;
+import com.jesz.createdieselgenerators.CDGItems;
 import com.jesz.createdieselgenerators.CDGRegistries;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.content.tools.FueledToolItem;
@@ -20,6 +22,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +37,9 @@ import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -76,7 +82,7 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
         FluidStack fStack = FluidStack.loadFluidStackFromNBT(tankCompound);
 
         boolean flammable = FuelType.getTypeFor(level.registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fStack.getFluid()).normal().speed() != 0;
-        if (flammable && stack.getTag().getInt("Type") == 2){
+        if (!flammable && stack.getTag().getInt("Type") == 2){
             stack.getTag().putInt("Type", 1);
         }
     }
@@ -169,6 +175,24 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
 
             return InteractionResult.SUCCESS;
         }
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        if (stack.is(CDGItems.LIGHTER.get()) && CDGConfig.COMBUSTIBLES_BLOW_UP.get() && stack.getTag() != null)
+            if (stack.getTag().getInt("Type") == 2) {
+                Vec3 entityPos = entity.getPosition(1);
+                FluidState fState = entity.level().getFluidState(new BlockPos(BlockPos.containing(entityPos)));
+                if(fState.is(Fluids.WATER) || fState.is(Fluids.FLOWING_WATER)) {
+                    stack.getTag().putInt("Type", 1);
+                    entity.level().playLocalSound(entity.getPosition(1).x, entity.getPosition(1).y, entity.getPosition(1).z, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1f, 1f, false);
+                    return false;
+                }
+                boolean flammable = FuelType.getTypeFor(entity.level().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fState.getType()).normal().speed() != 0;
+                if (flammable)
+                    entity.level().explode(null, null, null, entity.getPosition(1).x, entity.getPosition(1).y, entity.getPosition(1).z, 1, true, Level.ExplosionInteraction.BLOCK);
+            }
+        return false;
     }
 
     @Override
