@@ -22,6 +22,7 @@ import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
@@ -65,10 +66,10 @@ public class PumpjackCrankInstance extends KineticBlockEntityVisual<PumpjackCran
         float angle = AngleHelper.angleLerp(partialTicks, blockEntity.prevAngle, blockEntity.angle);
 
         boolean isXAxis = blockState.getValue(HORIZONTAL_FACING).getAxis() == Direction.Axis.X;
-        double v = ((isXAxis ? angle : -angle) + 90) / 180 * Math.PI;
+        float v = ((isXAxis ? angle : -angle) + 90) * Mth.DEG_TO_RAD;
 
-        double sin = Math.sin(v) * (blockEntity.crankSize.getValue() == 0 ? 0.8125 : 1.125);
-        double cos = Math.cos(v) * (blockEntity.crankSize.getValue() == 0 ? 0.8125 : 1.125);
+        double sin = Mth.sin(v) * (blockEntity.crankSize.getValue() == 0 ? 0.8125 : 1.125);
+        double cos = Mth.cos(v) * (blockEntity.crankSize.getValue() == 0 ? 0.8125 : 1.125);
 
         double dstY = -1000-sin-1.25 - pos.getY();
         double dstX = pos.getX()-cos-0.5 - pos.getX();
@@ -92,8 +93,8 @@ public class PumpjackCrankInstance extends KineticBlockEntityVisual<PumpjackCran
             if (!isXAxis)
                 interpolatedAngle *= -1;
             Vec2 crankBearingLocation = new Vec2(
-                    (float) ((blockEntity.crankBearingLocation.x) * Math.cos(interpolatedAngle/180 * Math.PI) - (blockEntity.crankBearingLocation.y) * Math.sin(interpolatedAngle/180*Math.PI))+0.5f,
-                    (float) ((blockEntity.crankBearingLocation.x) * Math.sin(interpolatedAngle/180 * Math.PI) + (blockEntity.crankBearingLocation.y) * Math.cos(interpolatedAngle/180*Math.PI))+0.5f);
+                    (float) ((blockEntity.crankBearingLocation.x) * Mth.cos(interpolatedAngle * Mth.DEG_TO_RAD) - (blockEntity.crankBearingLocation.y) * Mth.sin(interpolatedAngle * Mth.DEG_TO_RAD))+0.5f,
+                    (float) ((blockEntity.crankBearingLocation.x) * Mth.sin(interpolatedAngle * Mth.DEG_TO_RAD) + (blockEntity.crankBearingLocation.y) * Mth.cos(interpolatedAngle * Mth.DEG_TO_RAD))+0.5f);
             if (isXAxis)
                 crankBearingLocation = crankBearingLocation.add(new Vec2((float) blockEntity.bearingPos.getX(), (float) blockEntity.bearingPos.getY()));
             else
@@ -118,9 +119,9 @@ public class PumpjackCrankInstance extends KineticBlockEntityVisual<PumpjackCran
         msr.translate(getVisualPosition());
 
         if(isXAxis) {
-            msr.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZDegrees((float) (Math.atan2(dstY, dstX)*180/Math.PI-90));
+            msr.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZDegrees((float) (Mth.atan2(dstY, dstX) * Mth.RAD_TO_DEG - 90));
         }else {
-            msr.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateYDegrees(90).rotateZDegrees((float) (Math.atan2(dstZ, dstY)*180/Math.PI));
+            msr.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateYDegrees(90).rotateZ((float) Mth.atan2(dstZ, dstY));
         }
         (blockEntity.crankSize.getValue() == 0 ? crank_rod : large_crank_rod).setTransform(ms);
         (blockEntity.crankSize.getValue() == 0 ? large_crank_rod : crank_rod).setZeroTransform();

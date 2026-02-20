@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 
@@ -32,10 +33,10 @@ public class PumpjackCrankRenderer extends ShaftRenderer<PumpjackCrankBlockEntit
         float angle = AngleHelper.angleLerp(partialTicks, be.prevAngle, be.angle);
 
         boolean isXAxis = blockState.getValue(HORIZONTAL_FACING).getAxis() == Direction.Axis.X;
-        double v = ((isXAxis ? angle : -angle) + 90) / 180 * Math.PI;
+        float v = ((isXAxis ? angle : -angle) + 90) * Mth.DEG_TO_RAD;
 
-        double sin = Math.sin(v) * (be.crankSize.getValue() == 0 ? 0.8125 : 1.125);
-        double cos = Math.cos(v) * (be.crankSize.getValue() == 0 ? 0.8125 : 1.125);
+        double sin = Mth.sin(v) * (be.crankSize.getValue() == 0 ? 0.8125 : 1.125);
+        double cos = Mth.cos(v) * (be.crankSize.getValue() == 0 ? 0.8125 : 1.125);
         SuperByteBuffer crank = CachedBuffers.partial(be.crankSize.getValue() == 0 ? CDGPartialModels.PUMPJACK_CRANK_SMALL : CDGPartialModels.PUMPJACK_CRANK_LARGE, blockState);
         SuperByteBuffer rod = CachedBuffers.partial(be.crankSize.getValue() == 0 ? CDGPartialModels.PUMPJACK_CRANK_ROD_SMALL : CDGPartialModels.PUMPJACK_CRANK_ROD_LARGE, blockState);
 
@@ -56,8 +57,8 @@ public class PumpjackCrankRenderer extends ShaftRenderer<PumpjackCrankBlockEntit
             if (!isXAxis)
                 interpolatedAngle *= -1;
             Vec2 crankBearingLocation = new Vec2(
-                    (float) ((be.crankBearingLocation.x) * Math.cos(interpolatedAngle/180 * Math.PI) - (be.crankBearingLocation.y) * Math.sin(interpolatedAngle/180*Math.PI))+0.5f,
-                    (float) ((be.crankBearingLocation.x) * Math.sin(interpolatedAngle/180 * Math.PI) + (be.crankBearingLocation.y) * Math.cos(interpolatedAngle/180*Math.PI))+0.5f);
+                    (float) ((be.crankBearingLocation.x) * Mth.cos(interpolatedAngle * Mth.DEG_TO_RAD) - (be.crankBearingLocation.y) * Mth.sin(interpolatedAngle * Mth.DEG_TO_RAD))+0.5f,
+                    (float) ((be.crankBearingLocation.x) * Mth.sin(interpolatedAngle * Mth.DEG_TO_RAD) + (be.crankBearingLocation.y) * Mth.cos(interpolatedAngle * Mth.DEG_TO_RAD))+0.5f);
             if (isXAxis)
                 crankBearingLocation = crankBearingLocation.add(new Vec2((float) be.bearingPos.getX(), (float) be.bearingPos.getY()));
             else
@@ -70,10 +71,10 @@ public class PumpjackCrankRenderer extends ShaftRenderer<PumpjackCrankBlockEntit
 
         if (isXAxis) {
             crank.translate(0.5, 1.25, 0).rotateZDegrees(angle);
-            rod.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZDegrees((float) (Math.atan2(dstY, dstX)*180/Math.PI-90));
+            rod.translate(0.5, 1.25, 0).translate(cos, sin, 0).rotateZDegrees((float) (Mth.atan2(dstY, dstX) * Mth.RAD_TO_DEG - 90));
         } else {
             crank.translate(0, 1.25, 0.5).rotateYDegrees(90).rotateZDegrees(angle);
-            rod.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateYDegrees(90).rotateZDegrees((float) (Math.atan2(dstZ, dstY)*180/Math.PI));
+            rod.translate(0, 1.25, 0.5).translate(0, sin, cos).rotateYDegrees(90).rotateZ((float) Mth.atan2(dstZ, dstY));
         }
 
         rod.light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));

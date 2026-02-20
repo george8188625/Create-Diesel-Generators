@@ -241,6 +241,17 @@ public class CDGBlocks {
             .properties(p -> p.isRedstoneConductor((p1, p2, p3) -> true))
             .transform(pickaxeOnly())
             .blockstate(new DistillationTankGenerator()::generate)
+            .loot((lt, block) -> {
+                LootTable.Builder builder = LootTable.lootTable();
+                LootItemCondition.Builder survivesExplosion = ExplosionCondition.survivesExplosion();
+                lt.add(block, builder.withPool(LootPool.lootPool()
+                        .when(survivesExplosion)
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(CDGItems.DISTILLATION_CONTROLLER)))
+                        .withPool(LootPool.lootPool().when(survivesExplosion)
+                        .setRolls(ConstantValue.exactly(1))
+                        .add(LootItem.lootTableItem(AllBlocks.FLUID_TANK))));
+            })
             .onRegister(CreateRegistrate.blockModel(() -> DistillationTankModel::new))
             .register();
 
