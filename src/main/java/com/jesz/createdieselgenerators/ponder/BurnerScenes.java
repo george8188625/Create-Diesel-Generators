@@ -1,5 +1,6 @@
 package com.jesz.createdieselgenerators.ponder;
 
+import com.jesz.createdieselgenerators.content.burner.BurnerBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;
@@ -7,6 +8,7 @@ import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Blocks;
 
 public class BurnerScenes {
 
@@ -70,7 +72,7 @@ public class BurnerScenes {
 
         scene.overlay().showText(70)
                 .attachKeyFrame()
-                .text("The burners burn rate can be controlled with a valve")
+                .text("The burners' burn rates can be controlled with a valve")
                 .pointAt(util.vector().blockSurface(util.grid().at(1, 1, 1), Direction.NORTH))
                 .placeNearTarget();
         scene.idle(80);
@@ -79,7 +81,19 @@ public class BurnerScenes {
         scene.world().modifyKineticSpeed(valveShaft, f -> 256f);
         scene.idle(20);
         scene.world().modifyKineticSpeed(valveShaft, f -> 0f);
-
         scene.idle(60);
+
+        scene.overlay().showText(70)
+                .attachKeyFrame()
+                .text("Additionally, you can power the burner with redstone to make it burn even quicker")
+                .pointAt(util.vector().blockSurface(util.grid().at(2, 1, 1), Direction.NORTH))
+                .placeNearTarget();
+
+        scene.idle(80);
+        scene.world().setBlock(util.grid().at(2, 1, 0), Blocks.REDSTONE_TORCH.defaultBlockState(), false);
+        scene.world().showSection(util.select().position(2, 1, 0), Direction.DOWN);
+        scene.world().modifyBlockEntity(util.grid().at(2, 1, 1), BurnerBlockEntity.class, be -> be.redstonePower = true);
+        scene.idle(80);
+
     }
 }

@@ -5,6 +5,7 @@ import com.simibubi.create.content.kinetics.base.HorizontalAxisKineticBlock;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -44,9 +45,29 @@ public class BurnerBlock extends HorizontalAxisKineticBlock implements IBE<Burne
 
         super.entityInside(state, level, pos, entity);
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return box(1, 0, 1, 15, 12, 15);
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moved) {
+        if (level.getBlockEntity(pos) instanceof BurnerBlockEntity be)
+            be.redstonePower = level.hasNeighborSignal(pos);
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState p_60457_) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof BurnerBlockEntity be)
+            return be.redstoneOutput;
+
+        return 0;
     }
 
     @Override

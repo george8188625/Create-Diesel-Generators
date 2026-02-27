@@ -27,6 +27,7 @@ import java.util.List;
 
 public class BurnerBlockEntity extends KineticBlockEntity {
     public float heat = -1;
+    public int redstoneOutput = 0;
     SmartFluidTank tank = new SmartFluidTank(100, f -> {});
 
     public float valveState = 0.2f;
@@ -35,13 +36,16 @@ public class BurnerBlockEntity extends KineticBlockEntity {
     float multiplier;
     boolean ignited = false;
     int ignitionTries;
+    public boolean redstonePower = false;
+
     @Override
     public void tick() {
-        tick = (tick+1) % 40000;
+        tick = (tick + 1) & 0xFFFF;
         super.tick();
 
         prevValveState = valveState;
         valveState = Mth.clamp(valveState + getSpeed() / 5000, 0, 1);
+        float valveOrRedstoneState = redstonePower ? 20 : this.valveState;
 
         boolean containsValidFuel = !tank.getFluid().isEmpty();
         if (containsValidFuel)
@@ -49,9 +53,9 @@ public class BurnerBlockEntity extends KineticBlockEntity {
         if (multiplier == 0)
             containsValidFuel = false;
 
-        if (valveState == 0 || !containsValidFuel) {
+        if (valveOrRedstoneState == 0 || !containsValidFuel) {
             heat = -1;
-            if(!level.isClientSide) {
+            if (!level.isClientSide) {
                 if (ignited)
                     level.playSound(null, worldPosition, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3f, level.getRandom().nextFloat() * 0.4F + 0.7F);
 
@@ -59,11 +63,11 @@ public class BurnerBlockEntity extends KineticBlockEntity {
                 ignitionTries = 0;
             }
         }
-        if (containsValidFuel && valveState != 0){
-            heat = (valveState + 1) * multiplier;
-            if(level.isClientSide)
+        if (containsValidFuel && valveOrRedstoneState != 0) {
+            heat = (valveOrRedstoneState + 1) * multiplier;
+            if (level.isClientSide)
                 return;
-            if(tick % 5 == 0){
+            if (tick % 5 == 0) {
                 if(!ignited){
                     level.playSound(null, worldPosition, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.5f, level.getRandom().nextFloat() * 0.4F + 0.7F);
                     ignitionTries++;
@@ -71,7 +75,7 @@ public class BurnerBlockEntity extends KineticBlockEntity {
                         ignited = true;
                 }
             }
-            if ((int)(tick % (10 / valveState)) == 0) {
+            if ((int)(tick % (10 / valveOrRedstoneState)) == 0) {
                 tank.drain(1, IFluidHandler.FluidAction.EXECUTE);
                 sendData();
                 setChanged();
@@ -84,6 +88,11 @@ public class BurnerBlockEntity extends KineticBlockEntity {
             notifyUpdate();
         }
 
+        int newRedstoneOutput = (int) Mth.clamp(heat * 6, 0, 15);
+        if (redstoneOutput != newRedstoneOutput) {
+            redstoneOutput = newRedstoneOutput;
+            setChanged();
+        }
     }
     int x = 0;
     int y = 0;
@@ -91,11 +100,12 @@ public class BurnerBlockEntity extends KineticBlockEntity {
     @Override
     public void tickAudio() {
         super.tickAudio();
-        if (valveState == 0 || heat == -1)
+        float valveOrRedstoneState = Math.min(3, redstonePower ? 10 : this.valveState);
+        if (valveOrRedstoneState == 0 || heat == -1)
             return;
         RandomSource random = RandomSource.create();
-        if (tick % 100 == 0)
-            level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 0.3f, 1f, true);
+        if (tick % 20 == 0)
+            level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, heat * 0.3f, 1f, true);
 
         x = (x + 1) % 4;
         if (x == 3)
@@ -103,20 +113,40 @@ public class BurnerBlockEntity extends KineticBlockEntity {
 
         if (!(x == 0 || x == 3 || y == 0 || y == 3))
             return;
+
+        level.addParticle(ParticleTypes.SMOKE,
+                worldPosition.getX() + 0.3475 + (float) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (float) y / 9,
+                0, 0.02 * valveOrRedstoneState, 0);
+
+
+        if (redstonePower) {
+            if (heat >= 1.8f && random.nextInt(0, 1) != 1) {
+                level.addParticle(ParticleTypes.LARGE_SMOKE,
+                        worldPosition.getX() + 0.3475 + (double) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (double) y / 9,
+                        0, 0.02 * valveOrRedstoneState, 0);
+            }
+
+            if (heat >= 1.8f && random.nextInt(0, 1) != 1) {
+                level.addParticle(ParticleTypes.FLAME,
+                        worldPosition.getX() + 0.3475 + (double) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (double) y / 9,
+                        0, 0.02 * valveOrRedstoneState, 0);
+
+                level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                        worldPosition.getX() + 0.3475 + (double) x / 9, worldPosition.getY() + 1.75, worldPosition.getZ() + 0.3475 + (double) y / 9,
+                        0, 0.02 * valveOrRedstoneState, 0);
+            }
+
+        }
+
         if (heat >= 1.8f && random.nextInt(0, (int) (1+heat*2)) != 1) {
             level.addParticle(ParticleTypes.SOUL_FIRE_FLAME,
                     worldPosition.getX() + 0.3475 + (double) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (double) y / 9,
-                    0, 0.02 * valveState, 0);
+                    0, 0.02 * valveOrRedstoneState, 0);
             return;
         }
         level.addParticle(ParticleTypes.FLAME,
                 worldPosition.getX() + 0.3475 + (float) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (float) y / 9,
-                0, 0.02 * valveState, 0);
-
-        level.addParticle(ParticleTypes.SMOKE,
-            worldPosition.getX() + 0.3475 + (float) x / 9, worldPosition.getY() + 0.75, worldPosition.getZ() + 0.3475 + (float) y / 9,
-            0, 0.02 * valveState, 0);
-
+                0, 0.02 * valveOrRedstoneState, 0);
 
     }
 
@@ -133,12 +163,14 @@ public class BurnerBlockEntity extends KineticBlockEntity {
     }
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        compound.putFloat("ValveState", valveState);
-        compound.putFloat("Heat", heat);
-        compound.putInt("Tick", tick);
-        compound.put("FluidContent", tank.writeToNBT(new CompoundTag()));
-        super.write(compound, clientPacket);
+    protected void write(CompoundTag tag, boolean clientPacket) {
+        tag.putFloat("ValveState", valveState);
+        tag.putFloat("Heat", heat);
+        tag.putInt("Tick", tick);
+        tag.put("FluidContent", tank.writeToNBT(new CompoundTag()));
+        tag.putBoolean("RedstonePower", redstonePower);
+        tag.putByte("RedstoneOutput", (byte) redstoneOutput);
+        super.write(tag, clientPacket);
     }
 
     @Override
@@ -147,6 +179,8 @@ public class BurnerBlockEntity extends KineticBlockEntity {
         heat = compound.getFloat("Heat");
         tick = compound.getInt("Tick");
         tank.readFromNBT(compound.getCompound("FluidContent"));
+        redstonePower = compound.getBoolean("RedstonePower");
+        redstoneOutput = compound.getByte("RedstoneOutput");
         super.read(compound, clientPacket);
     }
 

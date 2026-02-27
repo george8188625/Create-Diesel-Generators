@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -161,10 +162,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
                 if (currentRecipe != null) {
                     List<Recipe<?>> r = getMatchingRecipes();
                     currentRecipe = null;
-                    if (!r.contains(currentRecipe)) {
-                        processingTime = -1;
-                    }
-                    if (processingTime == -1 && !r.isEmpty()) {
+                    if (!r.isEmpty()) {
                         currentRecipe = (BulkFermentingRecipe) r.get(0);
                         startProcessing();
                     }
@@ -274,6 +272,14 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
         if (blockEntity instanceof BulkFermenterBlockEntity)
             return (BulkFermenterBlockEntity) blockEntity;
         return null;
+    }
+
+    @Override
+    protected AABB createRenderBoundingBox() {
+        if (isController())
+            return super.createRenderBoundingBox().expandTowards(width - 1, 0, width - 1);
+        else
+            return super.createRenderBoundingBox();
     }
 
     public void applyFluidTankSize(int blocks) {
@@ -418,8 +424,10 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
         if (hasLevel() && (changeOfController || prevSize != width || prevHeight != height)) {
             level.setBlocksDirty(getBlockPos(), Blocks.AIR.defaultBlockState(), getBlockState());
 
-            if (isController())
+            if (isController()) {
                 tankInventory.setCapacity(getCapacityMultiplier() * getTotalTankSize());
+                invalidateRenderBoundingBox();
+            }
         }
 
     }
