@@ -148,7 +148,7 @@ dependencies {
 
     implementation fg.deobf("mezz.jei:jei-1.20.1-forge:15.19.0.85")
 
-    compileOnly("cc.tweaked:cc-tweaked-1.20.1-core-api:1.105.0")1
+    compileOnly("cc.tweaked:cc-tweaked-1.20.1-core-api:1.105.0")
     compileOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge-api:1.105.0")
     runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.105.0")
 
