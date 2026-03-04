@@ -29,6 +29,9 @@ public class CDGConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> OIL_CHUNK_INFINITE_THRESHOLD;
     public static final ForgeConfigSpec.ConfigValue<Integer> OIL_CHUNK_THRESHOLD;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_NORMAL_OIL_CHUNKS;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_HIGH_OIL_CHUNKS;
+
     public static final ForgeConfigSpec.ConfigValue<Double> OIL_CHUNK_SCALE;
     public static final ForgeConfigSpec.ConfigValue<Double> OIL_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<Double> HIGH_OIL_MULTIPLIER;
@@ -84,6 +87,10 @@ public class CDGConfig {
                     .define("Infinite oil chunk threshold", 10_000_000);
             OIL_CHUNK_THRESHOLD = SERVER_BUILDER.comment()
                     .define("Oil chunk threshold", 4_000_000);
+            DISABLE_NORMAL_OIL_CHUNKS = SERVER_BUILDER.comment()
+                    .define("Disable normal oil chunks", false);
+            DISABLE_HIGH_OIL_CHUNKS = SERVER_BUILDER.comment()
+                    .define("Disable high oil chunks", false);
             OIL_MULTIPLIER = SERVER_BUILDER.comment()
                     .define("Normal oil chunks oil amount multiplier", 1.3d);
             HIGH_OIL_MULTIPLIER = SERVER_BUILDER.comment()

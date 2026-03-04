@@ -1,9 +1,9 @@
 package com.jesz.createdieselgenerators.content.pumpjack;
 
+import com.jesz.createdieselgenerators.CDGTags;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.content.concrete.ConcreteEncasedFluidPipeBlock;
 import com.jesz.createdieselgenerators.world.OilChunksSavedData;
-import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.fluids.FluidFX;
@@ -17,12 +17,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
@@ -42,7 +40,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
-import static com.simibubi.create.AllTags.optionalTag;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IHaveHoveringInformation {
@@ -125,9 +122,9 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
                 } else if(bs.getBlock() instanceof GlassFluidPipeBlock) {
                     if (!(bs.getValue(AXIS) == Direction.Axis.Y))
                         break;
-                } else if(bs.is(optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("createdieselgenerators:pumpjack_pipe")))){
+                } else if(bs.is(CDGTags.PUMPJACK_PIPE)){
                     continue;
-                } else if (bs.is(optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("createdieselgenerators:oil_deposit")))) {
+                } else if (bs.is(CDGTags.OIL_DEPOSIT)) {
                     valid = true;
                     break;
                 } else
@@ -163,7 +160,7 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
 
     public void pumpjackRotation(boolean isCrankLarge) {
         List<Fluid> stackList = ForgeRegistries.FLUIDS.tags()
-                .getTag(optionalTag(ForgeRegistries.FLUIDS, new ResourceLocation("createdieselgenerators:pumpjack_output")))
+                .getTag(CDGTags.PUMPJACK_OUTPUT)
                 .stream()
                 .distinct()
                 .toList();

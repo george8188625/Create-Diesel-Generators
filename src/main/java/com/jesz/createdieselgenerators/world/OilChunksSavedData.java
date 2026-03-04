@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.world;
 
 import com.jesz.createdieselgenerators.CDGConfig;
+import com.jesz.createdieselgenerators.CDGTags;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.compat.kubejs.CDGKubeJSPlugin;
 import com.simibubi.create.AllTags;
@@ -113,11 +114,15 @@ public class OilChunksSavedData extends SavedData {
         boolean isHighInOil = false;
         boolean isDenied = false;
         for (Holder<Biome> biome : biomes) {
-            if (biome.is(AllTags.optionalTag(ForgeRegistries.BIOMES, CreateDieselGenerators.rl("oil_biomes"))))
+            if (biome.is(CDGTags.OIL_BIOMES))
                 isHighInOil = true;
-            if (biome.is(AllTags.optionalTag(ForgeRegistries.BIOMES, CreateDieselGenerators.rl("deny_oil_biomes"))))
+            if (biome.is(CDGTags.DENY_OIL_BIOMES))
                 isDenied = true;
         }
+
+        if ((isHighInOil && CDGConfig.DISABLE_HIGH_OIL_CHUNKS.get()) ||
+                (!isHighInOil && CDGConfig.DISABLE_NORMAL_OIL_CHUNKS.get()))
+            return 0;
 
         if (isDenied)
             return 0;

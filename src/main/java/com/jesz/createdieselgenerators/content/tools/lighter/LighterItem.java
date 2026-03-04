@@ -1,13 +1,9 @@
 package com.jesz.createdieselgenerators.content.tools.lighter;
 
-import com.jesz.createdieselgenerators.CDGConfig;
-import com.jesz.createdieselgenerators.CDGItems;
-import com.jesz.createdieselgenerators.CDGRegistries;
-import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.*;
 import com.jesz.createdieselgenerators.content.tools.FueledToolItem;
 import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.AllEnchantments;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.armor.CapacityEnchantment;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -45,7 +41,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -126,10 +121,10 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
         BlockPos blockpos = context.getClickedPos();
         BlockState blockstate = level.getBlockState(blockpos);
         ItemStack itemstack = context.getItemInHand();
-        if(itemstack.getTag() == null || itemstack.getTag().getInt("Type") != 2)
+        if (itemstack.getTag() == null || itemstack.getTag().getInt("Type") != 2)
             return use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
         if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) &&
-                !CandleCakeBlock.canLight(blockstate) && !blockstate.is(AllTags.optionalTag(ForgeRegistries.BLOCKS, CreateDieselGenerators.rl("lighter_")))) {
+                !CandleCakeBlock.canLight(blockstate) && !blockstate.is(CDGTags.LIGHTER_LIGHTABLE)) {
             BlockPos blockpos1 = blockpos.relative(context.getClickedFace());
             if (BaseFireBlock.canBePlacedAt(level, blockpos1, context.getHorizontalDirection())) {
                 level.playSound(player, blockpos1, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
@@ -146,7 +141,7 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
                     return InteractionResult.FAIL;
                 }
                 boolean flammable = FuelType.getTypeFor(level.registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fStack.getFluid()).normal().speed() != 0;
-                if (flammable && itemstack.getTag().getInt("Type") == 2){
+                if (flammable && itemstack.getTag().getInt("Type") == 2) {
                     fStack.setAmount(fStack.getAmount()-1);
                     fStack.writeToNBT(itemstack.getTag().getCompound("Fluid"));
                 }
@@ -156,7 +151,7 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
             }
         } else {
             level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
-            if(blockstate.hasProperty(BlockStateProperties.LIT))
+            if (blockstate.hasProperty(BlockStateProperties.LIT))
                 level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, true), 11);
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
             CompoundTag tankCompound = itemstack.getTag().getCompound("Fluid");

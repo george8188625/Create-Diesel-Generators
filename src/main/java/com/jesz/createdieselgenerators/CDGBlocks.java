@@ -43,6 +43,8 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -59,7 +61,6 @@ import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class CDGBlocks {
     public static final BlockEntry<BurnerBlock> BURNER = REGISTRATE.block("burner", BurnerBlock::new)
             .initialProperties(SharedProperties::copperMetal)
             .transform(pickaxeOnly())
-            .tag(AllTags.optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("farmersdelight:heat_sources")))
+            .tag(CDGTags.HEAT_SOURCES)
             .blockstate((c, p) -> BlockStateGen.horizontalAxisBlock(c, p, bs -> AssetLookup.partialBaseModel(c, p)))
             .onRegister((b) -> BoilerHeater.REGISTRY.register(b, ((level, pos, state) -> {
                 if(level.getBlockEntity(pos) instanceof BurnerBlockEntity be)
@@ -281,10 +282,10 @@ public class CDGBlocks {
 
     public static final BlockEntry<RotatedPillarBlock> CHIP_WOOD_BLOCK = REGISTRATE.block("chip_wood_block", RotatedPillarBlock::new)
             .initialProperties(() -> Blocks.OAK_PLANKS)
-            .tag(AllTags.optionalTag(ForgeRegistries.BLOCKS, new ResourceLocation("planks")))
+            .tag(BlockTags.PLANKS)
             .transform(axeOnly())
             .blockstate((c, p) -> p.axisBlock(c.getEntry(), p.modLoc("block/chip_wood_block_side"), p.modLoc("block/chip_wood_block")))
-            .item().tag(AllTags.optionalTag(ForgeRegistries.ITEMS, new ResourceLocation("planks"))).build()
+            .item().tag(ItemTags.PLANKS).build()
             .register();
 
     public static final BlockEntry<RotatedPillarBlock> CHIP_WOOD_BEAM = REGISTRATE.block("chip_wood_beam", RotatedPillarBlock::new)
@@ -298,14 +299,14 @@ public class CDGBlocks {
             .initialProperties(() -> Blocks.OAK_SLAB)
             .transform(axeOnly())
             .blockstate((c, p) -> p.slabBlock(c.getEntry(), p.modLoc("block/chip_wood_block"), p.modLoc("block/chip_wood_block_side"), p.modLoc("block/chip_wood_block"), p.modLoc("block/chip_wood_block")))
-            .item().tag(AllTags.optionalTag(ForgeRegistries.ITEMS, new ResourceLocation("wooden_slabs"))).build()
+            .item().tag(ItemTags.WOODEN_SLABS).build()
             .register();
 
     public static final BlockEntry<StairBlock> CHIP_WOOD_STAIRS = REGISTRATE.block("chip_wood_stairs", p -> new StairBlock(Blocks.ANDESITE_STAIRS::defaultBlockState, p))
             .initialProperties(() -> Blocks.OAK_STAIRS)
             .transform(axeOnly())
             .blockstate((c, p) -> p.stairsBlock(c.getEntry(), p.modLoc("block/chip_wood_block_side"), p.modLoc("block/chip_wood_block"), p.modLoc("block/chip_wood_block")))
-            .item().tag(AllTags.optionalTag(ForgeRegistries.ITEMS, new ResourceLocation("wooden_stairs"))).build()
+            .item().tag(ItemTags.WOODEN_STAIRS).build()
             .register();
 
     public static final BlockEntry<Block> ASPHALT_BLOCK = REGISTRATE.block("asphalt_block", Block::new)

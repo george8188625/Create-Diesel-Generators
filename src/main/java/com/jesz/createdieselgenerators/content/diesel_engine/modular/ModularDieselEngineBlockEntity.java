@@ -98,6 +98,8 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         ModularDieselEngineBlockEntity controller = getControllerBE();
         if (controller == null)
             return false;
+        if (controller.isController()) // Fix really niche crash where both blocks think the other is a controller. This can happen after using worldedit or something similar.
+            return false;
         return controller.addToGoggleTooltip(tooltip, isPlayerSneaking);
     }
 
