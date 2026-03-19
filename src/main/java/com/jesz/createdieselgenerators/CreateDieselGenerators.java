@@ -85,11 +85,11 @@ public class CreateDieselGenerators
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.getSource(), RenderType.translucent());
         event.enqueueWork(CreateDieselGenerators::clientInit);
+        CDGPartialModels.init();
     }
 
     public static void clientInit() {
         PonderIndex.addPlugin(new CDGPonderPlugin());
-        CDGPartialModels.init();
         CDGSpriteShifts.init();
     }
 
