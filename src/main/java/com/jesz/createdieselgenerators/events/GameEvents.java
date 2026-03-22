@@ -6,6 +6,7 @@ import com.jesz.createdieselgenerators.content.andesite_girder.AndesiteGirderWre
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineTypes;
 import com.jesz.createdieselgenerators.content.entity_filter.EntityFilteringRenderer;
 import com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable;
+import com.jesz.createdieselgenerators.content.track_layers_bag.TrackLayersBagPlacement;
 import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.jesz.createdieselgenerators.mixins.LootPoolAccessor;
 import com.jesz.createdieselgenerators.mixins.LootTableAccessor;
@@ -104,6 +105,7 @@ public class GameEvents {
     public static void onClientTick(ClientTickEvent.Post event) {
         AndesiteGirderWrenchBehaviour.tick();
         EntityFilteringRenderer.tick();
+        TrackLayersBagPlacement.clientTick();
     }
 
     @SubscribeEvent
