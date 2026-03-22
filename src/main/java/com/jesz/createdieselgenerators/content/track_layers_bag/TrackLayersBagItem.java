@@ -12,6 +12,7 @@ import com.tterrag.registrate.providers.RegistrateItemModelProvider;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -50,7 +51,7 @@ public class TrackLayersBagItem extends Item {
     int add(ItemStack bag, ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof TrackBlockItem) {
             ItemStack stackInBag = getTracks(bag);
-            if(!ItemStack.isSameItemSameComponents(stack, stackInBag) && !stackInBag.isEmpty())
+            if(stack.getItem() != stackInBag.getItem() && !stackInBag.isEmpty())
                 return 0;
 
             int oldCount = stackInBag.getCount();
@@ -139,12 +140,9 @@ public class TrackLayersBagItem extends Item {
 
     public static ItemStack getTracks(ItemStack stack) {
         TrackLayersBagItemDataComponent component = stack.get(CDGDataComponents.TRACKS);
-        ItemStack trackStack;
         if (component == null)
-            trackStack = ItemStack.EMPTY;
-        else
-            trackStack = component.stack().copyWithCount(component.count());
-        return trackStack;
+            return ItemStack.EMPTY;
+        return component.toStack();
     }
 
     @Override
