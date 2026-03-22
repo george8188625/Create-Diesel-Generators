@@ -3,34 +3,39 @@ package com.jesz.createdieselgenerators.content.track_layers_bag;
 import com.jesz.createdieselgenerators.CDGDataComponents;
 import com.jesz.createdieselgenerators.CDGItems;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
-import com.jesz.createdieselgenerators.mixins.UseOnContextInvoker;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.trains.track.TrackBlock;
+import com.simibubi.create.AllDataComponents;
+import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.content.trains.track.ITrackBlock;
 import com.simibubi.create.content.trains.track.TrackBlockItem;
+import com.simibubi.create.content.trains.track.TrackPlacement;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateItemModelProvider;
+import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 
@@ -99,6 +104,11 @@ public class TrackLayersBagItem extends Item {
     }
 
     @Override
+    public boolean isFoil(ItemStack stack) {
+        return stack.has(AllDataComponents.TRACK_CONNECTING_FROM);
+    }
+
+    @Override
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction click, Player player) {
         if (stack.getCount() != 1 || click != ClickAction.SECONDARY)
             return false;
@@ -147,46 +157,112 @@ public class TrackLayersBagItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        ItemStack stack = context.getItemInHand();
-        ItemStack tracks = getTracks(stack);
+        ItemStack bag = context.getItemInHand();
+        ItemStack tracks = getTracks(bag);
+
         if (tracks.isEmpty())
             return super.useOn(context);
-        BlockState clickedState = context.getLevel().getBlockState(context.getClickedPos());
 
-        if (!(clickedState.getBlock() instanceof TrackBlock)) {
-            stack.set(CDGDataComponents.TRACKS, new TrackLayersBagItemDataComponent(tracks.copyWithCount(Math.max(0, tracks.getCount() - 1))));
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        BlockState state = level.getBlockState(pos);
+        Player player = context.getPlayer();
 
+        if (player == null)
+            return InteractionResult.PASS;
 
-            return ((TrackBlockItem) tracks.getItem()).place(new BlockPlaceContext(
-                    context.getLevel(), context.getPlayer(), context.getHand(), tracks, ((UseOnContextInvoker)context).cdg_getHitResult()));
+        Vec3 lookAngle = player.getLookAngle();
+
+        // 🟢 第一阶段：没有选中 → select
+        if (!isFoil(bag)) {
+            if (select(level, pos, lookAngle, bag)) {
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM,
+                        SoundSource.BLOCKS, 0.75f, 1);
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
         }
+
+        if (player.isShiftKeyDown()) {
+            return clearSelection(bag, level, player).getResult();
+        }
+
+        boolean placing = !(state.getBlock() instanceof ITrackBlock);
+
+        if (placing) {
+            if (!state.canBeReplaced())
+                pos = pos.relative(context.getClickedFace());
+
+            state = ((TrackBlockItem) tracks.getItem()).getPlacementState(context);
+            if (state == null)
+                return InteractionResult.FAIL;
+        }
+
+        ItemStack offhandItem = player.getOffhandItem();
+        boolean hasGirder = AllBlocks.METAL_GIRDER.isIn(offhandItem);
+
+        TrackLayersBagPlacement.PlacementInfo info = TrackLayersBagPlacement.tryConnect(
+                level, player, pos, state, bag, hasGirder, false
+        );
+
+        if (info.message != null && !level.isClientSide)
+            player.displayClientMessage(CreateLang.translateDirect(info.message), true);
+
+        if (!info.valid) {
+            AllSoundEvents.DENY.playFrom(player, 1, 1);
+            return InteractionResult.FAIL;
+        }
+
+        if (level.isClientSide)
+            return InteractionResult.SUCCESS;
+
+        bag.remove(AllDataComponents.TRACK_CONNECTING_FROM);
+
+        SoundType soundtype = state.getSoundType();
+        if (soundtype != null)
+            level.playSound(null, pos, soundtype.getPlaceSound(),
+                    SoundSource.BLOCKS,
+                    (soundtype.getVolume() + 1.0F) / 2.0F,
+                    soundtype.getPitch() * 0.8F);
+
         return InteractionResult.SUCCESS;
     }
 
-    private InteractionResult place(BlockPlaceContext context, BlockItem item) {
-        if (!context.canPlace())
-            return InteractionResult.FAIL;
-
-        BlockPos pos = context.getClickedPos();
-        Level level = context.getLevel();
-        Player player = context.getPlayer();
-
-        BlockState blockstate = item.getBlock().getStateForPlacement(context);
-        CollisionContext collision = player == null ? CollisionContext.empty() : CollisionContext.of(player);
-
-        if (!blockstate.canSurvive(level, pos) || !level.isUnobstructed(blockstate, pos, collision)) {
-            return InteractionResult.FAIL;
-        } else if (!level.setBlock(pos, blockstate, 11)) {
-            return InteractionResult.FAIL;
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+        ItemStack stack = player.getItemInHand(usedHand);
+        if (player.isShiftKeyDown() && isFoil(stack)) {
+            return clearSelection(stack, level, player);
         } else {
-            BlockState clickedState = level.getBlockState(pos);
-
-            level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, clickedState));
-            SoundType sound = clickedState.getSoundType(level, pos, context.getPlayer());
-            level.playSound(player, pos, clickedState.getSoundType().getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return super.use(level, player, usedHand);
         }
+    }
 
+    public static InteractionResultHolder<ItemStack> clearSelection(ItemStack stack, Level level, Player player) {
+        if (level.isClientSide) {
+            level.playSound(player, player.blockPosition(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.75f, 1.0f);
+        } else {
+            player.displayClientMessage(CreateLang.translateDirect("track.selection_cleared"), true);
+            stack.remove(AllDataComponents.TRACK_CONNECTING_FROM);
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+    }
+
+    public static boolean select(LevelAccessor world, BlockPos pos, Vec3 lookVec, ItemStack heldItem) {
+        BlockState blockState = world.getBlockState(pos);
+        Block block = blockState.getBlock();
+        if (!(block instanceof ITrackBlock track))
+            return false;
+
+        Pair<Vec3, Direction.AxisDirection> nearestTrackAxis = track.getNearestTrackAxis(world, pos, blockState, lookVec);
+        Vec3 axis = nearestTrackAxis.getFirst()
+                .scale(nearestTrackAxis.getSecond() == Direction.AxisDirection.POSITIVE ? -1 : 1);
+        Vec3 end = track.getCurveStart(world, pos, blockState, axis);
+        Vec3 normal = track.getUpNormal(world, pos, blockState)
+                .normalize();
+
+        heldItem.set(AllDataComponents.TRACK_CONNECTING_FROM, new TrackPlacement.ConnectingFrom(pos, axis, normal, end));
+        return true;
     }
 
     public void registerModelOverrides() {
@@ -197,7 +273,7 @@ public class TrackLayersBagItem extends Item {
 
     public static ItemModelBuilder addOverrideModels(DataGenContext<Item, TrackLayersBagItem> c,
                                                      RegistrateItemModelProvider p) {
-        ItemModelBuilder builder = p.generated(() -> c.get());
+        ItemModelBuilder builder = p.generated(c::get);
 
         builder.override()
                 .predicate(CreateDieselGenerators.rl("tracks"), 0.01f)
