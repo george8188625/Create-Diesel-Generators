@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.content.track_layers_bag;
 import com.jesz.createdieselgenerators.CDGDataComponents;
 import com.jesz.createdieselgenerators.CDGItems;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.mixins.UseOnContextInvoker;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllSoundEvents;
@@ -29,6 +30,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -173,14 +175,14 @@ public class TrackLayersBagItem extends Item {
 
         Vec3 lookAngle = player.getLookAngle();
 
-        // 🟢 第一阶段：没有选中 → select
         if (!isFoil(bag)) {
             if (select(level, pos, lookAngle, bag)) {
                 level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM,
                         SoundSource.BLOCKS, 0.75f, 1);
                 return InteractionResult.SUCCESS;
             }
-            return InteractionResult.PASS;
+            return ((TrackBlockItem) tracks.getItem()).place(new BlockPlaceContext(
+                    context.getLevel(), context.getPlayer(), context.getHand(), tracks, ((UseOnContextInvoker)context).cdg_getHitResult()));
         }
 
         if (player.isShiftKeyDown()) {
