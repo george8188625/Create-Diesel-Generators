@@ -40,7 +40,8 @@ public class CreateDieselGenerators
             .setTooltipModifierFactory(item ->
                     new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
                             .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
-            );;
+            );
+
     public CreateDieselGenerators() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
@@ -93,7 +94,7 @@ public class CreateDieselGenerators
         CDGSpriteShifts.init();
     }
 
-    public static ResourceLocation rl(String path){
+    public static ResourceLocation rl(String path) {
         return new ResourceLocation(ID, path);
     }
 

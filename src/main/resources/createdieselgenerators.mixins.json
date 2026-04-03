@@ -12,6 +12,7 @@
     "CopycatBlockMixin",
     "CreeperMixin",
     "EntityMixin",
+    "LootItemAccessor",
     "LootPoolAccessor",
     "LootTableAccessor",
     "MechanicalPressBlockEntityMixin",

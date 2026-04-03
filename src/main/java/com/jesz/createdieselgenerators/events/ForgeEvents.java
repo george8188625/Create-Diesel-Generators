@@ -7,6 +7,7 @@ import com.jesz.createdieselgenerators.content.diesel_engine.EngineTypes;
 import com.jesz.createdieselgenerators.content.entity_filter.EntityFilteringRenderer;
 import com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable;
 import com.jesz.createdieselgenerators.fuel_type.FuelType;
+import com.jesz.createdieselgenerators.mixins.LootItemAccessor;
 import com.jesz.createdieselgenerators.mixins.LootPoolAccessor;
 import com.jesz.createdieselgenerators.mixins.LootTableAccessor;
 import com.simibubi.create.content.equipment.goggles.GogglesItem;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraftforge.api.distmarker.Dist;
@@ -73,19 +75,15 @@ public class ForgeEvents {
     public static void loadLootTable(LootTableLoadEvent event){
         LootTable table = event.getTable();
         ResourceLocation tableId = table.getLootTableId();
-        if(!tableId.getPath().startsWith("entities/"))
+        if (!tableId.getPath().startsWith("entities/"))
                 return;
-        List<ItemStack> results = new LinkedList<>();
         ((LootTableAccessor)table).getPools().forEach(pool -> {
             List.of(((LootPoolAccessor) pool).getEntries()).forEach(e -> {
-                if(e instanceof LootItem lootItem){
-                    lootItem.createItemStack(stack -> {
-                        String path = tableId.getPath();
-                        path = path.replaceAll("entities/", "");
-                        EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(tableId.getNamespace(), path));
-                        ReverseLootTable.ALL.computeIfAbsent(stack.getItem(), s -> new ArrayList<>()).add(type);
-
-                    },null);
+                if (e instanceof LootItemAccessor lootItem) {
+                    String path = tableId.getPath();
+                    path = path.replaceAll("entities/", "");
+                    EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(tableId.getNamespace(), path));
+                    ReverseLootTable.ALL.computeIfAbsent(lootItem.getItem(), s -> new ArrayList<>()).add(type);
                 }
             });
         });
