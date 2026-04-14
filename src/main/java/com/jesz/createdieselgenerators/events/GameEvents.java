@@ -73,6 +73,7 @@ public class GameEvents {
     public static void loadLootTable(LootTableLoadEvent event){
         LootTable table = event.getTable();
         ResourceLocation tableId = table.getLootTableId();
+        if (tableId == null) return;
         if (!tableId.getPath().startsWith("entities/"))
                 return;
 
