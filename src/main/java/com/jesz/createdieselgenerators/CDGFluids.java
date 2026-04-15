@@ -2,9 +2,17 @@ package com.jesz.createdieselgenerators;
 
 import com.jesz.createdieselgenerators.content.concrete.ConcreteBucketItem;
 import com.jesz.createdieselgenerators.content.concrete.ConcreteFluid;
+import com.simibubi.create.AllFluids;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.util.entry.FluidEntry;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +31,12 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(3)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
     
     public static final FluidEntry<ForgeFlowingFluid.Flowing> CRUDE_OIL =
@@ -33,6 +47,12 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(2)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
 
     public static final FluidEntry<ForgeFlowingFluid.Flowing> BIODIESEL =
@@ -43,6 +63,12 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(3)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
 
     public static final FluidEntry<ForgeFlowingFluid.Flowing> DIESEL =
@@ -53,6 +79,12 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(3)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
 
     public static final FluidEntry<ForgeFlowingFluid.Flowing> GASOLINE =
@@ -63,6 +95,12 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(3)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
 
     public static final FluidEntry<ForgeFlowingFluid.Flowing> ETHANOL =
@@ -73,7 +111,14 @@ public class CDGFluids {
                             .tickRate(25)
                             .slopeFindDistance(5)
                             .explosionResistance(100f))
+                    .source(ForgeFlowingFluid.Source::new)
+                    .block()
+                    .build()
+                    .bucket()
+                    .onRegister(CDGFluids::registerFluidDispenseBehavior)
+                    .build()
                     .register();
+
 
     public static final Map<DyeColor, FluidEntry<ForgeFlowingFluid.Flowing>> CONCRETE = new HashMap<>();
     static {
@@ -86,9 +131,11 @@ public class CDGFluids {
                     .fluidProperties(p -> p.levelDecreasePerBlock(8)
                             .tickRate(12)
                             .slopeFindDistance(1)
-                            .explosionResistance(100f)).source(p -> new ConcreteFluid(p, color))
+                            .explosionResistance(100f))
+                    .source(p -> new ConcreteFluid(p, color))
                     .bucket((f, p) -> new ConcreteBucketItem(color, f, p))
                             .lang(RegistrateLangProvider.toEnglishName(color.getName().replace('_', ' ')) + " Concrete Bucket")
+                            .onRegister(CDGFluids::registerFluidDispenseBehavior)
                             .build()
                     .register()
             );
@@ -97,5 +144,24 @@ public class CDGFluids {
 
     public static void register() {}
 
+    // from Create
 
+    private static final DispenseItemBehavior DEFAULT = new DefaultDispenseItemBehavior();
+
+    private static final DispenseItemBehavior DISPENSE_FLUID = new DefaultDispenseItemBehavior(){
+        @Override
+        protected ItemStack execute(BlockSource pSource, ItemStack pStack) {
+            DispensibleContainerItem dispensibleContainerItem = (DispensibleContainerItem) pStack.getItem();
+            BlockPos pos = pSource.getPos().relative(pSource.getBlockState().getValue(DispenserBlock.FACING));
+            Level level = pSource.getLevel();
+            if (dispensibleContainerItem.emptyContents(null, level, pos, null, pStack)) {
+                return new ItemStack(Items.BUCKET);
+            }
+            return DEFAULT.dispense(pSource, pStack);
+        }
+    };
+
+    private static void registerFluidDispenseBehavior(BucketItem bucket) {
+        DispenserBlock.registerBehavior(bucket, DISPENSE_FLUID);
+    }
 }

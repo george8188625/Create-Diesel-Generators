@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -20,6 +22,17 @@ public class ConcreteFluid extends ForgeFlowingFluid.Source {
     public ConcreteFluid(Properties properties, DyeColor color) {
         super(properties);
         this.color = color;
+    }
+
+    @Override
+    public void tick(Level level, BlockPos pos, FluidState state) {
+        if (level.getBlockState(pos.below()).isAir()) {
+            BlockState blockstate = state.createLegacyBlock();
+            level.setBlockAndUpdate(pos.below(), blockstate);
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        } else
+            super.tick(level, pos, state);
+
     }
 
     @Override
