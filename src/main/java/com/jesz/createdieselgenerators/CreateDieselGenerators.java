@@ -79,14 +79,13 @@ public class CreateDieselGenerators
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CDGConfig.CLIENT_SPEC, ID + "-client.toml");
         modEventBus.addListener(CreateDieselGenerators::clientSetup);
         modEventBus.addListener(LighterModel::onModelBake);
-
+        CDGPartialModels.init();
     }
 
     public static void clientSetup(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.getSource(), RenderType.translucent());
         event.enqueueWork(CreateDieselGenerators::clientInit);
-        CDGPartialModels.init();
     }
 
     public static void clientInit() {
