@@ -151,6 +151,9 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
                 } else {
                    if (processingTime == 0 && !level.isClientSide) {
                        currentRecipe.apply(this, false);
+                       for (int i = 1; i < width * width; i++) {
+                           currentRecipy.apply(this, true);
+                       }
 
                        processingTime = -1;
                    } else {
