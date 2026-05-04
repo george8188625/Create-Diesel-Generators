@@ -287,7 +287,7 @@ public class CDGBlocks {
             .initialProperties(() -> Blocks.OAK_SLAB)
             .transform(axeOnly())
             .blockstate((c, p) -> p.slabBlock(c.getEntry(), p.modLoc("block/chip_wood_block"), p.modLoc("block/chip_wood_block_side"), p.modLoc("block/chip_wood_block"), p.modLoc("block/chip_wood_block")))
-            .item().tag(ItemTags.WOODEN_STAIRS).build()
+            .item().tag(ItemTags.WOODEN_SLABS).build()
             .register();
 
     public static final BlockEntry<StairBlock> CHIP_WOOD_STAIRS = REGISTRATE.block("chip_wood_stairs", p -> new StairBlock(Blocks.ANDESITE_STAIRS.defaultBlockState(), p))
