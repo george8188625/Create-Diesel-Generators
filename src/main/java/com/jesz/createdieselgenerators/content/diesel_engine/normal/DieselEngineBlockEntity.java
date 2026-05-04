@@ -37,7 +37,6 @@ import static com.jesz.createdieselgenerators.content.diesel_engine.normal.Diese
 public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implements IEngine {
     ScrollOptionBehaviour<WindmillBearingBlockEntity.RotationDirection> movementDirection;
 
-    float remainingTicks = 0;
     EngineUpgrades upgrade = EngineUpgrades.EMPTY;
     SmartFluidTankBehaviour tank;
     private float lastCapacity;
@@ -72,8 +71,6 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-
-        tag.putFloat("RemainingTicks", remainingTicks);
         tag.putString("Upgrade", upgrade.getId().toString());
         tag.putInt("AnalogSignal", analogSignal);
     }
@@ -81,8 +78,6 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-
-        remainingTicks = tag.getFloat("RemainingTicks");
         upgrade = EngineUpgrades.get(ResourceLocation.parse(tag.getString("Upgrade")));
         analogSignal = tag.contains("AnalogSignal") ? tag.getInt("AnalogSignal") : 15;
         fuelDebt = 0f;
@@ -116,6 +111,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
         if (power != analogSignal) {
             analogSignal = power;
             signalChanged = true;
+            setChanged();
         }
     }
 
@@ -147,11 +143,18 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
         if (signalChanged) {
             signalChanged = false;
             reActivateSource = true;
+            setChanged();
             sendData();
         }
 
-        if (self() instanceof GeneratingKineticBlockEntity gkbe && gkbe.isOverStressed())
+        boolean effectivelyOff = getThrottle() == 0f || !validFS();
+        if (effectivelyOff) {
+            if (hasNetwork())
+                getOrCreateNetwork().remove(this);
+            detachKinetics();
+            removeSource();
             return;
+        }
 
         float throttle = getThrottle();
         float fuelCapacity = upgrade.getCapacity(
@@ -163,7 +166,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
             lastCapacity = fuelCapacity;
         }
 
-        if (enabled()) {
+        if (enabled() && !isOverStressed()) {
             fuelDebt += getFuelBurnRate() * getFuelThrottle();
             while (fuelDebt >= 1f) {
                 tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
@@ -180,7 +183,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @OnlyIn(Dist.CLIENT)
     protected void tickClient() {
-        if (enabled() && getThrottle() > 0) {
+        if (enabled() && getThrottle() > 0 && !isOverStressed()) {
             if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()
                         .getSoundManager()

@@ -60,7 +60,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
     private float lastSpeed;
     public int analogSignal = 0;
     private float fuelDebt = 0f;
-
+    private boolean signalChanged = false;
 
     public ModularDieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -163,7 +163,23 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
         }
 
-        if (self() instanceof GeneratingKineticBlockEntity gkbe && gkbe.isOverStressed())
+        boolean effectivelyOff = getThrottle() == 0f || !validFS();
+        if (effectivelyOff) {
+            if (hasNetwork())
+                getOrCreateNetwork().remove(this);
+            detachKinetics();
+            removeSource();
+            return;
+        }
+
+        if (signalChanged) {
+            signalChanged = false;
+            reActivateSource = true;
+            setChanged();
+            sendData();
+        }
+
+        if (isOverStressed())
             return;
 
         float throttle = getThrottle();
@@ -175,7 +191,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             lastSpeed = getGeneratedSpeed();
             lastCapacity = fuelCapacity;
         }
-        if (enabled()) {
+        if (!isOverStressed()) {
             fuelDebt += (length * getFuelBurnRate()) * getFuelThrottle();
             while (fuelDebt >= 1f) {
                 tankInventory.drain(length, IFluidHandler.FluidAction.EXECUTE);
@@ -193,7 +209,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
     @OnlyIn(Dist.CLIENT)
     protected void tickClient() {
-        if (enabled() && getThrottle() > 0) {
+        if (enabled() && getThrottle() > 0 && !isOverStressed()) {
             Vec3 pos = Vec3.atCenterOf(getBlockPos());
             if (getBlockState().getValue(FACING).getAxis() == Direction.Axis.X)
                 pos = pos.add((double) length / 2 - 0.5, 0, 0);
@@ -323,7 +339,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             if (tankInventory.getSpace() < 0)
                 tankInventory.drain(-tankInventory.getSpace(), IFluidHandler.FluidAction.EXECUTE);
             analogSignal = compound.contains("AnalogSignal") ? compound.getInt("AnalogSignal") : 0;
-            fuelDebt = compound.contains("fuelDebt") ? compound.getFloat("fuelDebt") : 0f;
+            fuelDebt = 0f;
         }
 
         updateCapability = true;
@@ -356,7 +372,6 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             compound.put("TankContent", tankInventory.writeToNBT(registries, new CompoundTag()));
             compound.putInt("Height", length);
             compound.putInt("AnalogSignal", analogSignal);
-            compound.putFloat("fuelDebt", fuelDebt);
         }
     }
 
@@ -438,8 +453,6 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         super.lazyTick();
         if (!isController()) return;
 
-        overStressed = isOverStressed();
-
         if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
 
         int maxSignal = level.getBestNeighborSignal(getBlockPos());
@@ -450,6 +463,8 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
         if (maxSignal != analogSignal) {
             analogSignal = maxSignal;
+            signalChanged = true;
+            setChanged();
         }
     }
 }

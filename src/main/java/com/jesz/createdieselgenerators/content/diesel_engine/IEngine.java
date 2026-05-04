@@ -14,8 +14,6 @@ public interface IEngine {
     default boolean enabled() {
         if (!validFS())
             return false;
-        if (self() instanceof GeneratingKineticBlockEntity gkbe && gkbe.isOverStressed())
-            return false;
         if (CDGConfig.ANALOG_SPEED_CONTROL.get())
             return true;
         return !(CDGConfig.ENGINES_DISABLED_WITH_REDSTONE.get()
