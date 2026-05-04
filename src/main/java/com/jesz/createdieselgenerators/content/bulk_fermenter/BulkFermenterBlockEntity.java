@@ -360,19 +360,33 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
         IItemHandler itemHandler = new VersionedInventoryWrapper(new CombinedInvWrapper(inventories) {
             @Override
             public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+                if (stack.isEmpty())
+                    return ItemStack.EMPTY;
+
                 for (int i = 0; i < getSlots(); i++) {
-                    if (ItemStack.isSameItemSameComponents(getStackInSlot(i), stack)) {
-                        int space = Math.min(stack.getMaxStackSize(), getSlotLimit(i)) - getStackInSlot(i).getCount();
-                        if (space == 0)
-                            return stack;
-                        return super.insertItem(i, stack, simulate)
-                                .copyWithCount(stack.getCount() - Math.min(stack.getCount(), space));
+                    ItemStack existing = getStackInSlot(i);
+                    if (!existing.isEmpty() && ItemStack.isSameItemSameComponents(existing, stack)) {
+                        int limit = Math.min(stack.getMaxStackSize(), getSlotLimit(i));
+                        int space = limit - existing.getCount();
+                        if (space <= 0)
+                            continue;
+
+                        ItemStack toInsert = stack.copyWithCount(Math.min(stack.getCount(), space));
+                        ItemStack remainder = super.insertItem(i, toInsert, simulate);
+                        int inserted = toInsert.getCount() - remainder.getCount();
+                        if (inserted > 0) {
+                            return stack.getCount() <= inserted
+                                    ? ItemStack.EMPTY
+                                    : stack.copyWithCount(stack.getCount() - inserted);
+                        }
                     }
                 }
 
-                for (int i = 0; i < getSlots(); i++)
-                    if (getStackInSlot(i).isEmpty())
+                for (int i = 0; i < getSlots(); i++) {
+                    if (getStackInSlot(i).isEmpty()) {
                         return super.insertItem(i, stack, simulate);
+                    }
+                }
 
                 return stack;
             }
