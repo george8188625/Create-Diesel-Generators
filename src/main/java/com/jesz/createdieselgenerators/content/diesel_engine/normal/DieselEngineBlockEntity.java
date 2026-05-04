@@ -58,7 +58,10 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
                         return be.tank.getCapability();
                     Direction facing = be.getBlockState().getValue(FACING);
                     if (facing.getAxis().isVertical()) {
-                        if (side.getAxis() == (facing == Direction.UP ? Direction.Axis.X : Direction.Axis.Z))
+                        Direction.Axis portAxis = (facing == Direction.DOWN)
+                                ? Direction.Axis.X
+                                : Direction.Axis.Z;
+                        if (side.getAxis() == portAxis)
                             return be.tank.getCapability();
                     } else {
                         if (side == Direction.DOWN)
