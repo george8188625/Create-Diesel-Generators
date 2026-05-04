@@ -2,6 +2,7 @@ package com.jesz.createdieselgenerators.content.diesel_engine.huge;
 
 import com.jesz.createdieselgenerators.CDGBlockEntityTypes;
 import com.jesz.createdieselgenerators.CDGBlocks;
+import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineSoundInstance;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineUpgrades;
 import com.jesz.createdieselgenerators.content.diesel_engine.IEngine;
@@ -45,29 +46,34 @@ import static com.jesz.createdieselgenerators.content.diesel_engine.huge.HugeDie
 
 public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IEngine {
     ScrollOptionBehaviour<WindmillBearingBlockEntity.RotationDirection> movementDirection;
-    float remainingTicks = 0;
     EngineUpgrades upgrade = EngineUpgrades.EMPTY;
     SmartFluidTankBehaviour tank;
     WeakReference<PoweredEngineShaftBlockEntity> target = new WeakReference<>(null);
+    public int analogSignal = 0;
+    private boolean signalChanged = false;
+    private float fuelDebt = 0f;
+    boolean overStressed = false;
 
     public HugeDieselEngineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-
+        setLazyTickRate(10);
     }
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        tag.putFloat("RemainingTicks", remainingTicks);
         tag.putString("Upgrade", upgrade.getId().toString());
+        tag.putInt("AnalogSignal", analogSignal);
+        tag.putFloat("fuelDebt", fuelDebt);
 
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        remainingTicks = tag.getFloat("RemainingTicks");
         upgrade = EngineUpgrades.get(ResourceLocation.parse(tag.getString("Upgrade")));
+        analogSignal = tag.contains("AnalogSignal") ? tag.getInt("AnalogSignal") : 0;
+        fuelDebt = tag.contains("fuelDebt") ? tag.getFloat("fuelDebt") : 0f;
     }
 
     @Override
@@ -76,28 +82,56 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     }
 
     @Override
+    public void lazyTick() {
+        super.lazyTick();
+        PoweredEngineShaftBlockEntity shaft = getShaft();
+        overStressed = shaft != null && shaft.isOverStressed();
+
+        if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
+        int power = level.getBestNeighborSignal(getBlockPos());
+        if (power != analogSignal) {
+            analogSignal = power;
+            signalChanged = true;
+        }
+    }
+
+    @Override
     public void tick() {
         super.tick();
+
+        if (signalChanged) {
+            signalChanged = false;
+            sendData();
+        }
+
+        if (overStressed) {
+            PoweredEngineShaftBlockEntity shaft = getShaft();
+            if (shaft != null)
+                shaft.removeGenerator(worldPosition);
+            return;
+        }
+
         PoweredEngineShaftBlockEntity shaft = getShaft();
         if (shaft == null)
             return;
 
-        if (enabled()) {
-            if (remainingTicks < 2) {
-                remainingTicks += 1 / getFuelBurnRate();
-                tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
-            }
-
-            if (remainingTicks >= 0)
-                remainingTicks--;
-
+        if (enabled() && getThrottle() > 0) {
             if (shaft.movementDirection != 0 && shaft.movementDirection != (movementDirection.get() == WindmillBearingBlockEntity.RotationDirection.CLOCKWISE ? 1 : -1)) {
                 shaft.removeGenerator(worldPosition);
                 onDirectionChanged(movementDirection.getValue());
                 return;
             }
 
-            shaft.update(worldPosition, movementDirection.getValue() == 0 ? 1 : -1, upgrade.getCapacity(getFuelCapacity(), this), upgrade.getSpeed(getFuelSpeed(), this));
+            float throttle = getThrottle();
+            float speed = upgrade.getSpeed(getFuelSpeed(), this) * throttle;
+            float capacity = upgrade.getCapacity(getFuelCapacity(), this);
+            shaft.update(worldPosition, movementDirection.getValue() == 0 ? 1 : -1, capacity, speed);
+
+            fuelDebt += getFuelBurnRate() * getFuelThrottle();
+            while (fuelDebt >= 1f) {
+                tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
+                fuelDebt -= 1f;
+            }
 
             if (level.isClientSide)
                 CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickClient);
@@ -117,8 +151,8 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
                         .play(soundInstance = upgrade.createSoundInstance(this, Vec3.atCenterOf(getBlockPos())));
             } else if (soundInstance.active()) {
                 soundInstance.keepAlive();
-                soundInstance.setPitch(upgrade.getPitchMultiplier(this) * getFuelSoundPitch() / 2);
-                soundInstance.setVolume(upgrade.getVolume(this));
+                soundInstance.setPitch(upgrade.getPitchMultiplier(this) * getFuelSoundPitch() / 2 * getThrottle());
+                soundInstance.setVolume(upgrade.getVolume(this)* getThrottle());
             }
         } else {
             if (soundInstance != null) {
@@ -135,7 +169,6 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
             if (shaft != null)
                 target = new WeakReference<>(null);
             BlockEntity anyShaftAt = level.getBlockEntity(worldPosition.relative(getBlockState().getValue(FACING), 2));
-            BlockState sState = level.getBlockState(worldPosition.relative(getBlockState().getValue(FACING), 2));
             if (anyShaftAt instanceof PoweredEngineShaftBlockEntity ps)
                 target = new WeakReference<>(shaft = ps);
         }
@@ -179,7 +212,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         if(shaft == null)
             return false;
         float stressBase = upgrade.getCapacity(getFuelCapacity(), this) *
-                upgrade.getSpeed(getFuelSpeed(), this);
+                upgrade.getSpeed(getFuelSpeed(), this) * getThrottle();
 
         if (Mth.equal(stressBase, 0))
             return false;
@@ -228,8 +261,8 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     }
 
     @Override
-    public float getRemainingTicks() {
-        return remainingTicks;
+    public int getAnalogSignal() {
+        return analogSignal;
     }
 
     @Override

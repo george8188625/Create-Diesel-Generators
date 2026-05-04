@@ -46,6 +46,7 @@ public class CDGConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> HUGE_ENGINES;
     public static final ModConfigSpec.ConfigValue<Boolean> ENGINES_FILLED_WITH_ITEMS;
     public static final ModConfigSpec.ConfigValue<Boolean> ENGINES_DISABLED_WITH_REDSTONE;
+    public static final ModConfigSpec.ConfigValue<Boolean> ANALOG_SPEED_CONTROL;
 
     static {
 
@@ -79,6 +80,9 @@ public class CDGConfig {
                     .define("Engines filled with a bucket", false);
             ENGINES_DISABLED_WITH_REDSTONE = SERVER_BUILDER.comment("Whenever Diesel Engines can be disabled with redstone")
                     .define("Engines disabled with redstone", true);
+
+            ANALOG_SPEED_CONTROL = SERVER_BUILDER.comment("If Diesel Engines can be controlled with a analog lever.")
+                    .define("Engines controlled by analog lever", true);
 
         SERVER_BUILDER.pop();
 

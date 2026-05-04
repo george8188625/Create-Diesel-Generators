@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.content.diesel_engine.normal;
 
 import com.jesz.createdieselgenerators.CDGBlockEntityTypes;
+import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineSoundInstance;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineUpgrades;
 import com.jesz.createdieselgenerators.content.diesel_engine.IEngine;
@@ -41,9 +42,13 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     SmartFluidTankBehaviour tank;
     private float lastCapacity;
     private float lastSpeed;
+    private int analogSignal = 15;
+    private boolean signalChanged = false;
+    private float fuelDebt = 0f;
 
     public DieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
+        setLazyTickRate(10);
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -70,6 +75,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
         tag.putFloat("RemainingTicks", remainingTicks);
         tag.putString("Upgrade", upgrade.getId().toString());
+        tag.putInt("AnalogSignal", analogSignal);
     }
 
     @Override
@@ -78,6 +84,8 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
         remainingTicks = tag.getFloat("RemainingTicks");
         upgrade = EngineUpgrades.get(ResourceLocation.parse(tag.getString("Upgrade")));
+        analogSignal = tag.contains("AnalogSignal") ? tag.getInt("AnalogSignal") : 15;
+        fuelDebt = 0f;
     }
 
     @Override
@@ -93,16 +101,34 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @Override
     public float calculateAddedStressCapacity() {
-        float capacity = upgrade.getCapacity(getFuelCapacity() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        float speed = upgrade.getSpeed(getFuelSpeed(), this) * getThrottle();
+        float capacity = upgrade.getCapacity(getFuelCapacity() * (1 / Math.max(speed, 0.001f)) * speed, this);
         lastCapacityProvided = capacity;
         return capacity;
     }
 
     @Override
+    public void lazyTick() {
+        super.lazyTick();
+
+        if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
+        int power = level.getBestNeighborSignal(getBlockPos());
+        if (power != analogSignal) {
+            analogSignal = power;
+            signalChanged = true;
+        }
+    }
+
+    @Override
     public float getGeneratedSpeed() {
-        if (!enabled())
-            return 0;
-        return convertToDirection((movementDirection.getValue() == 1 ? -1 : 1) * upgrade.getSpeed(getFuelSpeed(), this), getBlockState().getValue(FACING));
+        if (!enabled()) return 0;
+        float throttle = getThrottle();
+        if (throttle == 0f) return 0;
+        return convertToDirection(
+                (movementDirection.getValue() == 1 ? -1 : 1)
+                        * upgrade.getSpeed(getFuelSpeed(), this)
+                        * throttle,
+                getBlockState().getValue(FACING));
     }
 
     @Override
@@ -118,7 +144,19 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     public void tick() {
         super.tick();
 
-        float fuelCapacity = upgrade.getCapacity(getFuelCapacity() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        if (signalChanged) {
+            signalChanged = false;
+            reActivateSource = true;
+            sendData();
+        }
+
+        if (self() instanceof GeneratingKineticBlockEntity gkbe && gkbe.isOverStressed())
+            return;
+
+        float throttle = getThrottle();
+        float fuelCapacity = upgrade.getCapacity(
+                getFuelCapacity() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
+                        * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
         if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
             reActivateSource = true;
             lastSpeed = getGeneratedSpeed();
@@ -126,18 +164,15 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
         }
 
         if (enabled()) {
-            if (remainingTicks < 2) {
-                remainingTicks += 1 / getFuelBurnRate();
+            fuelDebt += getFuelBurnRate() * getFuelThrottle();
+            while (fuelDebt >= 1f) {
                 tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
+                fuelDebt -= 1f;
             }
-
-            if (remainingTicks >= 0)
-                remainingTicks--;
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide)
             CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickClient);
-        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -145,14 +180,14 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @OnlyIn(Dist.CLIENT)
     protected void tickClient() {
-        if (enabled()) {
+        if (enabled() && getThrottle() > 0) {
             if (soundInstance == null || soundInstance.isStopped()) {
                 Minecraft.getInstance()
                         .getSoundManager()
                         .play(soundInstance = upgrade.createSoundInstance(this, Vec3.atCenterOf(getBlockPos())));
             } else if (soundInstance.active()) {
                 soundInstance.keepAlive();
-                soundInstance.setPitch(upgrade.getPitchMultiplier(this) * getFuelSoundPitch());
+                soundInstance.setPitch(upgrade.getPitchMultiplier(this) * getFuelSoundPitch() * getThrottle());
                 soundInstance.setVolume(upgrade.getVolume(this));
             }
         } else {
@@ -164,8 +199,8 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public float getRemainingTicks() {
-        return remainingTicks;
+    public int getAnalogSignal() {
+        return analogSignal;
     }
 
     @Override
