@@ -153,9 +153,8 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (getGeneratedSpeed() == 0)
-            return false;
-        super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        if (getGeneratedSpeed() != 0)
+            super.addToGoggleTooltip(tooltip, isPlayerSneaking);
         containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability());
         return true;
     }

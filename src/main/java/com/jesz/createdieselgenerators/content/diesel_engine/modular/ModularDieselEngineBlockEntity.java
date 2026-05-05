@@ -98,17 +98,15 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (isController()) {
-            if (getGeneratedSpeed() == 0)
+        if (!isController()) {
+            ModularDieselEngineBlockEntity controller = getControllerBE();
+            if (controller == null)
                 return false;
-            super.addToGoggleTooltip(tooltip, isPlayerSneaking);
-            containedFluidTooltip(tooltip, isPlayerSneaking, fluidCapability);
-            return true;
+            return controller.addToGoggleTooltip(tooltip, isPlayerSneaking);
         }
-        ModularDieselEngineBlockEntity controller = getControllerBE();
-        if (controller == null)
-            return false;
-        return controller.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        if (getGeneratedSpeed() != 0)
+            super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+        return containedFluidTooltip(tooltip, isPlayerSneaking, fluidCapability);
     }
 
     public void onDirectionChanged(int v) {
@@ -189,12 +187,10 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         if (isOverStressed())
             return;
 
-        if (!isOverStressed()) {
-            fuelDebt += (length * cachedBurnRate) * getFuelThrottle();
-            while (fuelDebt >= 1f) {
-                tankInventory.drain(length, IFluidHandler.FluidAction.EXECUTE);
-                fuelDebt -= 1f;
-            }
+        fuelDebt += (length * cachedBurnRate) * getFuelThrottle();
+        while (fuelDebt >= 1f) {
+            tankInventory.drain(length, IFluidHandler.FluidAction.EXECUTE);
+            fuelDebt -= 1f;
         }
 
         if (level.isClientSide) {

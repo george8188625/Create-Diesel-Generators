@@ -15,9 +15,11 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
+import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -45,6 +47,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import static com.jesz.createdieselgenerators.content.diesel_engine.huge.HugeDieselEngineBlock.FACING;
+import static net.minecraft.ChatFormatting.GOLD;
 
 public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IEngine {
     ScrollOptionBehaviour<WindmillBearingBlockEntity.RotationDirection> movementDirection;
@@ -231,32 +234,37 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        if (!IRotate.StressImpact.isEnabled() || !enabled())
-            return false;
-        PoweredEngineShaftBlockEntity shaft = getShaft();
-        if(shaft == null)
-            return false;
-        float stressBase = upgrade.getCapacity(getFuelCapacity(), this) *
-                upgrade.getSpeed(getFuelSpeed(), this) * getThrottle();
+        if (overStressed) {
+            CreateLang.translate("gui.stressometer.overstressed")
+                    .style(GOLD)
+                    .forGoggles(tooltip);
+            Component hint = CreateLang.translateDirect("gui.contraptions.network_overstressed");
+            List<Component> cutString = TooltipHelper.cutTextComponent(hint, FontHelper.Palette.GRAY_AND_WHITE);
+            for (Component component : cutString)
+                CreateLang.builder().add(component.copy()).forGoggles(tooltip);
+            return containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability());
+        }
 
-        if (Mth.equal(stressBase, 0))
-            return false;
+        if (IRotate.StressImpact.isEnabled() && enabled() && getThrottle() > 0) {
+            PoweredEngineShaftBlockEntity shaft = getShaft();
+            if (shaft != null) {
+                float stressBase = upgrade.getCapacity(getFuelCapacity(), this) *
+                        upgrade.getSpeed(getFuelSpeed(), this) * getThrottle();
+                if (!Mth.equal(stressBase, 0)) {
+                    CreateLang.translate("gui.goggles.generator_stats").forGoggles(tooltip);
+                    CreateLang.translate("tooltip.capacityProvided")
+                            .style(ChatFormatting.GRAY).forGoggles(tooltip);
+                    CreateLang.number(Math.abs(stressBase))
+                            .translate("generic.unit.stress")
+                            .style(ChatFormatting.AQUA)
+                            .space()
+                            .add(CreateLang.translate("gui.goggles.at_current_speed")
+                                    .style(ChatFormatting.DARK_GRAY))
+                            .forGoggles(tooltip, 1);
+                }
+            }
+        }
 
-        CreateLang.translate("gui.goggles.generator_stats")
-                .forGoggles(tooltip);
-        CreateLang.translate("tooltip.capacityProvided")
-                .style(ChatFormatting.GRAY)
-                .forGoggles(tooltip);
-
-        float stressTotal = Math.abs(stressBase);
-
-        CreateLang.number(stressTotal)
-                .translate("generic.unit.stress")
-                .style(ChatFormatting.AQUA)
-                .space()
-                .add(CreateLang.translate("gui.goggles.at_current_speed")
-                        .style(ChatFormatting.DARK_GRAY))
-                .forGoggles(tooltip, 1);
         return containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability());
     }
 
