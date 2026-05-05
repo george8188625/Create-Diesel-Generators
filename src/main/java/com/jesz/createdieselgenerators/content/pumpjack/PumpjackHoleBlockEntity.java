@@ -18,7 +18,10 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -26,18 +29,22 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -60,6 +67,9 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
         super(type, pos, state);
         this.state = state;
     }
+
+    @OnlyIn(Dist.CLIENT)
+    protected AbstractTickableSoundInstance soundInstance;
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
@@ -139,7 +149,45 @@ public class PumpjackHoleBlockEntity extends SmartBlockEntity implements IHaveGo
                 this.pipeLength = 0;
             this.valid = valid;
         }
+        if (level.isClientSide)
+            CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickClient);
+    }
 
+    @OnlyIn(Dist.CLIENT)
+    public static class PumpjackSoundInstance extends AbstractTickableSoundInstance {
+        public PumpjackSoundInstance(SoundEvent event, float volume, float pitch, Vec3 pos) {
+            super(event, SoundSource.BLOCKS, RandomSource.create());
+            this.x = pos.x;
+            this.y = pos.y;
+            this.z = pos.z;
+            this.volume = volume;
+            this.pitch = pitch;
+            this.looping = true;
+            this.delay = 0;
+            this.attenuation = Attenuation.LINEAR;
+        }
+
+        @Override
+        public void tick() {}
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void tickClient() {
+        boolean isActive = started && valid && oilAmount > 0;
+
+        if (isActive) {
+            if (soundInstance == null || soundInstance.isStopped()) {
+                soundInstance = new PumpjackSoundInstance(
+                        SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_AMBIENT, 0.2f, 0.4f,
+                        Vec3.atCenterOf(getBlockPos()));
+                Minecraft.getInstance().getSoundManager().play(soundInstance);
+            }
+        } else {
+            if (soundInstance != null) {
+                Minecraft.getInstance().getSoundManager().stop(soundInstance);
+                soundInstance = null;
+            }
+        }
     }
 
     @Override
