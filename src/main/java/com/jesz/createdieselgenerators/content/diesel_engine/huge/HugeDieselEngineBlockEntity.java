@@ -6,6 +6,7 @@ import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineSoundInstance;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineUpgrades;
 import com.jesz.createdieselgenerators.content.diesel_engine.IEngine;
+import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -36,6 +37,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
@@ -53,6 +55,12 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     private boolean signalChanged = false;
     private float fuelDebt = 0f;
     boolean overStressed = false;
+    private FuelType cachedFuelType = FuelType.EMPTY;
+    private FluidStack lastCachedFluid = FluidStack.EMPTY;
+    private float cachedFuelSpeed = 0f;
+    private float cachedFuelCapacity = 0f;
+    private float cachedBurnRate = 0f;
+    private boolean needsShaftRegistration = true;
 
     public HugeDieselEngineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -75,6 +83,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         fuelDebt = 0f;
         signalChanged = true;
         overStressed = tag.contains("OverStressed") && tag.getBoolean("OverStressed");
+        invalidateFuelCache();
     }
 
     @Override
@@ -92,8 +101,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         if (wasOverStressed && !overStressed)
             signalChanged = true;
 
-        if (!overStressed && enabled() && getThrottle() > 0 && shaft != null
-                && shaft.engines.stream().noneMatch(e -> e.getFirst().equals(worldPosition)))
+        if (!overStressed && enabled() && getThrottle() > 0 && needsShaftRegistration)
             signalChanged = true;
 
         if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
@@ -118,9 +126,11 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
                 shaft.update(worldPosition,
                         movementDirection.getValue() == 0 ? 1 : -1,
                         upgrade.getCapacity(getFuelCapacity(), this),
-                        upgrade.getSpeed(getFuelSpeed(), this) * throttle);
+                        cachedFuelSpeed * throttle);
+                needsShaftRegistration = false;
             } else if (shaft != null && getThrottle() == 0f) {
                 shaft.removeGenerator(worldPosition);
+                needsShaftRegistration = true;
             }
         }
 
@@ -131,14 +141,16 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         if (shaft == null)
             return;
 
-        if (enabled() && getThrottle() > 0 && !overStressed) {
-            if (shaft.movementDirection != 0 && shaft.movementDirection != (movementDirection.get() == WindmillBearingBlockEntity.RotationDirection.CLOCKWISE ? 1 : -1)) {
+        if (enabled() && getThrottle() > 0) {
+            if (shaft.movementDirection != 0 && shaft.movementDirection !=
+                    (movementDirection.get() == WindmillBearingBlockEntity.RotationDirection.CLOCKWISE ? 1 : -1)) {
                 shaft.removeGenerator(worldPosition);
+                needsShaftRegistration = true;
                 onDirectionChanged(movementDirection.getValue());
                 return;
             }
 
-            fuelDebt += getFuelBurnRate() * getFuelThrottle();
+            fuelDebt += cachedBurnRate * getFuelThrottle();
             while (fuelDebt >= 1f) {
                 tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
                 fuelDebt -= 1f;
@@ -146,8 +158,10 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
 
             if (level.isClientSide)
                 CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickClient);
-        } else if (!overStressed)
+        } else {
             shaft.removeGenerator(worldPosition);
+            needsShaftRegistration = true;
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -295,4 +309,15 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     public void setUpgrade(EngineUpgrades upgrade) {
         this.upgrade = upgrade;
     }
+
+    @Override public FuelType getCachedFuelType() { return cachedFuelType; }
+    @Override public void setCachedFuelType(FuelType t) { cachedFuelType = t; }
+    @Override public FluidStack getLastCachedFluid() { return lastCachedFluid; }
+    @Override public void setLastCachedFluid(FluidStack f) { lastCachedFluid = f; }
+    @Override public float getCachedFuelSpeed() { return cachedFuelSpeed; }
+    @Override public void setCachedFuelSpeed(float s) { cachedFuelSpeed = s; }
+    @Override public float getCachedFuelCapacity() { return cachedFuelCapacity; }
+    @Override public void setCachedFuelCapacity(float c) { cachedFuelCapacity = c; }
+    @Override public float getCachedBurnRate() { return cachedBurnRate; }
+    @Override public void setCachedBurnRate(float r) { cachedBurnRate = r; }
 }

@@ -7,6 +7,7 @@ import com.jesz.createdieselgenerators.content.diesel_engine.EngineSoundInstance
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineUpgrades;
 import com.jesz.createdieselgenerators.content.diesel_engine.IEngine;
 import com.jesz.createdieselgenerators.content.diesel_engine.normal.DieselEngineBlock;
+import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
@@ -35,6 +36,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +63,11 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
     public int analogSignal = 0;
     private float fuelDebt = 0f;
     private boolean signalChanged = false;
+    private FuelType cachedFuelType = FuelType.EMPTY;
+    private FluidStack lastCachedFluid = FluidStack.EMPTY;
+    private float cachedFuelSpeed = 0f;
+    private float cachedFuelCapacity = 0f;
+    private float cachedBurnRate = 0f;
 
     public ModularDieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -182,17 +189,8 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         if (isOverStressed())
             return;
 
-        float throttle = getThrottle();
-        float fuelCapacity = upgrade.getCapacity(
-                getFuelCapacity() * getHeight() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
-                        * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
-        if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
-            reActivateSource = true;
-            lastSpeed = getGeneratedSpeed();
-            lastCapacity = fuelCapacity;
-        }
         if (!isOverStressed()) {
-            fuelDebt += (length * getFuelBurnRate()) * getFuelThrottle();
+            fuelDebt += (length * cachedBurnRate) * getFuelThrottle();
             while (fuelDebt >= 1f) {
                 tankInventory.drain(length, IFluidHandler.FluidAction.EXECUTE);
                 fuelDebt -= 1f;
@@ -340,6 +338,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
                 tankInventory.drain(-tankInventory.getSpace(), IFluidHandler.FluidAction.EXECUTE);
             analogSignal = compound.contains("AnalogSignal") ? compound.getInt("AnalogSignal") : 0;
             fuelDebt = 0f;
+            invalidateFuelCache();
         }
 
         updateCapability = true;
@@ -453,6 +452,19 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         super.lazyTick();
         if (!isController()) return;
 
+        if (!level.isClientSide && validFS()) {
+            float throttle = getThrottle();
+            float currentSpeed = getGeneratedSpeed();
+            float currentCapacity = upgrade.getCapacity(
+                    getFuelCapacity() * getHeight() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
+                            * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
+            if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
+                reActivateSource = true;
+                lastSpeed = currentSpeed;
+                lastCapacity = currentCapacity;
+            }
+        }
+
         if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
 
         int maxSignal = level.getBestNeighborSignal(getBlockPos());
@@ -467,5 +479,16 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             setChanged();
         }
     }
+
+    @Override public FuelType getCachedFuelType() { return cachedFuelType; }
+    @Override public void setCachedFuelType(FuelType t) { cachedFuelType = t; }
+    @Override public FluidStack getLastCachedFluid() { return lastCachedFluid; }
+    @Override public void setLastCachedFluid(FluidStack f) { lastCachedFluid = f; }
+    @Override public float getCachedFuelSpeed() { return cachedFuelSpeed; }
+    @Override public void setCachedFuelSpeed(float s) { cachedFuelSpeed = s; }
+    @Override public float getCachedFuelCapacity() { return cachedFuelCapacity; }
+    @Override public void setCachedFuelCapacity(float c) { cachedFuelCapacity = c; }
+    @Override public float getCachedBurnRate() { return cachedBurnRate; }
+    @Override public void setCachedBurnRate(float r) { cachedBurnRate = r; }
 }
 

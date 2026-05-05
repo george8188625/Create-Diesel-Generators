@@ -5,6 +5,7 @@ import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineSoundInstance;
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineUpgrades;
 import com.jesz.createdieselgenerators.content.diesel_engine.IEngine;
+import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -27,6 +28,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
@@ -44,6 +46,11 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     private int analogSignal = 15;
     private boolean signalChanged = false;
     private float fuelDebt = 0f;
+    private FuelType cachedFuelType = FuelType.EMPTY;
+    private FluidStack lastCachedFluid = FluidStack.EMPTY;
+    private float cachedFuelSpeed = 0f;
+    private float cachedFuelCapacity = 0f;
+    private float cachedBurnRate = 0f;
 
     public DieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -82,8 +89,9 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         upgrade = EngineUpgrades.get(ResourceLocation.parse(tag.getString("Upgrade")));
-        analogSignal = tag.contains("AnalogSignal") ? tag.getInt("AnalogSignal") : 15;
+        analogSignal = tag.contains("AnalogSignal") ? tag.getInt("AnalogSignal") : 0;
         fuelDebt = 0f;
+        invalidateFuelCache();
     }
 
     @Override
@@ -108,6 +116,19 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     @Override
     public void lazyTick() {
         super.lazyTick();
+
+        if (!level.isClientSide && validFS()) {
+            float throttle = getThrottle();
+            float currentSpeed = getGeneratedSpeed();
+            float currentCapacity = upgrade.getCapacity(
+                    getFuelCapacity() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
+                            * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
+            if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
+                reActivateSource = true;
+                lastSpeed = currentSpeed;
+                lastCapacity = currentCapacity;
+            }
+        }
 
         if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
         int power = level.getBestNeighborSignal(getBlockPos());
@@ -159,18 +180,8 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
             return;
         }
 
-        float throttle = getThrottle();
-        float fuelCapacity = upgrade.getCapacity(
-                getFuelCapacity() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
-                        * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
-        if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
-            reActivateSource = true;
-            lastSpeed = getGeneratedSpeed();
-            lastCapacity = fuelCapacity;
-        }
-
         if (enabled() && !isOverStressed()) {
-            fuelDebt += getFuelBurnRate() * getFuelThrottle();
+            fuelDebt += cachedBurnRate * getFuelThrottle();
             while (fuelDebt >= 1f) {
                 tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
                 fuelDebt -= 1f;
@@ -228,4 +239,15 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     public void setUpgrade(EngineUpgrades upgrade) {
         this.upgrade = upgrade;
     }
+
+    @Override public FuelType getCachedFuelType() { return cachedFuelType; }
+    @Override public void setCachedFuelType(FuelType t) { cachedFuelType = t; }
+    @Override public FluidStack getLastCachedFluid() { return lastCachedFluid; }
+    @Override public void setLastCachedFluid(FluidStack f) { lastCachedFluid = f; }
+    @Override public float getCachedFuelSpeed() { return cachedFuelSpeed; }
+    @Override public void setCachedFuelSpeed(float s) { cachedFuelSpeed = s; }
+    @Override public float getCachedFuelCapacity() { return cachedFuelCapacity; }
+    @Override public void setCachedFuelCapacity(float c) { cachedFuelCapacity = c; }
+    @Override public float getCachedBurnRate() { return cachedBurnRate; }
+    @Override public void setCachedBurnRate(float r) { cachedBurnRate = r; }
 }

@@ -20,34 +20,51 @@ public interface IEngine {
                 && self().getBlockState().getValue(DieselEngineBlock.POWERED));
     }
 
+    FuelType getCachedFuelType();
+    void setCachedFuelType(FuelType type);
+    FluidStack getLastCachedFluid();
+    void setLastCachedFluid(FluidStack fluid);
+    float getCachedFuelSpeed();
+    void setCachedFuelSpeed(float speed);
+    float getCachedFuelCapacity();
+    void setCachedFuelCapacity(float capacity);
+    float getCachedBurnRate();
+    void setCachedBurnRate(float rate);
+
+    default void invalidateFuelCache() {
+        setLastCachedFluid(FluidStack.EMPTY);
+    }
+
+    default FuelType getFuelType() {
+        FluidStack current = getTank().getFluid();
+        if (!FluidStack.isSameFluid(current, getLastCachedFluid())) {
+            setLastCachedFluid(current.copy());
+            FuelType type = FuelType.getTypeFor(
+                    self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE),
+                    current.getFluid());
+            setCachedFuelType(type);
+            float speed = type.getGenerated(self()).speed();
+            setCachedFuelSpeed(speed);
+            setCachedFuelCapacity(speed == 0 ? 0 :
+                    type.getGenerated(self()).strength() / speed);
+            setCachedBurnRate(type.getGenerated(self()).burn());
+        }
+        return getCachedFuelType();
+    }
+
     default boolean validFS() {
-        if (fs().isEmpty())
-            return false;
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()) != FuelType.EMPTY;
+        if (fs().isEmpty()) return false;
+        return getFuelType() != FuelType.EMPTY;
     }
 
     default FluidStack fs() {
         return getTank().getFluid();
     }
 
-    default float getFuelSpeed() {
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).speed();
-    }
-
-    default float getFuelCapacity() {
-        float speed = getFuelSpeed();
-        if (speed == 0)
-            return speed;
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).strength() / speed;
-    }
-
-    default float getFuelBurnRate() {
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).burn();
-    }
-
-    default float getFuelSoundPitch() {
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).soundPitch();
-    }
+    default float getFuelSpeed() { getFuelType(); return getCachedFuelSpeed(); }
+    default float getFuelCapacity() { getFuelType(); return getCachedFuelCapacity(); }
+    default float getFuelBurnRate() { getFuelType(); return getCachedBurnRate(); }
+    default float getFuelSoundPitch() { return getFuelType().soundPitch(); }
 
     int getAnalogSignal();
 
