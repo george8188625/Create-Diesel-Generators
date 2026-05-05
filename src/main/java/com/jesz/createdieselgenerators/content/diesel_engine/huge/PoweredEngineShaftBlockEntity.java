@@ -132,9 +132,29 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         speed = compound.getFloat("GeneratedSpeed");
     }
 
+    private float getActiveEngineSpeed() {
+        float maxSpeed = 0f;
+        for (Pair<BlockPos, Couple<Float>> engine : engines) {
+            if (isEngineFueled(engine.getFirst()))
+                maxSpeed = Math.max(maxSpeed, engine.getSecond().getSecond());
+        }
+        return maxSpeed;
+    }
+
+    private boolean isEngineFueled(BlockPos enginePos) {
+        if (level == null)
+            return false;
+        var be = level.getBlockEntity(enginePos);
+        if (be instanceof HugeDieselEngineBlockEntity engine)
+            return engine.enabled();
+        return false;
+    }
+
     @Override
     public float getGeneratedSpeed() {
-        return movementDirection * speed;
+        if (movementDirection == 0)
+            return 0;
+        return movementDirection * getActiveEngineSpeed();
     }
 
     @Override
@@ -142,8 +162,10 @@ public class PoweredEngineShaftBlockEntity extends GeneratingKineticBlockEntity 
         if(movementDirection == 0)
             return 0;
         float capacity = 0;
-        for (Pair<BlockPos, Couple<Float>> engine : engines)
-            capacity += engine.getSecond().getFirst();
+        for (Pair<BlockPos, Couple<Float>> engine : engines) {
+            if (isEngineFueled(engine.getFirst()))
+                capacity += engine.getSecond().getFirst();
+        }
         this.lastCapacityProvided = capacity;
         return capacity;
     }
