@@ -15,18 +15,27 @@ import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -114,6 +123,11 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     @Override
     public void tick() {
         if (isController() && isBottom()) {
+            if (processingTime >= 0 && currentRecipe == null) {
+                List<Recipe<?>> r = getMatchingRecipes();
+                if (!r.isEmpty())
+                    currentRecipe = (DistillationRecipe) r.get(0);
+            }
 
             if (processingTime > -1 && currentRecipe != null) {
                 boolean canFill = true;
@@ -141,6 +155,18 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                 }
             }
             if (processingTime == 0 && currentRecipe != null) {
+                if (!level.isClientSide) {
+                    level.playSound(null,
+                            getBlockPos().offset(width / 2, height / 2, width / 2),
+                            SoundEvents.BREWING_STAND_BREW,
+                            SoundSource.BLOCKS, 0.05f, 0.5f);
+
+                    level.playSound(null,
+                            getBlockPos().offset(width / 2, height / 2, width / 2),
+                            SoundEvents.FIRE_EXTINGUISH,
+                            SoundSource.BLOCKS, 0.05f, 0.5f);
+                }
+
                 if (tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).amount()  && currentRecipe.getRequiredHeat().testBlazeBurner(highestHeatLevel)) {
                     tankInventory.drain(currentRecipe.getFluidIngredients().get(0).amount(), IFluidHandler.FluidAction.EXECUTE);
                     if (currentRecipe != null)
@@ -187,6 +213,9 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
         }
         if (fluidLevel != null)
             fluidLevel.tickChaser();
+
+        if (level.isClientSide)
+            CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickClient);
     }
 
     @Override
@@ -203,7 +232,6 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     public void initialize() {
         super.initialize();
         updateTemperature();
-        checkForRecipes();
         sendData();
         if (level.isClientSide)
             invalidateRenderBoundingBox();
@@ -714,12 +742,51 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
         if (isController()) {
             highestHeatLevel = getHeat();
             sendData();
-            checkForRecipes();
+            onFluidStackChanged(tankInventory.getFluid());
             return;
         }
         DistillationTankBlockEntity be = getControllerBE();
         if (be == null)
             return;
         be.updateTemperature();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected DistillationSoundInstance soundInstance;
+
+    @OnlyIn(Dist.CLIENT)
+    protected void tickClient() {
+        boolean isProcessing = isController() && isBottom() && processingTime > -1;
+
+        if (isProcessing) {
+            if (soundInstance == null || soundInstance.isStopped()) {
+                soundInstance = new DistillationSoundInstance(
+                        Vec3.atCenterOf(getBlockPos().offset(width / 2, height / 2, width / 2)));
+                Minecraft.getInstance().getSoundManager().play(soundInstance);
+            }
+        } else {
+            if (soundInstance != null) {
+                Minecraft.getInstance().getSoundManager().stop(soundInstance);
+                soundInstance = null;
+            }
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static class DistillationSoundInstance extends AbstractTickableSoundInstance {
+        public DistillationSoundInstance(Vec3 pos) {
+            super(SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.BLOCKS, RandomSource.create());
+            this.x = pos.x;
+            this.y = pos.y;
+            this.z = pos.z;
+            this.volume = 0.5f;
+            this.pitch = 0.45f;
+            this.looping = true;
+            this.delay = 0;
+            this.attenuation = Attenuation.LINEAR;
+        }
+
+        @Override
+        public void tick() {}
     }
 }

@@ -45,7 +45,7 @@ public class DistillationScene {
 
         scene.overlay().showText(70)
                 .attachKeyFrame()
-                .text("Apply a Distillation Controller to a Fluid tank to create a Distillation Tower.")
+                .text("Apply a Distillation Controller to a at least 3 block tall Fluid tank to create a Distillation Tower.")
                 .colored(PonderPalette.BLUE)
                 .pointAt(util.vector().topOf(2, 2, 2))
                 .placeNearTarget();
@@ -78,7 +78,7 @@ public class DistillationScene {
 
         scene.overlay().showText(70)
                 .attachKeyFrame()
-                .text("Pump in your ingredient at the bottom level")
+                .text("Pump in your ingredient at the bottom level. Each output fluid requires its own tank layer above.")
                 .colored(PonderPalette.BLUE)
                 .pointAt(util.vector().topOf(0, 2, 2))
                 .placeNearTarget();
