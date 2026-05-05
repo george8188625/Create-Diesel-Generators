@@ -78,7 +78,7 @@ public class DistillationScene {
 
         scene.overlay().showText(70)
                 .attachKeyFrame()
-                .text("Pump in your ingredient at the bottom level. Each output fluid requires its own tank layer above.")
+                .text("Pump in your ingredient at the bottom level")
                 .colored(PonderPalette.BLUE)
                 .pointAt(util.vector().topOf(0, 2, 2))
                 .placeNearTarget();
