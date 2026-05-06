@@ -83,6 +83,25 @@ public class ModularDieselEngineBlock extends HorizontalKineticBlock implements 
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
         level.setBlockAndUpdate(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)));
+
+        if (CDGConfig.ANALOG_SPEED_CONTROL.get()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof ModularDieselEngineBlockEntity engine) {
+                ModularDieselEngineBlockEntity controller = engine.getControllerBE();
+                if (controller != null) {
+                    int maxSignal = 0;
+                    for (int i = 0; i < controller.getHeight(); i++) {
+                        BlockPos segPos = controller.getBlockPos().relative(
+                                controller.getBlockState().getValue(FACING).getAxis(), i);
+                        maxSignal = Math.max(maxSignal, level.getBestNeighborSignal(segPos));
+                    }
+                    if (maxSignal != controller.analogSignal) {
+                        controller.setAnalogSignal(maxSignal);
+                        controller.setSignalChanged(true);
+                    }
+                }
+            }
+        }
         super.neighborChanged(state, level, pos, block, otherPos, moving);
     }
 

@@ -113,7 +113,18 @@ public class DieselEngineBlock extends DirectionalKineticBlock implements Specia
 
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
-        level.setBlock(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)), 2);
+        boolean powered = level.hasNeighborSignal(pos);
+
+        if (state.getValue(POWERED) != powered) {
+            level.setBlock(pos, state.setValue(POWERED, powered), 2);
+        }
+
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof DieselEngineBlockEntity engine) {
+            engine.setAnalogSignal(level.getBestNeighborSignal(pos));
+            engine.setSignalChanged(true);
+        }
+
         super.neighborChanged(state, level, pos, block, otherPos, moving);
     }
 

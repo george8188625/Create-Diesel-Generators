@@ -54,7 +54,6 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     public DieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
-        setLazyTickRate(10);
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -114,32 +113,6 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     }
 
     @Override
-    public void lazyTick() {
-        super.lazyTick();
-
-        if (!level.isClientSide && validFS()) {
-            float throttle = getThrottle();
-            float currentSpeed = getGeneratedSpeed();
-            float currentCapacity = upgrade.getCapacity(
-                    getFuelCapacity() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
-                            * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
-            if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
-                reActivateSource = true;
-                lastSpeed = currentSpeed;
-                lastCapacity = currentCapacity;
-            }
-        }
-
-        if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
-        int power = level.getBestNeighborSignal(getBlockPos());
-        if (power != analogSignal) {
-            analogSignal = power;
-            signalChanged = true;
-            setChanged();
-        }
-    }
-
-    @Override
     public float getGeneratedSpeed() {
         if (!enabled()) return 0;
         float throttle = getThrottle();
@@ -168,6 +141,26 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
             reActivateSource = true;
             setChanged();
             sendData();
+        }
+
+        if (!level.isClientSide && validFS()) {
+            float throttle = getThrottle();
+
+            if (throttle != 0f || lastSpeed != 0f) {
+                float currentSpeed = getGeneratedSpeed();
+
+                float baseSpeed = upgrade.getSpeed(getFuelSpeed(), this) * throttle;
+                float currentCapacity = upgrade.getCapacity(
+                        getFuelCapacity() * (1 / Math.max(baseSpeed, 0.001f)) * baseSpeed,
+                        this
+                );
+
+                if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
+                    reActivateSource = true;
+                    lastSpeed = currentSpeed;
+                    lastCapacity = currentCapacity;
+                }
+            }
         }
 
         boolean effectivelyOff = getThrottle() == 0f || !validFS();
@@ -213,6 +206,9 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
             }
         }
     }
+
+    public void setAnalogSignal(int newSignal) { analogSignal = newSignal; }
+    public void setSignalChanged(boolean newSignal) { signalChanged = newSignal; }
 
     @Override
     public int getAnalogSignal() {

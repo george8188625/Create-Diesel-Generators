@@ -30,6 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -143,6 +144,18 @@ public class HugeDieselEngineBlock extends Block implements IBE<HugeDieselEngine
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos otherPos, boolean moving) {
         level.setBlockAndUpdate(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)));
+
+        if (CDGConfig.ANALOG_SPEED_CONTROL.get()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof HugeDieselEngineBlockEntity engine) {
+                int newSignal = level.getBestNeighborSignal(pos);
+                if (newSignal != engine.analogSignal) {
+                    engine.setAnalogSignal(newSignal);
+                    engine.setSignalChanged(true);
+                }
+            }
+        }
+
         super.neighborChanged(state, level, pos, block, otherPos, moving);
     }
 

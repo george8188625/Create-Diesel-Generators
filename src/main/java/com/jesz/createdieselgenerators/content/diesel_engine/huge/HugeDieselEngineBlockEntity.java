@@ -67,7 +67,6 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
 
     public HugeDieselEngineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        setLazyTickRate(10);
     }
 
     @Override
@@ -95,35 +94,22 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     }
 
     @Override
-    public void lazyTick() {
-        super.lazyTick();
+    public void tick() {
+        super.tick();
+
         PoweredEngineShaftBlockEntity shaft = getShaft();
         boolean wasOverStressed = overStressed;
         overStressed = shaft != null && shaft.isOverStressed();
-
         if (wasOverStressed && !overStressed)
             signalChanged = true;
 
         if (!overStressed && enabled() && getThrottle() > 0 && needsShaftRegistration)
             signalChanged = true;
 
-        if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
-        int power = level.getBestNeighborSignal(getBlockPos());
-        if (power != analogSignal) {
-            analogSignal = power;
-            signalChanged = true;
-        }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
         if (signalChanged) {
             signalChanged = false;
             setChanged();
             sendData();
-            PoweredEngineShaftBlockEntity shaft = getShaft();
             if (shaft != null && enabled() && getThrottle() > 0) {
                 float throttle = getThrottle();
                 shaft.update(worldPosition,
@@ -140,7 +126,6 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
         if (overStressed)
             return;
 
-        PoweredEngineShaftBlockEntity shaft = getShaft();
         if (shaft == null)
             return;
 
@@ -328,4 +313,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     @Override public void setCachedFuelCapacity(float c) { cachedFuelCapacity = c; }
     @Override public float getCachedBurnRate() { return cachedBurnRate; }
     @Override public void setCachedBurnRate(float r) { cachedBurnRate = r; }
+
+    public void setAnalogSignal(int newSignal) { analogSignal = newSignal; }
+    public void setSignalChanged(boolean newSignal) { signalChanged = newSignal; }
 }

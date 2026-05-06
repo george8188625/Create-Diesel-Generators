@@ -71,7 +71,6 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
     public ModularDieselEngineBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
-        setLazyTickRate(10);
     }
 
     @Override
@@ -168,6 +167,13 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
         }
 
+        if (signalChanged) {
+            signalChanged = false;
+            reActivateSource = true;
+            setChanged();
+            sendData();
+        }
+
         boolean effectivelyOff = getThrottle() == 0f || !validFS();
         if (effectivelyOff) {
             if (hasNetwork())
@@ -177,11 +183,17 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
         }
 
-        if (signalChanged) {
-            signalChanged = false;
-            reActivateSource = true;
-            setChanged();
-            sendData();
+        if (!level.isClientSide && validFS()) {
+            float throttle = getThrottle();
+            float currentSpeed = getGeneratedSpeed();
+            float currentCapacity = upgrade.getCapacity(
+                    getFuelCapacity() * getHeight() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
+                            * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
+            if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
+                reActivateSource = true;
+                lastSpeed = currentSpeed;
+                lastCapacity = currentCapacity;
+            }
         }
 
         if (isOverStressed())
@@ -443,38 +455,8 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         return analogSignal;
     }
 
-    @Override
-    public void lazyTick() {
-        super.lazyTick();
-        if (!isController()) return;
-
-        if (!level.isClientSide && validFS()) {
-            float throttle = getThrottle();
-            float currentSpeed = getGeneratedSpeed();
-            float currentCapacity = upgrade.getCapacity(
-                    getFuelCapacity() * getHeight() * (1 / Math.max(upgrade.getSpeed(getFuelSpeed(), this) * throttle, 0.001f))
-                            * upgrade.getSpeed(getFuelSpeed(), this) * throttle, this);
-            if (lastSpeed != currentSpeed || lastCapacity != currentCapacity) {
-                reActivateSource = true;
-                lastSpeed = currentSpeed;
-                lastCapacity = currentCapacity;
-            }
-        }
-
-        if (!CDGConfig.ANALOG_SPEED_CONTROL.get()) return;
-
-        int maxSignal = level.getBestNeighborSignal(getBlockPos());
-        for (int i = 1; i < length; i++) {
-            BlockPos segPos = getBlockPos().relative(getMainConnectionAxis(), i);
-            maxSignal = Math.max(maxSignal, level.getBestNeighborSignal(segPos));
-        }
-
-        if (maxSignal != analogSignal) {
-            analogSignal = maxSignal;
-            signalChanged = true;
-            setChanged();
-        }
-    }
+    public void setAnalogSignal(int newSignal) { analogSignal = newSignal; }
+    public void setSignalChanged(boolean newSignal) { signalChanged = newSignal; }
 
     @Override public FuelType getCachedFuelType() { return cachedFuelType; }
     @Override public void setCachedFuelType(FuelType t) { cachedFuelType = t; }
