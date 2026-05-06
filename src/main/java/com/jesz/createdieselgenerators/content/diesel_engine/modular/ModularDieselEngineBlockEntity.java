@@ -73,6 +73,12 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         super(typeIn, pos, state);
     }
 
+    public void resetConnectivity() {
+        updateConnectivity = true;
+        controller = null;
+        length = 1;
+    }
+
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         movementDirection = new ScrollOptionBehaviour<>(WindmillBearingBlockEntity.RotationDirection.class,

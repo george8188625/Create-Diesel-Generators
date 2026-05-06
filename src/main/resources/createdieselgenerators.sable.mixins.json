@@ -1,0 +1,11 @@
+{
+  "required": false,
+  "package": "com.jesz.createdieselgenerators.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SableAssemblyMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

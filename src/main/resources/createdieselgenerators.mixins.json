@@ -16,7 +16,8 @@
     "LootTableAccessor",
     "MechanicalPressBlockEntityMixin",
     "ShaftBlockMixin",
-    "UseOnContextInvoker"
+    "UseOnContextInvoker",
+    "SableAssemblyMixin"
   ],
   "client": [
     "AgeableListModelAccessor",
