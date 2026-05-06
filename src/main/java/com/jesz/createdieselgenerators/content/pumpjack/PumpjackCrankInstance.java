@@ -62,7 +62,9 @@ public class PumpjackCrankInstance extends KineticBlockEntityVisual<PumpjackCran
 
         BlockState blockState = blockEntity.getBlockState();
         BlockPos pos = blockEntity.getBlockPos();
-        float angle = AngleHelper.angleLerp(partialTicks, blockEntity.prevAngle, blockEntity.angle);
+
+        boolean active = blockEntity.getBearing() != null;
+        float angle = active ? AngleHelper.angleLerp(partialTicks, blockEntity.prevAngle, blockEntity.angle) : 0;
 
         boolean isXAxis = blockState.getValue(HORIZONTAL_FACING).getAxis() == Direction.Axis.X;
         double v = ((isXAxis ? angle : -angle) + 90) / 180 * Math.PI;
