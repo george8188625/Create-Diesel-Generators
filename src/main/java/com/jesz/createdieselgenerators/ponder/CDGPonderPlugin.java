@@ -55,8 +55,7 @@ public class CDGPonderPlugin implements PonderPlugin {
                 .add(CDGBlocks.PUMPJACK_BEARING.getId())
                 .add(CDGBlocks.CHEMICAL_TURRET.getId());
         helper.addToTag(AllCreatePonderTags.DISPLAY_SOURCES)
-                .add(CDGBlocks.DIESEL_ENGINE.getId())
-                .add(CDGBlocks.MODULAR_DIESEL_ENGINE.getId());
+                .add(CDGBlocks.PUMPJACK_HOLE.getId());
         helper.addToTag(AllCreatePonderTags.DECORATION)
                 .add(CDGBlocks.ANDESITE_GIRDER.getId())
                 .add(CDGBlocks.SHEET_METAL_PANEL.getId());

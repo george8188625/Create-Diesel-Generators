@@ -123,7 +123,7 @@
   "createdieselgenerators.ponder.huge_diesel_engine.text_1": "Riesige Dieselmotoren verbinden mit Wellen ...",
   "createdieselgenerators.ponder.huge_diesel_engine.text_2": "... sie werden starten kinetische Energie zu genariern, sobald du ihnen Kraftstoff gibst.",
 
-  "createdieselgenerators.display_source.pumpjack_hole_source": "Ölmenge",
+  "createdieselgenerators.display_source.pumpjack_oil_amount": "Ölmenge",
   "createdieselgenerators.display_source.diesel_engine_source": "Motor Status",
   "createdieselgenerators.display_source.large_diesel_engine_source": "Motor Status",
   "createdieselgenerators.display_source.engine_status": "Motor Status",
