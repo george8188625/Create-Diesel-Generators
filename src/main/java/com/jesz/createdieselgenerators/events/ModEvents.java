@@ -12,14 +12,12 @@ import com.jesz.createdieselgenerators.content.canister.SpoutCanisterFilling;
 import com.jesz.createdieselgenerators.content.diesel_engine.huge.HugeDieselEngineBlockEntity;
 import com.jesz.createdieselgenerators.content.diesel_engine.modular.ModularDieselEngineBlockEntity;
 import com.jesz.createdieselgenerators.content.diesel_engine.normal.DieselEngineBlockEntity;
-import com.jesz.createdieselgenerators.content.distillation.DistillationTankBlock;
 import com.jesz.createdieselgenerators.content.distillation.DistillationTankBlockEntity;
 import com.jesz.createdieselgenerators.content.molds.BasinSpoutCasting;
 import com.jesz.createdieselgenerators.content.molds.MoldType;
 import com.jesz.createdieselgenerators.content.oil_barrel.OilBarrelBlockEntity;
 import com.jesz.createdieselgenerators.content.pumpjack.PumpjackHoleBlockEntity;
 import com.jesz.createdieselgenerators.content.tools.FueledToolItem;
-import com.jesz.createdieselgenerators.content.tools.lighter.LighterItem;
 import com.jesz.createdieselgenerators.content.tools.lighter.LighterModel;
 import com.jesz.createdieselgenerators.content.track_layers_bag.TrackLayersBagComponent;
 import com.jesz.createdieselgenerators.content.turret.ChemicalTurretBlockEntity;
@@ -38,7 +36,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -69,7 +66,7 @@ public class ModEvents {
         
         CreateDieselGenerators.REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
 
-            JsonElement jsonElement = FilesHelper.loadJsonResource("assets/createdieselgenerators/lang/default/default.json");
+            JsonElement jsonElement = FilesHelper.loadJsonResource("assets/createdieselgenerators/lang/default.json");
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet())
                 provider.add(entry.getKey(), entry.getValue().getAsString());

@@ -79,7 +79,7 @@
   "createdieselgenerators.display_source.engine_status": "引擎状态",
   "createdieselgenerators.display_source.idle": "空闲",
   "createdieselgenerators.display_source.large_diesel_engine_source": "引擎状态",
-  "createdieselgenerators.display_source.pumpjack_hole_source": "原油储量",
+  "createdieselgenerators.display_source.pumpjack_oil_amount": "原油储量",
   "createdieselgenerators.display_source.speed": "转速：",
   "createdieselgenerators.display_source.stress": "应力量：",
   "createdieselgenerators.engine_silencer.tooltip.summary": "用于消除_柴油引擎_的_噪音_。",

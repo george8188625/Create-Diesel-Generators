@@ -53,6 +53,7 @@ public class CreateDieselGenerators
         CDGCreativeTab.register(modEventBus);
         CDGPackets.register();
         CDGDataComponents.register(modEventBus);
+        CDGDisplaySources.register();
 
         if (ModList.get().isLoaded("moonlight"))
             EveryCompatCompat.init();

@@ -31,12 +31,9 @@ import com.jesz.createdieselgenerators.contraption.DieselEngineMovementBehaviour
 import com.jesz.createdieselgenerators.contraption.PumpjackBearingBMovementBehaviour;
 import com.jesz.createdieselgenerators.contraption.PumpjackHeadMovementBehaviour;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllMountedStorageTypes;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.api.boiler.BoilerHeater;
-import com.simibubi.create.api.registry.CreateRegistries;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
@@ -45,12 +42,9 @@ import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -193,7 +187,6 @@ public class CDGBlocks {
             .initialProperties(SharedProperties::copperMetal)
             .transform(pickaxeOnly())
             .blockstate(PumpjackHoleGenerator::blockState)
-            .onRegisterAfter(CreateRegistries.DISPLAY_SOURCE, block -> DisplaySource.BY_BLOCK.add(block, new OilAmountDisplaySource()))
             .item().model((c, p) -> p.cubeBottomTop("pumpjack_hole", p.modLoc("block/pumpjack_hole_pipe"), p.modLoc("block/pumpjack_hole_base"), p.modLoc("block/pumpjack_hole_pipe"))).build()
             .register();
 

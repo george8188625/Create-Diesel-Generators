@@ -88,7 +88,7 @@
   "createdieselgenerators.ponder.huge_diesel_engine.header": "大型ディーゼルエンジンの設定",
   "createdieselgenerators.ponder.huge_diesel_engine.text_1": "大型ディーゼルエンジンは,シャフトに接続します ...",
   "createdieselgenerators.ponder.huge_diesel_engine.text_2": "...それにいくらかの燃料を与えると,それは運動エネルギーを生成します.",
-  "createdieselgenerators.display_source.pumpjack_hole_source": "オイルの量",
+  "createdieselgenerators.display_source.pumpjack_oil_amount": "オイルの量",
   "createdieselgenerators.display_source.diesel_engine_source": "エンジンの状態",
   "createdieselgenerators.display_source.large_diesel_engine_source": "エンジンの状態",
   "createdieselgenerators.display_source.engine_status": "エンジンの状態",

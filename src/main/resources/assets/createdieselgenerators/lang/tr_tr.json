@@ -123,7 +123,7 @@
   "createdieselgenerators.ponder.huge_diesel_engine.text_1": "Büyük Dizel Motorlar Şaftlara Bağlanıyor ...",
   "createdieselgenerators.ponder.huge_diesel_engine.text_2": "... onlara biraz yakıt verdiğinizde Kinetik Enerji üretmeye başlayacaklar.",
 
-  "createdieselgenerators.display_source.pumpjack_hole_source": "Petrol Miktarı",
+  "createdieselgenerators.display_source.pumpjack_oil_amount": "Petrol Miktarı",
   "createdieselgenerators.display_source.diesel_engine_source": "Motor Durumu",
   "createdieselgenerators.display_source.large_diesel_engine_source": "Motor Durumu",
   "createdieselgenerators.display_source.engine_status": "Motor Durumu",

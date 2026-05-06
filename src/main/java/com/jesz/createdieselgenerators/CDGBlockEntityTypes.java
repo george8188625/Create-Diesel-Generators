@@ -104,6 +104,7 @@ public class CDGBlockEntityTypes {
             .register();
 
     public static final BlockEntityEntry<PumpjackHoleBlockEntity> PUMPJACK_HOLE = REGISTRATE.blockEntity("pumpjack_hole_block_entity", PumpjackHoleBlockEntity::new)
+            .displaySource(CDGDisplaySources.PUMPJACK_OIL_AMOUNT)
             .validBlocks(CDGBlocks.PUMPJACK_HOLE)
             .renderer(() -> PumpjackHoleRenderer::new)
             .register();

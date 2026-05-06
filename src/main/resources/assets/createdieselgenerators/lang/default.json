@@ -118,5 +118,7 @@
   "mold.createdieselgenerators.lines": "Wavy Mold",
   "mold.createdieselgenerators.bowl": "Bowl Mold",
   "mold.createdieselgenerators.chain": "Chain Mold",
-  "mold.createdieselgenerators.bar": "Bar Mold"
+  "mold.createdieselgenerators.bar": "Bar Mold",
+
+  "createdieselgenerators.display_source.pumpjack_oil_amount": "Oil Amount"
 }
