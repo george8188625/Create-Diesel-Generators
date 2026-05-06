@@ -231,7 +231,7 @@ public class DieselEngineBlock extends DirectionalKineticBlock implements Specia
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock()))
+        if (!state.is(newState.getBlock())&& !isMoving)
             withBlockEntityDo(level, pos, be -> {
                 if (be.upgrade != EngineUpgrades.EMPTY)
                     popResource(level, pos, be.upgrade.getItem());
