@@ -92,6 +92,18 @@ repositories {
     maven {
         url = "https://api.modrinth.com/maven"
     }
+
+    exclusiveContent { // Sable
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("dev.ryanhcode.sable-companion")
+        }
+    }
 }
 
 dependencies {
@@ -119,6 +131,11 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
     compileOnly("maven.modrinth:sable:${sable_version}+mc${minecraft_version}-neoforge")
+    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${project.minecraft_version}:[${project.sable_companion_version},)")) {
+        version {
+            prefer project.sable_companion_version
+        }
+    }
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
