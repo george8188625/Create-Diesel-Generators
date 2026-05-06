@@ -90,7 +90,7 @@
   "createdieselgenerators.actionbar.turret.stopped_controlling": "Stopped controlling: %1$s",
   "createdieselgenerators.actionbar.turret.too_far_away": "You are too far away!",
   "createdieselgenerators.actionbar.distillation_controller.not_enough": "Not enough Distillation Controllers!",
-
+  "createdieselgenerators.actionbar.distillation_controller.too_short": "Distillation Tower too short! Minimum height: %s",
   "createdieselgenerators.recipe.basin_fermenting": "Basin Processing",
   "createdieselgenerators.recipe.diesel_combustion": "Diesel Engine Combustion",
   "createdieselgenerators.recipe.distillation": "Distillation",

@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.content.distillation;
 
 import com.jesz.createdieselgenerators.CDGBlocks;
+import com.jesz.createdieselgenerators.CDGConfig;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
@@ -40,10 +41,11 @@ public class DistillationControllerItem extends Item {
         int width = ftbe.getControllerBE().getWidth();
         int height = ftbe.getControllerBE().getHeight();
 
-        if (height < 3) {
+        if (height < CDGConfig.DISTILLATION_MIN_HEIGHT.get()) {
             if (context.getPlayer() instanceof ServerPlayer sp)
                 sp.connection.send(new ClientboundSetActionBarTextPacket(
-                        Component.translatable("createdieselgenerators.actionbar.distillation_controller.too_short")
+                        Component.translatable("createdieselgenerators.actionbar.distillation_controller.too_short",
+                                        CDGConfig.DISTILLATION_MIN_HEIGHT.get())
                                 .withStyle(ChatFormatting.RED)));
             return InteractionResult.FAIL;
         }

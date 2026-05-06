@@ -47,6 +47,8 @@ public class CDGConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> ENGINES_FILLED_WITH_ITEMS;
     public static final ModConfigSpec.ConfigValue<Boolean> ENGINES_DISABLED_WITH_REDSTONE;
 
+    public static final ModConfigSpec.ConfigValue<Integer> DISTILLATION_MIN_HEIGHT;
+
     static {
 
         CLIENT_BUILDER.push("Client Configs");
@@ -104,7 +106,7 @@ public class CDGConfig {
 
         MAX_OIL_BARREL_WIDTH = SERVER_BUILDER.comment("Maximum width of Oil Barrels")
                 .define("Max Oil Barrel Width", 3);
-        
+
 
 
         CANISTER_SPOUT_FILLING = SERVER_BUILDER.comment("Canister can be filled by spouts")
@@ -112,6 +114,9 @@ public class CDGConfig {
 
         COMBUSTIBLES_BLOW_UP = SERVER_BUILDER.comment("Combustibles do boom boom when on fire")
                 .define("Combustibles blow up",true);
+
+        DISTILLATION_MIN_HEIGHT = SERVER_BUILDER.comment("Minimum height of the Distillation Tower required to process recipes")
+                .defineInRange("Distillation Tower Minimum Height", 3, 2, 7);
 
         SERVER_BUILDER.pop();
         SERVER_SPEC = SERVER_BUILDER.build();
