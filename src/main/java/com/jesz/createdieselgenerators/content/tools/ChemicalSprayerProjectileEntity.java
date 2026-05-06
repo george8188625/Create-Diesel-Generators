@@ -6,7 +6,6 @@ import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -26,7 +25,7 @@ import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -196,25 +195,28 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
     public boolean isOnFire() {
         return fire;
     }
+
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        BlockPos pos = new BlockPos((int) Math.floor(getPosition(1).x), (int) Math.floor(getPosition(1).y), (int) Math.floor(getPosition(1).z));
-        if (cooling) {
-            if (level().getBlockState(pos).getBlock() instanceof FireBlock) {
-                level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-                level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
-            }
+        if (level().isClientSide) return;
 
-            for (int i = 0; i < 6; i++) {
-                if (level().getBlockState(pos.relative(Direction.values()[i], 1)).getBlock() instanceof FireBlock) {
-                    level().setBlock(pos.relative(Direction.values()[i], 1), Blocks.AIR.defaultBlockState(), 3);
-                    level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
-                }
+        BlockPos facePos = hit.getBlockPos().relative(hit.getDirection());
+
+        if (cooling) {
+            if (level().getBlockState(facePos).getBlock() instanceof FireBlock)
+                level().setBlockAndUpdate(facePos, Blocks.AIR.defaultBlockState());
+            for (Direction dir : Direction.values()) {
+                BlockPos adj = facePos.relative(dir);
+                if (level().getBlockState(adj).getBlock() instanceof FireBlock)
+                    level().setBlockAndUpdate(adj, Blocks.AIR.defaultBlockState());
             }
+            level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
         }
-        if (fire && level().getBlockState(pos).getBlock() instanceof AirBlock && BlockHelper.hasBlockSolidSide(level().getBlockState(pos.below()), level(), pos.below(), Direction.UP))
-            level().setBlock(pos, FireBlock.getState(level(), pos), 3);
+
+        if (fire && level().isEmptyBlock(facePos))
+            level().setBlockAndUpdate(facePos, BaseFireBlock.getState(level(), facePos));
+
         remove(RemovalReason.DISCARDED);
     }
 
