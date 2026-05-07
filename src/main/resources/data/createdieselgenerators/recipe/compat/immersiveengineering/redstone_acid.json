@@ -7,7 +7,7 @@
       "amount": 250
     },
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   ],
   "processingTime": 400,
