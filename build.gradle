@@ -182,7 +182,7 @@ tasks.withType(JavaCompile).configureEach {
 
 jar {
     manifest.attributes([
-            "MixinConfigs": "${mod_id}.mixins.json",
+            "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.sable.mixins.json",
     ])
 }
 
