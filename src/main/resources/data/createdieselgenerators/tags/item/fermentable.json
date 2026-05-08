@@ -7,11 +7,11 @@
     "minecraft:sugar_cane",
     {
       "required": false,
-      "id": "#forge:vegetables/tomato"
+      "id": "#c:foods/tomato"
     },
     {
       "required": false,
-      "id": "#forge:vegetables/onion"
+      "id": "#c:foods/onion"
     }
   ]
 }
