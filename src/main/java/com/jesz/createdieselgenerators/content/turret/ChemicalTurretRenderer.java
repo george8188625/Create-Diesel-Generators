@@ -60,7 +60,7 @@ public class ChemicalTurretRenderer extends KineticBlockEntityRenderer<ChemicalT
                 .uncenter()
                 .translate(0.5, 1.3125, 0.125)
                 .rotateXDegrees(verticalRotation)
-                .rotateZDegrees((Mth.lerp(partialTicks, AnimationTickHolder.getTicks()-1, AnimationTickHolder.getTicks()))*(be.getSpeed()/32))
+                .rotateZDegrees(Mth.lerp(partialTicks, be.lastCogRotation, be.cogRotation))
                 .light(light)
                 .renderInto(ms, buffer.getBuffer(RenderType.solid()));
     }
