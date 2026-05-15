@@ -176,17 +176,23 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
     }
 
     public PoweredEngineShaftBlockEntity getShaft() {
-
         PoweredEngineShaftBlockEntity shaft = target.get();
         if (shaft == null || shaft.isRemoved() || !shaft.canBePoweredBy()) {
-            if (shaft != null)
+            if (shaft != null) {
                 target = new WeakReference<>(null);
+                needsShaftRegistration = true;
+                signalChanged = true;
+            }
             BlockEntity anyShaftAt = level.getBlockEntity(worldPosition.relative(getBlockState().getValue(FACING), 2));
-            if (anyShaftAt instanceof PoweredEngineShaftBlockEntity ps)
+            if (anyShaftAt instanceof PoweredEngineShaftBlockEntity ps && ps.canBePoweredBy()) {
                 target = new WeakReference<>(shaft = ps);
+                needsShaftRegistration = true;
+                signalChanged = true;
+            }
         }
         return shaft;
     }
+    
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         movementDirection = new ScrollOptionBehaviour<>(WindmillBearingBlockEntity.RotationDirection.class,
