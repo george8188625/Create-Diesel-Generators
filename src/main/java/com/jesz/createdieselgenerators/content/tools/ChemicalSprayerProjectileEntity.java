@@ -214,8 +214,11 @@ public class ChemicalSprayerProjectileEntity extends AbstractHurtingProjectile {
             level().playLocalSound(position().x, position().y, position().z, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5f, 2, true);
         }
 
-        if (fire && level().isEmptyBlock(facePos))
-            level().setBlockAndUpdate(facePos, BaseFireBlock.getState(level(), facePos));
+        if (fire && level().getBlockState(facePos).canBeReplaced() && level().getFluidState(facePos).isEmpty()) {
+            if (BaseFireBlock.canBePlacedAt(level(), facePos, hit.getDirection())) {
+                level().setBlockAndUpdate(facePos, BaseFireBlock.getState(level(), facePos));
+            }
+        }
 
         remove(RemovalReason.DISCARDED);
     }
