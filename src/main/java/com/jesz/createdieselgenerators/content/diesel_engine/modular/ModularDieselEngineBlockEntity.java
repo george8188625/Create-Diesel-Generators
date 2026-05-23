@@ -202,9 +202,9 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
 
         fuelDebt += (length * cachedBurnRate) * getFuelThrottle();
-        while (fuelDebt >= 1f) {
+        while (fuelDebt >= length) {
             tankInventory.drain(length, IFluidHandler.FluidAction.EXECUTE);
-            fuelDebt -= 1f;
+            fuelDebt -= length;
         }
 
         if (level.isClientSide) {
