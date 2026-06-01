@@ -12,11 +12,6 @@ The main focus of this mod is to provide a streamlined implementation of industr
 
 While this is not gonna give you the absolute most realistic implementation, this provides something simple. You don't have to overthink anything when playing. Just play.
 
-### The future of this mod
-I'm not gonna beat around the bush, this mod isn't gonna receive many **content** updates, but it's still going to be maintained. You'll get ports, bugfixes and support.
-
-This was my first real project. I do this as a hobby and don't have that much free time to come up with new features. This was my life for 2.5 years, I think it's natural to move forward. Wow, I get nostalgic just thinking about this.
-
-If you want to contribute, feel free to open a PR (to the default branch or both latest ones), whether to fix something or add a feature.
+If you want to contribute, feel free to open a PR (to the default branch), whether to fix something or add a feature.
 
 If you want to help translate this mod, make a pull request with the translation files<br>
