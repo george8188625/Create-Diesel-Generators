@@ -151,13 +151,13 @@ public class BurnerBlockEntity extends KineticBlockEntity {
     }
 
     public BlazeBurnerBlock.HeatLevel calculateHeatLevel(float heat) {
-        if(heat >= 1.8)
+        if(heat >= 1.8f)
             return BlazeBurnerBlock.HeatLevel.SEETHING;
-        if(heat >= 1.4)
+        if(heat >= 1.4f)
             return BlazeBurnerBlock.HeatLevel.KINDLED;
-        if(heat >= 1.2)
+        if(heat >= 1.2f)
             return BlazeBurnerBlock.HeatLevel.FADING;
-        if(heat >= 1)
+        if(heat >= 1f)
             return BlazeBurnerBlock.HeatLevel.SMOULDERING;
         return BlazeBurnerBlock.HeatLevel.NONE;
     }
