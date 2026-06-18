@@ -50,8 +50,8 @@ public class CDGConfig {
 
     public static final ModConfigSpec.ConfigValue<Integer> DISTILLATION_MIN_HEIGHT;
 
-    public static final ModConfigSpec.ConfigValue<Integer> TURRET_FUEL_CONSUMPTION;
-    public static final ModConfigSpec.ConfigValue<Integer> TURRET_TANK_AMOUNT;
+    public static final ModConfigSpec.ConfigValue<Integer> CHEMICAL_TURRET_FUEL_CONSUMPTION;
+    public static final ModConfigSpec.ConfigValue<Integer> CHEMICAL_TURRET_TANK_AMOUNT;
 
     static {
 
@@ -129,9 +129,9 @@ public class CDGConfig {
         SERVER_SPEC = SERVER_BUILDER.build();
 
         SERVER_BUILDER.push("Turrent Config");
-        TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turrent tank in mB")
+        CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turrent tank in mB")
                 .define("Turrent Tank Amount", 4000);
-        TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turrent (mB per second)")
+        CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turrent (mB per second)")
                 .define("Turrent Fuel Consumption", 100);
 
         SERVER_BUILDER.pop();

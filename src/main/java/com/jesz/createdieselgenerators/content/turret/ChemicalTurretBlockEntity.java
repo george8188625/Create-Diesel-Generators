@@ -142,7 +142,7 @@ public class ChemicalTurretBlockEntity extends TurretBlockEntity {
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         behaviours.add(computerBehaviour = CCProxy.behaviour(this));
-        tank = SmartFluidTankBehaviour.single(this, CDGConfig.TURRET_TANK_AMOUNT.get());
+        tank = SmartFluidTankBehaviour.single(this, CDGConfig.CHEMICAL_TURRET_TANK_AMOUNT.get());
         behaviours.add(tank);
         super.addBehaviours(behaviours);
     }
@@ -177,7 +177,7 @@ public class ChemicalTurretBlockEntity extends TurretBlockEntity {
 
             level.addFreshEntity(projectile);
             if (tank_consumption) {
-                tank.getPrimaryHandler().drain(CDGConfig.TURRET_FUEL_CONSUMPTION.get()/20, IFluidHandler.FluidAction.EXECUTE);
+                tank.getPrimaryHandler().drain(CDGConfig.CHEMICAL_TURRET_FUEL_CONSUMPTION.get()/20, IFluidHandler.FluidAction.EXECUTE);
                 tank_consumption =  false;
             }
         }
