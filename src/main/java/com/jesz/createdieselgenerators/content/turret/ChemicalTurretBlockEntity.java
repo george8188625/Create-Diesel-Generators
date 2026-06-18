@@ -1,6 +1,7 @@
 package com.jesz.createdieselgenerators.content.turret;
 
 import com.jesz.createdieselgenerators.CDGBlockEntityTypes;
+import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.CDGRegistries;
 import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.content.tools.ChemicalSprayerProjectileEntity;
@@ -141,7 +142,7 @@ public class ChemicalTurretBlockEntity extends TurretBlockEntity {
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         behaviours.add(computerBehaviour = CCProxy.behaviour(this));
-        tank = SmartFluidTankBehaviour.single(this, 1000);
+        tank = SmartFluidTankBehaviour.single(this, CDGConfig.TURRET_TANK_AMOUNT.get());
         behaviours.add(tank);
         super.addBehaviours(behaviours);
     }
@@ -175,8 +176,9 @@ public class ChemicalTurretBlockEntity extends TurretBlockEntity {
             projectile.setOwner(controllingPlayer != null ? controllingPlayer : controllingEntity);
 
             level.addFreshEntity(projectile);
-            if (t == 1) {
-                tank.getPrimaryHandler().drain(3, IFluidHandler.FluidAction.EXECUTE);
+            if (tank_consumption) {
+                tank.getPrimaryHandler().drain(CDGConfig.TURRET_FUEL_CONSUMPTION.get()/20, IFluidHandler.FluidAction.EXECUTE);
+                tank_consumption =  false;
             }
         }
     }

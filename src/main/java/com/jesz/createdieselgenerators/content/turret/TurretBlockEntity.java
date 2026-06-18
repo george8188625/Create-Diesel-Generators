@@ -56,6 +56,7 @@ public class TurretBlockEntity extends KineticBlockEntity {
     }
 
     int t;
+    boolean tank_consumption = false;
 
     @Override
     public void tick() {
@@ -112,6 +113,10 @@ public class TurretBlockEntity extends KineticBlockEntity {
         if (t % 8 == 0 && sync) {
             sendData();
             sync = false;
+        }
+
+        if(!tank_consumption) {
+            tank_consumption = true;
         }
 
         oldHorizontalRotation = horizontalRotation;
