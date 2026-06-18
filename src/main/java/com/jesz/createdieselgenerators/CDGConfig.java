@@ -126,15 +126,15 @@ public class CDGConfig {
                 .defineInRange("Distillation Tower Minimum Height", 3, 2, 7);
 
         SERVER_BUILDER.pop();
-        SERVER_SPEC = SERVER_BUILDER.build();
 
         SERVER_BUILDER.push("Turrent Config");
         CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turrent tank in mB")
                 .define("Turrent Tank Amount", 4000);
         CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turrent (mB per second)")
                 .define("Turrent Fuel Consumption", 100);
-
         SERVER_BUILDER.pop();
+
+        SERVER_SPEC = SERVER_BUILDER.build();
 
         COMMON_BUILDER.push("Common Config");
             TOOL_CAPACITY = COMMON_BUILDER.comment("Capacity of Tools requiring Fluids in mB")
