@@ -91,6 +91,7 @@ public class CDGConfig {
 
         SERVER_BUILDER.pop();
 
+
         SERVER_BUILDER.push("Oil Config");
             OIL_CHUNK_INFINITE_THRESHOLD = SERVER_BUILDER.comment()
                     .define("Infinite oil chunk threshold", 10_000_000);
@@ -111,10 +112,18 @@ public class CDGConfig {
 
         SERVER_BUILDER.pop();
 
+
+        SERVER_BUILDER.push("Turret Config");
+        CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turret tank in mB")
+                .define("Turret Tank Amount", 1000);
+        CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turret (mB per second)")
+                .define("Turret Fuel Consumption", 50);
+
+        SERVER_BUILDER.pop();
+
+
         MAX_OIL_BARREL_WIDTH = SERVER_BUILDER.comment("Maximum width of Oil Barrels")
                 .define("Max Oil Barrel Width", 3);
-
-
 
         CANISTER_SPOUT_FILLING = SERVER_BUILDER.comment("Canister can be filled by spouts")
                 .define("Canister can be filled by spouts",true);
@@ -126,15 +135,8 @@ public class CDGConfig {
                 .defineInRange("Distillation Tower Minimum Height", 3, 2, 7);
 
         SERVER_BUILDER.pop();
-
-        SERVER_BUILDER.push("Turret Config");
-        CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turret tank in mB")
-                .define("Turret Tank Amount", 1000);
-        CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turret (mB per second)")
-                .define("Turret Fuel Consumption", 50);
-        SERVER_BUILDER.pop();
-
         SERVER_SPEC = SERVER_BUILDER.build();
+
 
         COMMON_BUILDER.push("Common Config");
             TOOL_CAPACITY = COMMON_BUILDER.comment("Capacity of Tools requiring Fluids in mB")
