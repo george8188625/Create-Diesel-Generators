@@ -114,10 +114,10 @@ public class CDGConfig {
 
 
         SERVER_BUILDER.push("Turret Config");
-        CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in the turret tank in mB")
-                .define("Turret Tank Amount", 1000);
-        CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by the turret (mB per second)")
-                .define("Turret Fuel Consumption", 50);
+        CHEMICAL_TURRET_TANK_AMOUNT = SERVER_BUILDER.comment("Amount of fluid in chemical turret tank in mB")
+                .define("Chemical Turret Tank Amount", 1000);
+        CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by chemical turret (mB per second)")
+                .define("Chemical Turret Fuel Consumption", 50);
 
         SERVER_BUILDER.pop();
 
