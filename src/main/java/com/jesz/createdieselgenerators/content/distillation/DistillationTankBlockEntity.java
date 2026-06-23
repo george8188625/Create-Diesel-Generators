@@ -80,6 +80,7 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
     // For rendering purposes only
     private LerpedFloat fluidLevel;
     BlazeBurnerBlock.HeatLevel highestHeatLevel = BlazeBurnerBlock.HeatLevel.NONE;
+    int numberOfHighestHeat = 0;
 
     public DistillationTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -108,6 +109,23 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
             }
         }
         return highestHeat;
+    }
+
+    // counts the number of burners if an EXACT heat level
+    public int getNumberOfHeat(BlazeBurnerBlock.HeatLevel heatTest) {
+        int width = getControllerBE().width;
+        int heatCount = 0;
+
+        for (int xOffset = 0; xOffset < width; xOffset++) {
+            for (int zOffset = 0; zOffset < width; zOffset++) {
+                BlockPos pos = getController().offset(xOffset, -1, zOffset);
+                BlockState blockState = level.getBlockState(pos);
+                BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(blockState);
+                if(heatTest == heat)
+                    heatCount++;
+            }
+        }
+        return heatCount;
     }
 
     public void updateConnectivity() {
@@ -179,21 +197,24 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                             SoundSource.BLOCKS, 0.05f, 0.5f);
                 }
 
-                if (tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).amount()) {
-                    if (currentRecipe.getRequiredHeat().testBlazeBurner(highestHeatLevel)) {
-                        tankInventory.drain(currentRecipe.getFluidIngredients().get(0).amount(), IFluidHandler.FluidAction.EXECUTE);
-                        if (currentRecipe != null)
-                            for (int i = 0; i < currentRecipe.getFluidResults().size(); i++) {
-                                if (!(level.getBlockEntity(getBlockPos().above(i + 1)) instanceof DistillationTankBlockEntity be))
-                                    break;
+                if (currentRecipe.getRequiredHeat().testBlazeBurner(highestHeatLevel)) {
+                    for (int j = 0; j < numberOfHighestHeat; j++)
+                    {
+                        if (tankInventory.getFluid().getAmount() >= currentRecipe.getFluidIngredients().get(0).amount()) {
+                            tankInventory.drain(currentRecipe.getFluidIngredients().get(0).amount(), IFluidHandler.FluidAction.EXECUTE);
+                            if (currentRecipe != null)
+                                for (int i = 0; i < currentRecipe.getFluidResults().size(); i++) {
+                                    if (!(level.getBlockEntity(getBlockPos().above(i + 1)) instanceof DistillationTankBlockEntity be))
+                                        break;
 
-                                if (!isSameMultiBlock(be))
-                                    break;
-                                be.tankInventory.fill(currentRecipe.getFluidResults().get(i), IFluidHandler.FluidAction.EXECUTE);
-                            }
+                                    if (!isSameMultiBlock(be))
+                                        break;
+                                    be.tankInventory.fill(currentRecipe.getFluidResults().get(i), IFluidHandler.FluidAction.EXECUTE);
+                                }
+                        } else {
+                            tanksFull = true;
+                        }
                     }
-                } else {
-                    tanksFull = true;
                 }
 
                 currentRecipe = null;
@@ -808,6 +829,7 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
             return;
         if (isController()) {
             highestHeatLevel = getHeat();
+            numberOfHighestHeat = getNumberOfHeat(highestHeatLevel);
             sendData();
             onFluidStackChanged(tankInventory.getFluid());
             return;
