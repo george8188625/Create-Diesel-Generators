@@ -181,6 +181,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
                     }
 
                     if (!level.isClientSide) {
+                        updateCapability = true; // FIX: #338
                         setChanged();
                         sendData();
                     }
@@ -697,7 +698,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
                 BlockPos pos = getController().offset(xOffset, -1, zOffset);
                 BlockState blockState = level.getBlockState(pos);
                 BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(blockState);
-                if(!highestHeat.isAtLeast(heat))
+                if (heat.ordinal() > highestHeat.ordinal()) // FIX: #338
                     highestHeat = heat;
             }
         }
