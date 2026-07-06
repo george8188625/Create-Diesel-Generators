@@ -2,6 +2,7 @@ package com.jesz.createdieselgenerators.content.bulk_fermenter;
 
 import com.jesz.createdieselgenerators.CDGBlockEntityTypes;
 import com.jesz.createdieselgenerators.CDGRecipes;
+import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
@@ -48,10 +49,12 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.spongepowered.asm.logging.ILogger;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMultiBlockEntityContainerFluidItem, IHaveGoggleInformation {
@@ -212,6 +215,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
         }
     }
 
+
     protected List<Recipe<?>> getMatchingRecipes() {
         List<RecipeHolder<? extends Recipe<?>>> list = RecipeFinder.get(RECIPE_CACHE_KEY, level, recipe -> recipe.value().getType() == CDGRecipes.BULK_FERMENTING.getType());
         return list.stream()
@@ -263,7 +267,6 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
             currentRecipe = (BulkFermentingRecipe) r.get(0);
             startProcessing();
         }
-
 
         for (int yOffset = 0; yOffset < height; yOffset++) {
             for (int xOffset = 0; xOffset < width; xOffset++) {
@@ -480,7 +483,6 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
                 invalidateRenderBoundingBox();
             }
         }
-
     }
 
     @Override
@@ -778,8 +780,10 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
             for (FluidTank tank : tanks) {
                 if (FluidStack.isSameFluidSameComponents(tank.getFluid(), resource)) {
                     FluidStack result = tank.drain(resource, action);
-                    if (action.execute())
+                    if (action.execute()) {
                         onContentsChanged();
+                    }
+
                     return result;
                 }
             }
