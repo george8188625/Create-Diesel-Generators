@@ -115,10 +115,6 @@ public class TurretBlockEntity extends KineticBlockEntity {
             sync = false;
         }
 
-        if(!tank_consumption) {
-            tank_consumption = true;
-        }
-
         oldHorizontalRotation = horizontalRotation;
         oldVerticalRotation = verticalRotation;
         horizontalRotation = AngleHelper.angleLerp(controllingEntity == null || controllingPlayer != null ? 0.2f : 0.7f, horizontalRotation, targetedHorizontalRotation);
