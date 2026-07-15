@@ -52,6 +52,7 @@ public class CDGConfig {
 
     public static final ModConfigSpec.ConfigValue<Integer> CHEMICAL_TURRET_FUEL_CONSUMPTION;
     public static final ModConfigSpec.ConfigValue<Integer> CHEMICAL_TURRET_TANK_AMOUNT;
+    public static final ModConfigSpec.BooleanValue CHEMICAL_TURRET_FUEL_PER_TICK;
 
     static {
 
@@ -118,7 +119,8 @@ public class CDGConfig {
                 .define("Chemical Turret Tank Amount", 1000);
         CHEMICAL_TURRET_FUEL_CONSUMPTION = SERVER_BUILDER.comment("Amount of fluid consumed by chemical turret (mB per second)")
                 .define("Chemical Turret Fuel Consumption", 50);
-
+        CHEMICAL_TURRET_FUEL_PER_TICK = SERVER_BUILDER.comment("Set to true to make ChemicalTurret consume oil per tick")
+                .define("Chemical Turret Fuel Consumption Per Tick", false);
         SERVER_BUILDER.pop();
 
 

@@ -176,8 +176,8 @@ public class ChemicalTurretBlockEntity extends TurretBlockEntity {
             projectile.setOwner(controllingPlayer != null ? controllingPlayer : controllingEntity);
 
             level.addFreshEntity(projectile);
-            if (t == 1) {
-                tank.getPrimaryHandler().drain(CDGConfig.CHEMICAL_TURRET_FUEL_CONSUMPTION.get()/20, IFluidHandler.FluidAction.EXECUTE);
+            if (t == 1 || CDGConfig.CHEMICAL_TURRET_FUEL_PER_TICK.get()) {
+                    tank.getPrimaryHandler().drain(CDGConfig.CHEMICAL_TURRET_FUEL_CONSUMPTION.get()/20, IFluidHandler.FluidAction.EXECUTE);
                 tank_consumption =  false;
             }
         }
