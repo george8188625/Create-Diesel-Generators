@@ -135,6 +135,7 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
     }
     @Override
     public void tick() {
+        updateHeat()
         assert level != null;
 
         if (isController()) {
@@ -678,43 +679,40 @@ public class BulkFermenterBlockEntity extends SmartBlockEntity implements IMulti
 
     public void updateHeat() {
         assert level != null;
+    
         BulkFermenterBlockEntity controller = getControllerBE();
-        int width;
+    
         if (controller == null)
-            width = 1;
-        else {
-            if (controller != this) {
-                controller.updateHeat();
-                return;
-            }
-            width = controller.width;
+            return;
+    
+        if (controller != this) {
+            controller.updateHeat();
+            return;
         }
-
+    
         BlazeBurnerBlock.HeatLevel highestHeat = BlazeBurnerBlock.HeatLevel.NONE;
-
+    
         for (int xOffset = 0; xOffset < width; xOffset++) {
             for (int zOffset = 0; zOffset < width; zOffset++) {
                 BlockPos pos = getController().offset(xOffset, -1, zOffset);
+    
                 BlockState blockState = level.getBlockState(pos);
-                BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(blockState);
-                if(!highestHeat.isAtLeast(heat))
+    
+                BlazeBurnerBlock.HeatLevel heat =
+                        BasinBlockEntity.getHeatLevelOf(blockState);
+    
+                if (highestHeat.ordinal() < heat.ordinal())
                     highestHeat = heat;
             }
         }
-        highestHeatLevel = highestHeat;
-
-        List<Recipe<?>> r = getMatchingRecipes();
-        if (!r.contains(currentRecipe)) {
-            processingTime = -1;
-        }
-        if (processingTime == -1 && !r.isEmpty()) {
-            currentRecipe = (BulkFermentingRecipe) r.get(0);
-            startProcessing();
-        }
-
-        if (!level.isClientSide) {
-            setChanged();
-            sendData();
+    
+        if (highestHeatLevel != highestHeat) {
+            highestHeatLevel = highestHeat;
+    
+            if (!level.isClientSide) {
+                setChanged();
+                sendData();
+            }
         }
     }
 
