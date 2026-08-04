@@ -30,7 +30,7 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
         super(info);
     }
     private int calculateYOffset(DistillationRecipe recipe) {
-        return -23 * (recipe.getMaxFluidOutputCount() - recipe.getFluidResults().size()); //line 49
+        return 23 * recipe.getFluidResults().size(); //line 49
     }
 
     @Override
@@ -40,13 +40,13 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
             return;
         int yOffset = calculateYOffset(recipe);
         SizedFluidIngredient fluidIngredient = recipe.getFluidIngredients().get(0);
-        addFluidSlot(builder, 17, 145 + yOffset, fluidIngredient);
+        addFluidSlot(builder, 17, 53 + yOffset, fluidIngredient);
 
 
         int i = 1;
 
         for (FluidStack fluidResult : recipe.getFluidResults()) {
-            int yPosition = -23 * i + 150 + yOffset;
+            int yPosition = -23 * i + 58 + yOffset;
             addFluidSlot(builder, 130, yPosition, fluidResult);
             i++;
         }
@@ -54,12 +54,12 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
         HeatCondition requiredHeat = recipe.getRequiredHeat();
         if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.NONE)) {
             builder
-                    .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 171 + yOffset)
+                    .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 79 + yOffset)
                     .addItemStack(AllBlocks.BLAZE_BURNER.asStack());
         }
         if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.KINDLED)) {
             builder
-                    .addSlot(RecipeIngredientRole.CATALYST, 153, 171 + yOffset)
+                    .addSlot(RecipeIngredientRole.CATALYST, 153, 79 + yOffset)
                     .addItemStack(AllItems.BLAZE_CAKE.asStack());
         }
     }
@@ -69,18 +69,18 @@ public class DistillationCategory extends CreateRecipeCategory<DistillationRecip
         HeatCondition requiredHeat = recipe.getRequiredHeat();
         boolean noHeat = requiredHeat == HeatCondition.NONE;
         int yOffset = calculateYOffset(recipe);
-        AllGuiTextures.JEI_ARROW.render(graphics, 40, 150 + yOffset);
+        AllGuiTextures.JEI_ARROW.render(graphics, 40, 58 + yOffset);
         AllGuiTextures shadow = noHeat ? AllGuiTextures.JEI_SHADOW : AllGuiTextures.JEI_LIGHT;
-        shadow.render(graphics, 81, 153 + (noHeat ? 10 : 30) + yOffset);
-        distillationTower.draw(graphics, 91, 142 + yOffset, recipe.getFluidResults().size());
+        shadow.render(graphics, 81, 61 + (noHeat ? 10 : 30) + yOffset);
+        distillationTower.draw(graphics, 91, 50 + yOffset, recipe.getFluidResults().size());
 
         if(!noHeat)
-            heater.withHeat(requiredHeat.visualizeAsBlazeBurner()).draw(graphics, 91, 150 + yOffset);
+            heater.withHeat(requiredHeat.visualizeAsBlazeBurner()).draw(graphics, 91, 58 + yOffset);
 
         AllGuiTextures heatBar = noHeat ? AllGuiTextures.JEI_NO_HEAT_BAR : AllGuiTextures.JEI_HEAT_BAR;
 
-        heatBar.render(graphics, 4, 170 + yOffset);
+        heatBar.render(graphics, 4, 78 + yOffset);
         graphics.drawString(Minecraft.getInstance().font, CreateLang.translateDirect(requiredHeat.getTranslationKey()), 9,
-                176 + yOffset, requiredHeat.getColor(), false);
+                84 + yOffset, requiredHeat.getColor(), false);
     }
 }
