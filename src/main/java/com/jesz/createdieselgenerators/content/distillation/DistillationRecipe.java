@@ -30,7 +30,7 @@ public class DistillationRecipe extends StandardProcessingRecipe<RecipeInput> {
     }
 
     @Override
-    protected int getMaxFluidOutputCount() {
+    public int getMaxFluidOutputCount() {
         return 6;
     }
 
