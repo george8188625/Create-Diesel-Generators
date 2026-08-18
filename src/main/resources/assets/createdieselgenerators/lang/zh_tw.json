@@ -1,6 +1,7 @@
 {
   "block.createdieselgenerators.andesite_girder": "安山岩梁",
   "block.createdieselgenerators.andesite_girder_encased_shaft": "安山岩梁封裝軸",
+  "block.createdieselgenerators.andesite_girder_strut": "安山岩樑式支柱",
   "block.createdieselgenerators.asphalt_block": "柏油塊",
   "block.createdieselgenerators.asphalt_slab": "柏油半磚",
   "block.createdieselgenerators.asphalt_stairs": "柏油階梯",
@@ -102,6 +103,8 @@
   "createdieselgenerators.gui.entity_filter.deny_list.description": "只要物品不具備任何選定屬性即可通過。",
   "createdieselgenerators.gui.entity_filter.no_selected_attributes": "未選定屬性",
   "createdieselgenerators.gui.entity_filter.selected_attributes": "選定屬性：",
+  "createdieselgenerators.hint.distiller_full": "看起來這個 _蒸餾塔_ 的輸出罐已經滿了。請確保每個 _罐子_ 都有足夠的空間容納輸出物。",
+  "createdieselgenerators.hint.distiller_full.title": "出水箱已滿",
   "createdieselgenerators.hint.pumpjack_hole_no_pipe": "此_抽油泵_似乎未連接到下方的_基岩_。請確保_管道_一直延伸至虛空。",
   "createdieselgenerators.hint.pumpjack_hole_no_pipe.title": "缺少管道",
   "createdieselgenerators.ponder.automatic_turret.header": "自動控制砲塔",
