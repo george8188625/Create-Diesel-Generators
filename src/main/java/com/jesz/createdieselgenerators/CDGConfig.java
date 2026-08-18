@@ -25,7 +25,7 @@ public class CDGConfig {
 
     public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_SCANNER_LEVEL;
     public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_BARREL_WIDTH;
-    public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_BARREL_LENGTH;
+    public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_BARREL_LENGTH_PER_WIDTH;
 
     public static final ModConfigSpec.ConfigValue<Integer> OIL_CHUNK_INFINITE_THRESHOLD;
     public static final ModConfigSpec.ConfigValue<Integer> OIL_CHUNK_THRESHOLD;
