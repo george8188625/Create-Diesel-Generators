@@ -330,7 +330,7 @@ public class OilBarrelBlockEntity extends SmartBlockEntity implements IMultiBloc
 
     @Override
     public int getMaxLength(Direction.Axis longAxis, int width) {
-        return CDGConfig.MAX_OIL_BARREL_LENGTH.get();
+        return CDGConfig.MAX_OIL_BARREL_LENGTH_PER_WIDTH.get() * width;
     }
 
     @Override
