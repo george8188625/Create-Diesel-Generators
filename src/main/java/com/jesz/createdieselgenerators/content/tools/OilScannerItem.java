@@ -67,6 +67,8 @@ public class OilScannerItem extends Item {
 
                             if (amount <= 0)
                                 stack.getTag().putInt("Type", 1);
+                            else if (amount == Integer.MAX_VALUE)
+                                stack.getTag().putInt("Type", 4);
                             else if (amount >= (CDGConfig.OIL_CHUNK_THRESHOLD.get() + CDGConfig.OIL_CHUNK_INFINITE_THRESHOLD.get()) / 2)
                                 stack.getTag().putInt("Type", 3);
                             else
@@ -75,9 +77,9 @@ public class OilScannerItem extends Item {
                                 if (amount <= 0)
                                     sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_none", TooltipHelper.makeProgressBar(3, 0)).withStyle(ChatFormatting.GRAY)));
                                 else if (amount == Integer.MAX_VALUE)
-                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_bottomless", TooltipHelper.makeProgressBar(3, 3)).withStyle(ChatFormatting.GOLD)));
+                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_bottomless", TooltipHelper.makeProgressBar(3, 3)).withStyle(ChatFormatting.RED)));
                                 else if (amount >= (CDGConfig.OIL_CHUNK_THRESHOLD.get() + CDGConfig.OIL_CHUNK_INFINITE_THRESHOLD.get()) / 2)
-                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_high", TooltipHelper.makeProgressBar(3, 2)).withStyle(ChatFormatting.YELLOW)));
+                                    sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_high", TooltipHelper.makeProgressBar(3, 2)).withStyle(ChatFormatting.GOLD)));
                                 else
                                     sp.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("createdieselgenerators.actionbar.oil_scanner.oil_low", TooltipHelper.makeProgressBar(3, 1)).withStyle(ChatFormatting.GREEN)));
 
@@ -128,6 +130,12 @@ public class OilScannerItem extends Item {
                 .model(p.getBuilder(c.getName() + "_high")
                         .parent(new ModelFile.UncheckedModelFile("item/generated"))
                         .texture("layer0", CreateDieselGenerators.rl("item/oil_scanner_high")))
+                .end();
+		builder.override()
+                .predicate(CreateDieselGenerators.rl("oil_scanner_state"), 4.0f)
+                .model(p.getBuilder(c.getName() + "_bottomless")
+                        .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                        .texture("layer0", CreateDieselGenerators.rl("item/oil_scanner_bottomless")))
                 .end();
         return builder;
     }

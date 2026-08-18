@@ -24,6 +24,12 @@
       "predicate": {
         "createdieselgenerators:oil_scanner_state": 3.0
       }
+    },
+    {
+      "model": "createdieselgenerators:item/oil_scanner_bottomless",
+      "predicate": {
+        "createdieselgenerators:oil_scanner_state": 4.0
+      }
     }
   ],
   "textures": {
