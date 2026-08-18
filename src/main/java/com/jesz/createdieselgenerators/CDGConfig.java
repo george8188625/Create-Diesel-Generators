@@ -25,6 +25,7 @@ public class CDGConfig {
 
     public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_SCANNER_LEVEL;
     public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_BARREL_WIDTH;
+    public static final ModConfigSpec.ConfigValue<Integer> MAX_OIL_BARREL_LENGTH_PER_WIDTH;
 
     public static final ModConfigSpec.ConfigValue<Integer> OIL_CHUNK_INFINITE_THRESHOLD;
     public static final ModConfigSpec.ConfigValue<Integer> OIL_CHUNK_THRESHOLD;
@@ -110,7 +111,8 @@ public class CDGConfig {
 
         MAX_OIL_BARREL_WIDTH = SERVER_BUILDER.comment("Maximum width of Oil Barrels")
                 .define("Max Oil Barrel Width", 3);
-
+        MAX_OIL_BARREL_LENGTH_PER_WIDTH = SERVER_BUILDER.comment("Maximum Oil Barrel length for each unit of width")
+                .define("Max Oil Barrel Length (per width)", 4);
 
 
         CANISTER_SPOUT_FILLING = SERVER_BUILDER.comment("Canister can be filled by spouts")
