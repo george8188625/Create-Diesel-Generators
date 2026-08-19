@@ -3,6 +3,7 @@ package com.jesz.createdieselgenerators.content.distillation;
 import com.jesz.createdieselgenerators.CDGBlockEntityTypes;
 import com.jesz.createdieselgenerators.CDGRecipes;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
+import com.jesz.createdieselgenerators.content.distillation.DistillationTankBlockEntity.DistillationSoundInstance;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
@@ -166,7 +167,7 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
                             canFill = false;
                             break;
                         }
-                        if (be.tankInventory.getSpace() < (currentRecipe.getFluidResults().get(i).getAmount())) {
+                        if (be.tankInventory.getSpace() < (currentRecipe.getFluidResults().get(i).getAmount()*getTotalTankSize())) {
                             canFill = false;
                             tanksFull = true;
                             break;
@@ -284,25 +285,61 @@ public class DistillationTankBlockEntity extends SmartBlockEntity implements IMu
         removeController(true);
         lastKnownPos = worldPosition;
     }
+    private boolean canExecuteRecipe(DistillationRecipe recipe) {
+        if (recipe == null || level == null) return false;
+        for (int i = 0; i < recipe.getFluidResults().size(); i++) {
+            BlockPos pos = getBlockPos().above(i + 1);
+            BlockEntity be = level.getBlockEntity(pos);
+            if (!(be instanceof DistillationTankBlockEntity tankBe)) {
+                return false;  // tank height < output size
+            }
+            if (!isSameMultiBlock(tankBe)) {
+                return false; 
+            }
+        }
+        return true;
+    }
     protected List<Recipe<?>> getMatchingRecipes() {
+        List<RecipeHolder<? extends Recipe<?>>> holders = RecipeFinder.get(
+            getRecipeCacheKey(), 
+            level, 
+            recipe -> recipe.value().getType() == CDGRecipes.DISTILLATION.getType()
+        );
 
-        List<RecipeHolder<? extends Recipe<?>>> list = RecipeFinder.get(getRecipeCacheKey(), level, recipe -> recipe.value().getType() == CDGRecipes.DISTILLATION.getType());
-        return list.stream()
-                .map(RecipeHolder::value)
-                .sorted((r1, r2) -> {
-                    if(r1 instanceof DistillationRecipe recipe1 && r2 instanceof DistillationRecipe recipe2)
-                        return recipe2.getRequiredHeat().ordinal() - recipe1.getRequiredHeat().ordinal();
-                    return 0;
-                })
-                .filter(r ->{
-                            if(r instanceof DistillationRecipe recipe){
-                                if(!recipe.getRequiredHeat().testBlazeBurner(highestHeatLevel))
-                                    return false;
-                                return recipe.getFluidIngredients().get(0).test(tankInventory.getFluid());
-                            }
-                            return false;
-                        })
-                .collect(Collectors.toList());
+        return holders.stream()
+            .map(RecipeHolder::value)
+            .filter(r -> {
+                if (r instanceof DistillationRecipe recipe) {
+                    // heat level
+                    if (!recipe.getRequiredHeat().testBlazeBurner(highestHeatLevel))
+                        return false;
+                    // fluid input
+                    if (!recipe.getFluidIngredients().get(0).test(tankInventory.getFluid()))
+                        return false;
+                    // newly defined method
+                    if (!canExecuteRecipe(recipe))
+                        return false;
+                    return true;
+                }
+                return false;
+            })
+            .sorted((r1, r2) -> {
+                if (r1 instanceof DistillationRecipe recipe1 && r2 instanceof DistillationRecipe recipe2) {
+                    // output size descending order
+                    int sizeCompare = Integer.compare(
+                        recipe2.getFluidResults().size(), 
+                        recipe1.getFluidResults().size()
+                    );
+                    if (sizeCompare != 0) return sizeCompare;
+                    // heat level descending order
+                    return Integer.compare(
+                        recipe2.getRequiredHeat().ordinal(), 
+                        recipe1.getRequiredHeat().ordinal()
+                    );
+                }
+                return 0;
+            })
+            .collect(Collectors.toList());
     }
     static final Object RECIPE_CACHE_KEY = new Object();
     Object getRecipeCacheKey() {
