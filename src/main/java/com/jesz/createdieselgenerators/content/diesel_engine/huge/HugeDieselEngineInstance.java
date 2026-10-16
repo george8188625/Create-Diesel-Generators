@@ -16,7 +16,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
 import java.util.function.Consumer;
 
 import static com.jesz.createdieselgenerators.content.diesel_engine.huge.HugeDieselEngineBlock.FACING;
@@ -42,18 +41,17 @@ public class HugeDieselEngineInstance extends AbstractBlockEntityVisual<HugeDies
         BlockState state = blockEntity.getBlockState();
         Direction facing = state.getValue(FACING);
         Direction.Axis facingAxis = facing.getAxis();
-        if (angle == null){
+        if (angle == null) {
             transformed(piston, facing, false)
                     .translate(0, 0.53475, 0);
             linkage.setZeroTransform().setChanged();
             connector.setZeroTransform().setChanged();
             piston.setChanged();
             return;
-    }
+        }
 
-
-        PoweredEngineShaftBlockEntity shaft = blockEntity.getShaft();
-        if(shaft == null){
+        PoweredEngineShaftBlockEntity shaft = blockEntity.target.get();
+        if (shaft == null) {
             transformed(piston, facing, false)
                     .translate(0, 0.53475, 0);
             linkage.setZeroTransform().setChanged();
@@ -65,7 +63,7 @@ public class HugeDieselEngineInstance extends AbstractBlockEntityVisual<HugeDies
 
         boolean roll90 = facingAxis.isHorizontal() && axis == Direction.Axis.Y || facingAxis.isVertical() && axis == Direction.Axis.Z;
         float shaftR = facing == Direction.DOWN ? -90 : facing == Direction.UP ? 90 : facing == Direction.WEST ? -90 : facing == Direction.EAST ? 90 : 0;
-        if(roll90)
+        if (roll90)
             shaftR = facing == Direction.NORTH ? 180 : facing == Direction.SOUTH ? 0 : facing == Direction.EAST ? -90 : facing == Direction.WEST ? 90 : 0;
         angle += (float)(shaftR*Math.PI/180);
 
@@ -84,7 +82,7 @@ public class HugeDieselEngineInstance extends AbstractBlockEntityVisual<HugeDies
                 .translate(0, 4 / 16f, 8 / 16f)
                 .rotateXDegrees(sine2 * 23f)
                 .translate(0, -4 / 16f, -8 / 16f);
-        if(shaft.isEngineForConnectorDisplay(blockEntity.getBlockPos()))
+        if (shaft.isEngineForConnectorDisplay(blockEntity.getBlockPos()))
             transformed(connector, facing, roll90)
                     .translate(0, 2, 0)
                     .center()
@@ -96,6 +94,7 @@ public class HugeDieselEngineInstance extends AbstractBlockEntityVisual<HugeDies
         connector.setChanged();
         piston.setChanged();
     }
+
     protected TransformedInstance transformed(TransformedInstance modelData, Direction facing, boolean roll90) {
         return modelData.setIdentityTransform()
                 .translate(getVisualPosition())
@@ -117,6 +116,7 @@ public class HugeDieselEngineInstance extends AbstractBlockEntityVisual<HugeDies
     public void updateLight(float partialTick) {
         relight(piston, linkage, connector);
     }
+
     @Override
     protected void _delete() {
         piston.delete();

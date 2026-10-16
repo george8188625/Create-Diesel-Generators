@@ -205,7 +205,6 @@ public class GameEvents {
         CKinetics config = AllConfigs.server().kinetics;
 
         if (!(item instanceof BlockItem bi) ||
-                !IRotate.StressImpact.isEnabled() ||
                 !(CDGBlocks.DIESEL_ENGINE.is(bi) ||
                 CDGBlocks.MODULAR_DIESEL_ENGINE.is(bi) ||
                 CDGBlocks.HUGE_DIESEL_ENGINE.is(bi)))

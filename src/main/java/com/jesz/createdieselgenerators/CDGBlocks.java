@@ -78,7 +78,7 @@ public class CDGBlocks {
             .blockstate((c, p) -> BlockStateGen.horizontalAxisBlock(c, p, bs -> AssetLookup.partialBaseModel(c, p)))
             .onRegister((b) -> BoilerHeater.REGISTRY.register(b, ((level, pos, state) -> {
                 if(level.getBlockEntity(pos) instanceof BurnerBlockEntity be)
-                    return state.getValue(BurnerBlock.LIT) ? be.heat : -1;
+                    return state.getValue(BurnerBlock.LIT) ? Math.min(2, be.heat) : -1;
                 return -1;
             })))
             .item().model((c, p) -> p.blockItem(c, "/item")).build()
