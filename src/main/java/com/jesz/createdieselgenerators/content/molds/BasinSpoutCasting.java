@@ -17,7 +17,7 @@ public class BasinSpoutCasting implements BlockSpoutingBehaviour {
     @Override
     public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid, boolean simulate) {
         BasinBlockEntity basin;
-        if (level.getBlockEntity(pos) instanceof BasinBlockEntity be)
+        if (level.getBlockEntity(pos) instanceof BasinBlockEntity be && be.canContinueProcessing())
             basin = be;
         else
             return 0;
