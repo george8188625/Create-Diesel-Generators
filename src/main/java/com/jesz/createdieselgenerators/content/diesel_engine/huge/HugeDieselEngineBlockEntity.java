@@ -115,7 +115,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
             float throttle = getThrottle();
             shaft.update(worldPosition,
                     movementDirection.getValue() == 0 ? 1 : -1,
-                    upgrade.getCapacity(getFuelCapacity(), this),
+                    upgrade.getCapacity(getFuelCapacity() * throttle, this),
                     cachedFuelSpeed * throttle);
         } else if (shaft != null && getThrottle() == 0f) {
             shaft.removeGenerator(worldPosition);

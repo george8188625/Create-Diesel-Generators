@@ -54,6 +54,7 @@ public interface EngineUpgrades {
     default float getSpeed(float speed, IEngine engine) {
         return speed;
     }
+
     default float getCapacity(float capacity, IEngine engine) {
         return capacity;
     }
