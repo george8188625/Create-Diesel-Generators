@@ -204,7 +204,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
         if (isOverStressed())
             return;
 
-        fuelDebt += (length * cachedBurnRate) * getFuelThrottle();
+        fuelDebt += length * cachedBurnRate * getFuelThrottle() * upgrade.getBurnRateMultiplier(this);
         while (fuelDebt >= 1f) {
             tankInventory.drain(1, IFluidHandler.FluidAction.EXECUTE);
             fuelDebt -= 1f;

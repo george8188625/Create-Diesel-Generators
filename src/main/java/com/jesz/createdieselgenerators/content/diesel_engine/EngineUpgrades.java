@@ -46,7 +46,9 @@ public interface EngineUpgrades {
         }
         return EMPTY;
     }
+
     ResourceLocation getId();
+
     default boolean canAddOn(IEngine engine) {
         return true;
     }
@@ -65,6 +67,10 @@ public interface EngineUpgrades {
     }
 
     default <T extends SmartBlockEntity & IEngine> float getPitchMultiplier(T engine) {
+        return 1f;
+    }
+
+    default <T extends SmartBlockEntity & IEngine> float getBurnRateMultiplier(T engine) {
         return 1f;
     }
 
@@ -200,6 +206,11 @@ public interface EngineUpgrades {
         @Override
         public <T extends SmartBlockEntity & IEngine> float getPitchMultiplier(T engine) {
             return 1.5f;
+        }
+
+        @Override
+        public <T extends SmartBlockEntity & IEngine> float getBurnRateMultiplier(T engine) {
+            return CDGConfig.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get().floatValue();
         }
     }
 }

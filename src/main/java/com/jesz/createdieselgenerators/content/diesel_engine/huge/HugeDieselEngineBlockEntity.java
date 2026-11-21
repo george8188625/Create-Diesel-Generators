@@ -141,7 +141,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
                 return;
             }
 
-            fuelDebt += cachedBurnRate * getFuelThrottle();
+            fuelDebt += cachedBurnRate * getFuelThrottle() * upgrade.getBurnRateMultiplier(this);
             while (fuelDebt >= 1f) {
                 tank.getPrimaryHandler().drain(1, IFluidHandler.FluidAction.EXECUTE);
                 fuelDebt -= 1f;

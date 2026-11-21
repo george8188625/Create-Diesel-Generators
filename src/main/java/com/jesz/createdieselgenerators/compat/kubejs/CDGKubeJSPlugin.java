@@ -9,15 +9,16 @@ import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CDGKubeJSPlugin implements KubeJSPlugin {
@@ -52,20 +53,17 @@ public class CDGKubeJSPlugin implements KubeJSPlugin {
         registerMolds();
     }
 
-    public static int calculateOilChunks(List<Holder<Biome>> biomes, ChunkPos chunkPos, long seed) {
+    public static int calculateOilChunks(Collection<Holder<Biome>> biomes, ChunkPos chunkPos, long seed) {
         if (!OIL_CHUNKS.hasListeners())
             return -1;
 
         GetChunkOilAmountEventJS event = new GetChunkOilAmountEventJS();
         event.chunkPos = chunkPos;
         event.seed = seed;
-        String[] stringBiomes = new String[biomes.size()];
-        for (int i = 0; i < stringBiomes.length; i++) {
-            stringBiomes[i] = biomes.stream().map(b -> ((Holder.Reference)b).key().location().toString()).toList().get(i);
-        }
-        event.biomes = stringBiomes;
+        event.biomes = biomes.stream().map(Holder::getRegisteredName).toArray(String[]::new);
 
-        return ((Double)OIL_CHUNKS.post(event).value()).intValue();
+        EventResult result = OIL_CHUNKS.post(event);
+        return result.value() == null ? -1 : (int) result.value();
     }
 
     public static void registerLighterSkins() {

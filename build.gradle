@@ -104,7 +104,7 @@ dependencies {
 //    implementation("curse.maven:createaddition-439890:6445614")
 
     compileOnly("curse.maven:kubejs-238086:5810100")
-//    implementation("dev.latvian.mods:kubejs-neoforge:2101.7.2-build.200")
+    runtimeOnly("curse.maven:kubejs-238086:5810100")
 
 //    implementation("curse.maven:rhino-416294:6184623")
     implementation("dev.latvian.mods:rhino:2101.2.7-build.74")
