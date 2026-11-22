@@ -18,6 +18,7 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
@@ -134,6 +135,11 @@ public class DistillationTankBlock extends Block implements IBE<DistillationTank
             world.removeBlockEntity(pos);
             ConnectivityHandler.splitMulti(tankBE);
         }
+    }
+
+    @Override
+    public Item asItem() {
+        return AllBlocks.FLUID_TANK.asItem();
     }
 
     @Override
