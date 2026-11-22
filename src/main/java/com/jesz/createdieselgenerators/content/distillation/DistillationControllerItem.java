@@ -41,15 +41,6 @@ public class DistillationControllerItem extends Item {
         int width = ftbe.getControllerBE().getWidth();
         int height = ftbe.getControllerBE().getHeight();
 
-        if (height < CDGConfig.DISTILLATION_MIN_HEIGHT.get()) {
-            if (context.getPlayer() instanceof ServerPlayer sp)
-                sp.connection.send(new ClientboundSetActionBarTextPacket(
-                        Component.translatable("createdieselgenerators.actionbar.distillation_controller.too_short",
-                                        CDGConfig.DISTILLATION_MIN_HEIGHT.get())
-                                .withStyle(ChatFormatting.RED)));
-            return InteractionResult.FAIL;
-        }
-
         IFluidHandler tank = context.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, ftbe.getBlockPos(), null);
         FluidStack fluidInTank = tank.getFluidInTank(0);
         List<BlockPos> positions = new ArrayList<>();
